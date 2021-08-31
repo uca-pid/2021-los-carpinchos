@@ -7,22 +7,29 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
 import styles from "./styles";
+import { Grid } from "@material-ui/core";
 
 type Props = {
-	classes: {
-		root: string;
-		title: string;
-	};
+	classes: {};
 };
 
 const AppBar = ({ classes }: Props) => {
 	return (
-		<MaterialAppBar className={classes.root} position="fixed">
+		<MaterialAppBar position="fixed">
 			<Toolbar>
-				<Typography variant="h6" className={classes.title}>
-					AppBar
-				</Typography>
-				<Button color="inherit">Login</Button>
+				<Grid alignItems="center" container spacing={1}>
+					<Grid item xs>
+						<Typography variant="h6">MyBar</Typography>
+					</Grid>
+					<Grid item>
+						<Button color="inherit">Iniciar Sesión</Button>
+					</Grid>
+					<Grid item>
+						<Button color="inherit" variant="outlined">
+							Crear Cuenta
+						</Button>
+					</Grid>
+				</Grid>
 			</Toolbar>
 		</MaterialAppBar>
 	);

@@ -1,10 +1,3 @@
-const styles = {
-	root: {
-		flexGrow: 1,
-	},
-	title: {
-		flexGrow: 1,
-	},
-};
+const styles = {};
 
 export default styles;
