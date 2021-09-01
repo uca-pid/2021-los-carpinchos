@@ -6,6 +6,9 @@ const theme = createTheme({
 			main: "#6c63ff",
 		},
 	},
+	typography: {
+		fontFamily: "GillSans",
+	},
 });
 
 export default theme;

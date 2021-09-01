@@ -1,8 +1,12 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const styles = makeStyles(theme => ({
-	toolbar: {
-		marginBottom: 20,
+	card: {
+		backgroundColor: theme.palette.action.hover,
+		padding: 20,
+	},
+	cardActions: {
+		marginTop: 20,
 	},
 }));
 
