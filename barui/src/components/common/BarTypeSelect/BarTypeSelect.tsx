@@ -5,24 +5,22 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 
-import styles from "./styles";
-
 const mockedBarTypes = [
 	{
-		value: "Bar",
 		label: "Bar",
+		value: "Bar",
 	},
 	{
-		value: "CoffeeBar",
 		label: "Coffee Bar",
+		value: "CoffeeBar",
 	},
 	{
-		value: "WineBar",
 		label: "Wine Bar",
+		value: "WineBar",
 	},
 	{
-		value: "Other",
 		label: "Other",
+		value: "Other",
 	},
 ];
 
@@ -34,13 +32,12 @@ type Props = {
 };
 
 const BarTypeSelect = ({ barType, setBarType }: Props) => {
-	const classes = styles();
+	const handleChange = useCallback(({ target: { value } }) => setBarType(value), [setBarType]);
 
-	const handleChange = useCallback(event => setBarType(event), [setBarType]);
 	return (
 		<FormControl fullWidth>
 			<InputLabel>Tipo de bar</InputLabel>
-			<Select value={barType} onChange={handleChange}>
+			<Select displayEmpty value={barType} onChange={handleChange}>
 				<MenuItem value="None" disabled>
 					Seleccionar tipo de bar
 				</MenuItem>

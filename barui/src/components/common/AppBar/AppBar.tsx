@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 
 import { useHistory, useLocation } from "react-router-dom";
-import { withStyles } from "@material-ui/core/styles";
 import MaterialAppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
