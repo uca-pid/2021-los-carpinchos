@@ -1,10 +1,17 @@
 package entities;
 
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
 public class Account {
-
+    @Id
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACCOUNT_SEQ")
+    @ManyToMany
+    @JoinTable(name="PRODUCT_ACCOUNT",
+            joinColumns= @JoinColumn(name="PRODUCT_ID"),
+            inverseJoinColumns= @JoinColumn(name="ACCOUNT_ID"))
     private int id;
     private String name;
     private String manager;

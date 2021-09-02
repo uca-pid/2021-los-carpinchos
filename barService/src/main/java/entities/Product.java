@@ -1,9 +1,14 @@
 package entities;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
 public class Product {
-
+    @Id
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="PRODUCT_SEQ")
+    @ManyToOne
+    @JoinColumn(name="PRODUCT_ID", nullable = false)
     private int id;
     private String name;
     private int price;
