@@ -1,11 +1,8 @@
-import React, { useCallback } from "react";
-import TextField from "@material-ui/core/TextField";
-import { useState } from "react";
+import React, { useCallback, useState } from "react";
 
-export type ValidationSetting = {
-	message: string;
-	validate: Function;
-};
+import { ValidationSetting } from "../../SignUp/validationSettings";
+
+import TextField from "@material-ui/core/TextField";
 
 export type TextFieldWithValidationProps = {
 	className: string;
@@ -37,7 +34,6 @@ const TextFieldWithValidation = ({
 
 	const handleChange = useCallback(
 		({ target: { value } }) => {
-			//validation
 			let hasError = false;
 			let messages: string[] = [];
 			settings &&
@@ -53,7 +49,7 @@ const TextFieldWithValidation = ({
 
 			onChange(value, hasError);
 		},
-		[onChange, settings, error, setError, setHelperText]
+		[onChange, settings, error, setError, setHelperText, isValidCallback]
 	);
 
 	return (

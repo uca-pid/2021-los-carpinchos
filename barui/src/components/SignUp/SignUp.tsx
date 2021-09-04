@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 
+import { Input, LoginInput } from "../Login/Login";
 import { useHistory } from "react-router-dom";
 
 import Card from "@material-ui/core/Card";
@@ -13,25 +14,18 @@ import { Grid, Link } from "@material-ui/core";
 import PasswordTextField from "../common/PasswordTextField";
 
 import styles from "./styles";
-import TextFieldWithValidation, {
-	ValidationSetting,
-} from "../common/TextFieldWithValidation/TextFieldWithValidation";
+import TextFieldWithValidation from "../common/TextFieldWithValidation";
 
-type Input = {
-	invalid: boolean;
-	value: string;
-};
+import { settings, emailSetting, passwordSetting, ValidationSetting } from "./validationSettings";
 
-type Account = {
-	email: Input;
+type SignUpInput = LoginInput & {
 	manager: Input;
 	name: Input;
-	password: Input;
 };
 
 const SignUp = () => {
 	const [verifyPassword, setVerifyPassword] = useState("");
-	const [input, setInput] = useState<Account>({
+	const [input, setInput] = useState<SignUpInput>({
 		email: { invalid: true, value: "" },
 		manager: { invalid: true, value: "" },
 		name: { invalid: true, value: "" },
@@ -69,36 +63,6 @@ const SignUp = () => {
 	const login = useCallback(() => history.push("/login"), [history]);
 
 	const createAccount = useCallback(() => console.log(input), [input]);
-
-	const settings: ValidationSetting[] = [
-		{
-			message: "Debe contener menos de 30 caracteres",
-			validate: (input: string) => input.length > 30,
-		},
-		{
-			message: "El campo es requerido",
-			validate: (input: string) => input.length === 0,
-		},
-	];
-
-	const emailSetting: ValidationSetting = {
-		message: "Esta dirección de correo no es válida",
-		validate: (email: string) => {
-			const re =
-				/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-			return !re.test(String(email).toLowerCase());
-		},
-	};
-
-	const passwordSetting: ValidationSetting = {
-		message: "La contraseña no es válida",
-		validate: (password: string) => {
-			const re = new RegExp(
-				"^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})"
-			);
-			return !re.test(String(password).toLowerCase());
-		},
-	};
 
 	const passwordCheckValidation: ValidationSetting = {
 		message: "La contraseña no coincide",

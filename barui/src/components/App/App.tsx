@@ -16,7 +16,7 @@ const App = () => (
 		<Router>
 			<AppBar />
 			<Switch>
-				<Route exact path="/home">
+				<Route exact path="/">
 					<Home />
 				</Route>
 				<Route exact path="/login">
@@ -25,7 +25,7 @@ const App = () => (
 				<Route exact path="/signUp">
 					<SignUp />
 				</Route>
-				<Route path="/">
+				<Route path="/dashboard">
 					<PrivateRoute />
 				</Route>
 			</Switch>
