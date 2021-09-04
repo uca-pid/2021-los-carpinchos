@@ -2,8 +2,6 @@ import React, { useState, useCallback } from "react";
 
 import { useHistory } from "react-router-dom";
 
-import { BarType } from "../common/BarTypeSelect/BarTypeSelect";
-
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -13,7 +11,6 @@ import Container from "@material-ui/core/Container";
 import { Grid, Link } from "@material-ui/core";
 
 import PasswordTextField from "../common/PasswordTextField";
-import BarTypeSelect from "../common/BarTypeSelect";
 
 import styles from "./styles";
 import TextFieldWithValidation, {
@@ -30,7 +27,6 @@ type Account = {
 	manager: Input;
 	name: Input;
 	password: Input;
-	type: BarType;
 };
 
 const SignUp = () => {
@@ -40,7 +36,6 @@ const SignUp = () => {
 		manager: { invalid: true, value: "" },
 		name: { invalid: true, value: "" },
 		password: { invalid: true, value: "" },
-		type: "None",
 	});
 	const history = useHistory();
 
@@ -53,11 +48,6 @@ const SignUp = () => {
 
 	const handleChangeManager = useCallback(
 		(value, invalid) => setInput(prev => ({ ...prev, manager: { value, invalid } })),
-		[setInput]
-	);
-
-	const handleChangeType = useCallback(
-		value => setInput(prev => ({ ...prev, type: value })),
 		[setInput]
 	);
 
