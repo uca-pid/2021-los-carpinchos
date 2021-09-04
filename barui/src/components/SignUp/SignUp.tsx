@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from "react";
 
+import { Input, LoginInput } from "../Login/Login";
 import { useHistory } from "react-router-dom";
-
-import { BarType } from "../common/BarTypeSelect/BarTypeSelect";
 
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -13,34 +12,24 @@ import Container from "@material-ui/core/Container";
 import { Grid, Link } from "@material-ui/core";
 
 import PasswordTextField from "../common/PasswordTextField";
-import BarTypeSelect from "../common/BarTypeSelect";
 
 import styles from "./styles";
-import TextFieldWithValidation, {
-	ValidationSetting,
-} from "../common/TextFieldWithValidation/TextFieldWithValidation";
+import TextFieldWithValidation from "../common/TextFieldWithValidation";
 
-type Input = {
-	invalid: boolean;
-	value: string;
-};
+import { settings, emailSetting, passwordSetting, ValidationSetting } from "./validationSettings";
 
-type Account = {
-	email: Input;
+type SignUpInput = LoginInput & {
 	manager: Input;
 	name: Input;
-	password: Input;
-	type: BarType;
 };
 
 const SignUp = () => {
 	const [verifyPassword, setVerifyPassword] = useState("");
-	const [input, setInput] = useState<Account>({
+	const [input, setInput] = useState<SignUpInput>({
 		email: { invalid: true, value: "" },
 		manager: { invalid: true, value: "" },
 		name: { invalid: true, value: "" },
 		password: { invalid: true, value: "" },
-		type: "None",
 	});
 	const history = useHistory();
 
@@ -53,11 +42,6 @@ const SignUp = () => {
 
 	const handleChangeManager = useCallback(
 		(value, invalid) => setInput(prev => ({ ...prev, manager: { value, invalid } })),
-		[setInput]
-	);
-
-	const handleChangeType = useCallback(
-		value => setInput(prev => ({ ...prev, type: value })),
 		[setInput]
 	);
 
@@ -79,36 +63,6 @@ const SignUp = () => {
 	const login = useCallback(() => history.push("/login"), [history]);
 
 	const createAccount = useCallback(() => console.log(input), [input]);
-
-	const settings: ValidationSetting[] = [
-		{
-			message: "Debe contener menos de 30 caracteres",
-			validate: (input: string) => input.length > 30,
-		},
-		{
-			message: "El campo es requerido",
-			validate: (input: string) => input.length === 0,
-		},
-	];
-
-	const emailValidation: ValidationSetting = {
-		message: "Esta dirección de correo no es válida",
-		validate: (email: string) => {
-			const re =
-				/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-			return !re.test(String(email).toLowerCase());
-		},
-	};
-
-	const passwordValidation: ValidationSetting = {
-		message: "La contraseña no es válida",
-		validate: (password: string) => {
-			const re = new RegExp(
-				"^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})"
-			);
-			return !re.test(String(password).toLowerCase());
-		},
-	};
 
 	const passwordCheckValidation: ValidationSetting = {
 		message: "La contraseña no coincide",
@@ -149,11 +103,6 @@ const SignUp = () => {
 						</Grid>
 						<Grid item>
 							<div className={classes.singleInputRow}>
-								<BarTypeSelect barType={input.type} setBarType={handleChangeType} />
-							</div>
-						</Grid>
-						<Grid item>
-							<div className={classes.singleInputRow}>
 								<TextFieldWithValidation
 									className={classes.textField}
 									label="Correo electrónico"
@@ -161,7 +110,7 @@ const SignUp = () => {
 									value={input.email.value}
 									onChange={handleChangeEmail}
 									required
-									settings={[...settings, emailValidation]}
+									settings={[...settings, emailSetting]}
 									type="email"
 								/>
 							</div>
@@ -175,7 +124,7 @@ const SignUp = () => {
 									value={input.password.value}
 									onChange={handleChangePassword}
 									required
-									settings={[passwordValidation]}
+									settings={[passwordSetting]}
 								/>
 							</Grid>
 							<Grid item xs>
@@ -186,7 +135,7 @@ const SignUp = () => {
 									value={verifyPassword}
 									onChange={handleChangeVerifyPassword}
 									required
-									settings={[passwordValidation, passwordCheckValidation]}
+									settings={[passwordSetting, passwordCheckValidation]}
 								/>
 							</Grid>
 						</Grid>
@@ -196,13 +145,13 @@ const SignUp = () => {
 					<Grid alignItems="center" container>
 						<Grid item>
 							<Link onClick={login}>
-								<Typography>¿Ya tenes cuenta? Inicia sesión</Typography>
+								<Typography className={classes.loginText}>¿Ya tenes cuenta? Inicia sesión</Typography>
 							</Link>
 						</Grid>
 						<Grid item xs></Grid>
 						<Grid item>
 							<Button
-								color="primary"
+								color="secondary"
 								size="small"
 								variant="contained"
 								onClick={createAccount}

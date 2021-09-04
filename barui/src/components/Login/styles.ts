@@ -8,12 +8,6 @@ const styles = makeStyles(theme => ({
 	cardActions: {
 		marginTop: 20,
 	},
-	singleInputRow: {
-		width: "calc(50% - 12px)",
-		[theme.breakpoints.down(585)]: {
-			width: "100%",
-		},
-	},
 	textField: {
 		margin: 0,
 		minWidth: 220,
@@ -24,7 +18,10 @@ const styles = makeStyles(theme => ({
 	title: {
 		marginBottom: 20,
 	},
-	loginText: {
+	loginButton: {
+		width: 210,
+	},
+	signUpText: {
 		color: theme.palette.secondary.dark,
 	},
 }));
