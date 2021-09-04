@@ -28,24 +28,24 @@ const AppBar = () => {
 					<Grid alignItems="center" container spacing={1}>
 						<Grid alignItems="flex-end" container item xs spacing={2}>
 							<Grid item>
-								<BarIcon />
+								<BarIcon color="secondary" />
 							</Grid>
 							<Grid item>
-								<Typography variant="h6" onClick={handleNameClick}>
+								<Typography color="secondary" variant="h6" onClick={handleNameClick}>
 									MyBar
 								</Typography>
 							</Grid>
 						</Grid>
 						{(location.pathname === "/" || location.pathname === "/signUp") && (
 							<Grid item>
-								<Button color="inherit" onClick={handleLoginButton}>
+								<Button color="secondary" onClick={handleLoginButton}>
 									Iniciar Sesión
 								</Button>
 							</Grid>
 						)}
 						{(location.pathname === "/" || location.pathname === "/login") && (
 							<Grid item>
-								<Button color="inherit" onClick={handleSignUpButton} variant="outlined">
+								<Button color="secondary" onClick={handleSignUpButton} variant="outlined">
 									Crear Cuenta
 								</Button>
 							</Grid>

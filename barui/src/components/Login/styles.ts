@@ -21,6 +21,9 @@ const styles = makeStyles(theme => ({
 	loginButton: {
 		width: 210,
 	},
+	signUpText: {
+		color: theme.palette.secondary.dark,
+	},
 }));
 
 export default styles;

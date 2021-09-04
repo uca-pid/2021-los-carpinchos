@@ -63,6 +63,7 @@ const TextFieldWithValidation = ({
 			margin="normal"
 			InputLabelProps={{
 				shrink: true,
+				style: { fontSize: 20 },
 			}}
 			InputProps={InputProps}
 			value={value}

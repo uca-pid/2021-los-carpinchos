@@ -24,6 +24,9 @@ const styles = makeStyles(theme => ({
 	title: {
 		marginBottom: 20,
 	},
+	loginText: {
+		color: theme.palette.secondary.dark,
+	},
 }));
 
 export default styles;

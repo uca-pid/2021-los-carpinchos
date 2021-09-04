@@ -15,7 +15,7 @@ import PasswordTextField from "../common/PasswordTextField";
 import styles from "./styles";
 import TextFieldWithValidation from "../common/TextFieldWithValidation";
 
-import { settings, emailSetting, passwordSetting } from "../SignUp/validationSettings";
+import { settings, emailSetting } from "../SignUp/validationSettings";
 
 export type Input = {
 	invalid: boolean;
@@ -78,7 +78,6 @@ const Login = () => {
 								value={input.password.value}
 								onChange={handleChangePassword}
 								required
-								settings={[passwordSetting]}
 							/>
 						</Grid>
 					</Grid>
@@ -87,12 +86,12 @@ const Login = () => {
 					<Grid alignItems="center" container direction="column" spacing={3}>
 						<Grid item xs>
 							<Button
-								color="primary"
+								color="secondary"
 								className={classes.loginButton}
 								size="small"
 								variant="contained"
 								onClick={login}
-								disabled={input.email.invalid || input.password.invalid}
+								disabled={input.email.invalid || input.password.value === ""}
 							>
 								Iniciar Sesión
 							</Button>
@@ -100,7 +99,7 @@ const Login = () => {
 
 						<Grid item xs>
 							<Link onClick={createAccount}>
-								<Typography>¿Aún no tenes cuenta? Crear cuenta</Typography>
+								<Typography className={classes.signUpText}>¿Aún no tenes cuenta? Crear cuenta</Typography>
 							</Link>
 						</Grid>
 					</Grid>

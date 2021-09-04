@@ -145,13 +145,13 @@ const SignUp = () => {
 					<Grid alignItems="center" container>
 						<Grid item>
 							<Link onClick={login}>
-								<Typography>¿Ya tenes cuenta? Inicia sesión</Typography>
+								<Typography className={classes.loginText}>¿Ya tenes cuenta? Inicia sesión</Typography>
 							</Link>
 						</Grid>
 						<Grid item xs></Grid>
 						<Grid item>
 							<Button
-								color="primary"
+								color="secondary"
 								size="small"
 								variant="contained"
 								onClick={createAccount}
