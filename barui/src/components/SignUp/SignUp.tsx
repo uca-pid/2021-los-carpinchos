@@ -91,7 +91,7 @@ const SignUp = () => {
 		},
 	];
 
-	const emailValidation: ValidationSetting = {
+	const emailSetting: ValidationSetting = {
 		message: "Esta dirección de correo no es válida",
 		validate: (email: string) => {
 			const re =
@@ -100,7 +100,7 @@ const SignUp = () => {
 		},
 	};
 
-	const passwordValidation: ValidationSetting = {
+	const passwordSetting: ValidationSetting = {
 		message: "La contraseña no es válida",
 		validate: (password: string) => {
 			const re = new RegExp(
@@ -149,11 +149,6 @@ const SignUp = () => {
 						</Grid>
 						<Grid item>
 							<div className={classes.singleInputRow}>
-								<BarTypeSelect barType={input.type} setBarType={handleChangeType} />
-							</div>
-						</Grid>
-						<Grid item>
-							<div className={classes.singleInputRow}>
 								<TextFieldWithValidation
 									className={classes.textField}
 									label="Correo electrónico"
@@ -161,7 +156,7 @@ const SignUp = () => {
 									value={input.email.value}
 									onChange={handleChangeEmail}
 									required
-									settings={[...settings, emailValidation]}
+									settings={[...settings, emailSetting]}
 									type="email"
 								/>
 							</div>
@@ -175,7 +170,7 @@ const SignUp = () => {
 									value={input.password.value}
 									onChange={handleChangePassword}
 									required
-									settings={[passwordValidation]}
+									settings={[passwordSetting]}
 								/>
 							</Grid>
 							<Grid item xs>
@@ -186,7 +181,7 @@ const SignUp = () => {
 									value={verifyPassword}
 									onChange={handleChangeVerifyPassword}
 									required
-									settings={[passwordValidation, passwordCheckValidation]}
+									settings={[passwordSetting, passwordCheckValidation]}
 								/>
 							</Grid>
 						</Grid>
