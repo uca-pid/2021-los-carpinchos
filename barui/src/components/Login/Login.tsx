@@ -47,7 +47,17 @@ const Login = () => {
 		[setInput]
 	);
 
-	const login = useCallback(() => console.log(input), [input]);
+	const login = useCallback(() => {
+		// authenticate user
+		console.log(input);
+
+		// successful login
+		localStorage.setItem("isLoggedIn", "true");
+		history.push("/dashboard");
+
+		// login failed
+		// display error in login screen
+	}, [input]);
 
 	const createAccount = useCallback(() => history.push("/signUp"), [history]);
 
@@ -88,6 +98,13 @@ const Login = () => {
 								</Link>
 							</div>
 						</Grid>
+						{false && (
+							<Grid item xs>
+								<Typography variant="body1" color="error">
+									! Usuario/Contraseña incorrecta. Intente de nuevo.
+								</Typography>
+							</Grid>
+						)}
 					</Grid>
 				</CardContent>
 				<CardActions className={classes.cardActions}>
