@@ -7,6 +7,7 @@ import AppBar from "../common/AppBar";
 import Home from "../Home";
 import Login from "../Login";
 import SignUp from "../SignUp";
+import ResetPassword from "../ResetPassword";
 import PrivateRoute from "../PrivateRoute";
 
 import theme from "./theme";
@@ -24,6 +25,9 @@ const App = () => (
 				</Route>
 				<Route exact path="/signUp">
 					<SignUp />
+				</Route>
+				<Route exact path="/resetPassword">
+					<ResetPassword />
 				</Route>
 				<Route path="/dashboard">
 					<PrivateRoute />

@@ -7,6 +7,7 @@ const styles = makeStyles(theme => ({
 	},
 	cardActions: {
 		marginTop: 20,
+		justifyContent: "center",
 	},
 	textField: {
 		margin: 0,
@@ -23,11 +24,6 @@ const styles = makeStyles(theme => ({
 	},
 	signUpText: {
 		color: theme.palette.secondary.dark,
-	},
-	resetPasswordText: {
-		float: "right",
-		textAlign: "right",
-		width: 180,
 	},
 }));
 

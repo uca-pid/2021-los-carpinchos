@@ -50,6 +50,9 @@ const Login = () => {
 	const login = useCallback(() => console.log(input), [input]);
 
 	const createAccount = useCallback(() => history.push("/signUp"), [history]);
+
+	const resetPassword = useCallback(() => history.push("/resetPassword"), [history]);
+
 	return (
 		<Container maxWidth="sm">
 			<Card className={classes.card}>
@@ -79,6 +82,11 @@ const Login = () => {
 								onChange={handleChangePassword}
 								required
 							/>
+							<div className={classes.resetPasswordText}>
+								<Link onClick={resetPassword}>
+									<Typography>¿Olvidaste tu contraseña?</Typography>
+								</Link>
+							</div>
 						</Grid>
 					</Grid>
 				</CardContent>
