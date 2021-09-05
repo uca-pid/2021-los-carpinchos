@@ -13,7 +13,7 @@ const RedirectRoute = ({ children, ...rest }: Props) => {
 		<Route
 			{...rest}
 			render={({ location }) =>
-				JSON.parse(localStorage.getItem("isLoggedIn") ?? "true") ? (
+				JSON.parse(localStorage.getItem("isLoggedIn") ?? "false") ? (
 					<Redirect
 						to={{
 							pathname: "/dashboard",

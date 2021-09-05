@@ -48,7 +48,7 @@ const ResetPassword = ({ accountEmail }: Props) => {
 	const resetPassword = useCallback(() => {
 		history.push("/login");
 		console.log(input);
-	}, [input]);
+	}, [input, history]);
 
 	const passwordCheckValidation: ValidationSetting = {
 		message: "La contraseña no coincide",

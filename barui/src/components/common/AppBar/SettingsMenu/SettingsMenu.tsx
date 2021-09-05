@@ -25,6 +25,11 @@ const SettingsMenu = () => {
 		setAnchorEl(null);
 	}, [setAnchorEl]);
 
+	const goToSettings = useCallback(() => {
+		history.push("/dashboard/settings/profile");
+		handleClose();
+	}, [history, handleClose]);
+
 	const handleLogOut = useCallback(() => {
 		handleClose();
 		localStorage.setItem("isLoggedIn", "false");
@@ -47,11 +52,11 @@ const SettingsMenu = () => {
 				open={Boolean(anchorEl)}
 				onClose={handleClose}
 			>
-				<MenuItem onClick={handleClose}>
+				<MenuItem onClick={goToSettings}>
 					<ListItemIcon>
 						<ProfileIcon fontSize="small" />
 					</ListItemIcon>
-					<ListItemText primary="Perfil" />
+					<ListItemText primary="Configuración" />
 				</MenuItem>
 				<MenuItem onClick={handleLogOut}>
 					<ListItemIcon>

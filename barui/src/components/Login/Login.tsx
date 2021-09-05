@@ -57,7 +57,7 @@ const Login = () => {
 
 		// login failed
 		// display error in login screen
-	}, [input]);
+	}, [input, history]);
 
 	const createAccount = useCallback(() => history.push("/signUp"), [history]);
 
