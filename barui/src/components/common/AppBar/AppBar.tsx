@@ -9,6 +9,7 @@ import Button from "@material-ui/core/Button";
 
 import BarIcon from "@material-ui/icons/LocalBar";
 import styles from "./styles";
+import SettingsMenu from "./SettingsMenu";
 
 const AppBar = () => {
 	const history = useHistory();
@@ -49,6 +50,16 @@ const AppBar = () => {
 									Crear Cuenta
 								</Button>
 							</Grid>
+						)}
+						{location.pathname.startsWith("/dashboard") && (
+							<>
+								<Grid item>
+									<Typography>BAR_NAME</Typography>
+								</Grid>
+								<Grid item>
+									<SettingsMenu />
+								</Grid>
+							</>
 						)}
 					</Grid>
 				</Toolbar>
