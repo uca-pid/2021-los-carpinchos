@@ -15,6 +15,7 @@ export type TextFieldWithValidationProps = {
 	type?: "text" | "password" | "email";
 	InputProps?: any;
 	isValidCallback?: Function;
+	disabled?: boolean;
 };
 
 const TextFieldWithValidation = ({
@@ -28,6 +29,7 @@ const TextFieldWithValidation = ({
 	type = "text",
 	InputProps,
 	isValidCallback,
+	disabled = false,
 }: TextFieldWithValidationProps) => {
 	const [error, setError] = useState(false);
 	const [helperText, setHelperText] = useState("");
@@ -70,6 +72,7 @@ const TextFieldWithValidation = ({
 			onChange={handleChange}
 			required={error && required}
 			type={type}
+			disabled={disabled}
 		/>
 	);
 };

@@ -31,7 +31,7 @@ const App = () => (
 				<Route exact path="/resetPassword">
 					<ResetPassword />
 				</Route>
-				<PrivateRoute exact path="/dashboard">
+				<PrivateRoute path="/dashboard">
 					<Dashboard />
 				</PrivateRoute>
 			</Switch>
