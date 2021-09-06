@@ -1,34 +1,25 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+
+import { Switch, Route, useRouteMatch, useHistory, useLocation } from "react-router-dom";
+
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import { Switch, Route, useRouteMatch, useHistory, useLocation } from "react-router-dom";
-import ProfileScreen from "./ProfileScreen";
 import { Card, Container } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
 import WarningIcon from "@material-ui/icons/Warning";
-import DeleteAccount from "./DeleteAccount";
-import styles from "./ProfileScreen/styles";
 
-const routes = [
-	{
-		pathName: "profile",
-		component: ProfileScreen,
-	},
-	{
-		pathName: "deleteAccount",
-		component: DeleteAccount,
-	},
-];
+import ProfileScreen from "./ProfileScreen";
+import DeleteAccount from "./DeleteAccount";
+
+import styles from "./styles";
 
 const SettingsScreen = () => {
+	const [value, setValue] = useState("profile");
+
 	let { path } = useRouteMatch();
 	const classes = styles();
-
 	const history = useHistory();
-
 	const location = useLocation();
-
-	const [value, setValue] = React.useState("profile");
 
 	const handleChange = useCallback(
 		(event: React.ChangeEvent<{}>, newPath: string) => {
@@ -51,14 +42,16 @@ const SettingsScreen = () => {
 					<Tab icon={<WarningIcon />} label="Eliminar cuenta" value="deleteAccount" />
 				</Tabs>
 
-				<Switch>
-					<Route exact path={`${path}/profile`}>
-						<ProfileScreen />
-					</Route>
-					<Route exact path={`${path}/deleteAccount`}>
-						<DeleteAccount />
-					</Route>
-				</Switch>
+				<div className={classes.contentContainer}>
+					<Switch>
+						<Route exact path={`${path}/profile`}>
+							<ProfileScreen />
+						</Route>
+						<Route exact path={`${path}/deleteAccount`}>
+							<DeleteAccount />
+						</Route>
+					</Switch>
+				</div>
 			</Card>
 		</Container>
 	);

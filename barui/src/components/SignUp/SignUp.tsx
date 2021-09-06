@@ -18,7 +18,7 @@ import TextFieldWithValidation from "../common/TextFieldWithValidation";
 
 import { settings, emailSetting, passwordSetting, ValidationSetting } from "./validationSettings";
 
-type SignUpInput = LoginInput & {
+export type SignUpInput = LoginInput & {
 	manager: Input;
 	name: Input;
 };

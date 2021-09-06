@@ -16,6 +16,7 @@ const PasswordTextField = ({
 	onChange,
 	required,
 	settings,
+	disabled,
 }: TextFieldWithValidationProps) => {
 	const [showPassword, setShowPassword] = useState(false);
 
@@ -38,8 +39,9 @@ const PasswordTextField = ({
 			required={required}
 			settings={settings}
 			type={showPassword ? "text" : "password"}
+			disabled={disabled}
 			InputProps={{
-				endAdornment: (
+				endAdornment: !disabled && (
 					<InputAdornment position="end">
 						<IconButton
 							aria-label="toggle password visibility"
