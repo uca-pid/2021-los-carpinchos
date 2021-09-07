@@ -62,6 +62,12 @@ class TestUser(APITestCase):
         user = mb_user.getAllUsers().filter(id=1).first()
         self.assertEqual(user,None)
 
+    def test_product_was_succefully_saved(self):
+        product = p.products.first()
+        self.assertEqual(product.getName(),'cafe')
+        self.assertEqual(product.getPrice(),9)
+
+
 
 
 

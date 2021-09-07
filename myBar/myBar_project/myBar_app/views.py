@@ -12,10 +12,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.http import HttpResponse
 
-#from .parser import *
+
 
 from .models import Mb_user
-from .serializer import Serializer
+from .models import Product
 from . import models
 
 def index(request):
@@ -45,17 +45,12 @@ def user_log_in(request):
 
 @api_view(['PUT'])
 def user_reestablish_password(request, id):
-    #user = Mb_user.getAllUsers().filter(email=request.data.get('email'))
     user = Mb_user.users.filter(id=id)
     user2 = user.first()
-    print(user2.password)
     if user2:
         try:
-            #(request.data).pop('id', None)
-            #print('rompio')
             user2 = user2.modifyUser(**(request.data))
             user2.save()
-            #print(user2.password)
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'message': str(e)},status = status.HTTP_400_BAD_REQUEST)
@@ -85,14 +80,14 @@ def user_detail(request,id):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-
+@api_view(['POST'])
 def register_product(request):
     try:
-        user = Mb_user(**request.data)
-        user.save()
+        product = Product(**request.data)
+        product.save()
         return Response(status=status.HTTP_201_CREATED)
     except Exception as e:
-        if str(e) == "El usuario ya existe":
+        if str(e) == "El producto ya existe":
             return Response(status = status.HTTP_409_CONFLICT)
         else:
             return Response(status = status.HTTP_400_BAD_REQUEST)

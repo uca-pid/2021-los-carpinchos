@@ -74,7 +74,6 @@ class Product(models.Model):
 
     # setter method
     def setName(self, x):
-        print("holssss")
         self.name = x
 
     # getter method
@@ -83,7 +82,6 @@ class Product(models.Model):
 
     # setter method
     def setPrice(self, x):
-        print("holssss")
         self.price = x
 
     @classmethod
