@@ -26,7 +26,7 @@ const SettingsScreen = () => {
 			setValue(newPath);
 			history.push(`${path}/${newPath}`);
 		},
-		[history, setValue]
+		[history, setValue, path]
 	);
 
 	useEffect(() => {
