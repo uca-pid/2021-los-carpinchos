@@ -31,6 +31,7 @@ const SignUp = () => {
 		name: { invalid: true, value: "" },
 		password: { invalid: true, value: "" },
 	});
+	const [errorMessage, setErrorMessage] = useState(false);
 	const history = useHistory();
 
 	const classes = styles();
@@ -62,7 +63,29 @@ const SignUp = () => {
 
 	const login = useCallback(() => history.push("/login"), [history]);
 
-	const createAccount = useCallback(() => console.log(input), [input]);
+	const createAccount = useCallback(async () => {
+		setErrorMessage(false);
+		await fetch("http://127.0.0.1:8000/user_creation/", {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				email: input.email.value,
+				name: input.name.value,
+				manager: input.manager.value,
+				password: input.password.value,
+			}),
+		}).then(response => {
+			if (response.status === 201) {
+				history.push("/login");
+			} else if (response.status === 400) {
+				setErrorMessage(true);
+				setInput(prev => ({ ...prev, email: { value: "", invalid: true } }));
+			}
+		});
+	}, [input, history, setErrorMessage]);
 
 	const passwordCheckValidation: ValidationSetting = {
 		message: "La contraseña no coincide",
@@ -149,6 +172,13 @@ const SignUp = () => {
 							</Link>
 						</Grid>
 						<Grid item xs></Grid>
+						{errorMessage && (
+							<Grid item xs>
+								<Typography variant="body1" color="error">
+									! Esta cuenta ya existe
+								</Typography>
+							</Grid>
+						)}
 						<Grid item>
 							<Button
 								color="secondary"
