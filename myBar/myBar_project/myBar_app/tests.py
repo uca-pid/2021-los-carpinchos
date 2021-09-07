@@ -54,6 +54,15 @@ class TestUser(APITestCase):
         user = mb_user.getAllUsers().filter(id=1).first()
         self.assertEqual(user.getPassword(), 'Pass3')
 
+    def test_modify_details(self):
+        user = mb_user.getAllUsers().filter(id=1).first()
+        webClient = self.client
+        response = webClient.put('/reestablish_password/1', {'password': 'Pass3' , 'manager':'Glenn'})
+        self.assertEqual(response.status_code,204)
+        user = mb_user.getAllUsers().filter(id=1).first()
+        self.assertEqual(user.getPassword(), 'Pass3')
+        self.assertEqual(user.getManager(), 'Glenn')
+
     def test_delete_user(self):
         user = mb_user.getAllUsers().filter(id=1).first()
         webClient = self.client
