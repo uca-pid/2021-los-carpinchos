@@ -12,7 +12,7 @@ export type TextFieldWithValidationProps = {
 	onChange: Function;
 	required?: boolean;
 	settings?: Array<ValidationSetting>;
-	type?: "text" | "password" | "email";
+	type?: "text" | "password" | "email" | "number";
 	InputProps?: any;
 	isValidCallback?: Function;
 	disabled?: boolean;

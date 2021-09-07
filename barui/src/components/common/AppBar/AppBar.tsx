@@ -10,6 +10,7 @@ import Button from "@material-ui/core/Button";
 import BarIcon from "@material-ui/icons/LocalBar";
 import styles from "./styles";
 import SettingsMenu from "./SettingsMenu";
+import CreateProduct from "../../Dashboard/MainScreen/CreateProduct";
 
 const AppBar = () => {
 	const history = useHistory();
