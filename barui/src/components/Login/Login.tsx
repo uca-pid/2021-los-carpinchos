@@ -32,6 +32,7 @@ const Login = () => {
 		email: { invalid: true, value: "" },
 		password: { invalid: true, value: "" },
 	});
+	const [errorMessage, setErrorMessage] = useState(false);
 
 	const history = useHistory();
 
@@ -47,17 +48,37 @@ const Login = () => {
 		[setInput]
 	);
 
-	const login = useCallback(() => {
+	const login = useCallback(async () => {
 		// authenticate user
-		console.log(input);
+		setErrorMessage(false);
+		await fetch("http://127.0.0.1:8000/user_log_in/", {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				email: input.email.value,
+				password: input.password.value,
+			}),
+		}).then(response => {
+			if (response.status === 200) {
+				localStorage.setItem("isLoggedIn", "true");
+				history.push("/dashboard");
+			} else if (response.status === 400) {
+				setErrorMessage(true);
+				setInput({
+					email: { invalid: true, value: "" },
+					password: { invalid: true, value: "" },
+				});
+			}
+		});
 
 		// successful login
-		localStorage.setItem("isLoggedIn", "true");
-		history.push("/dashboard");
 
 		// login failed
 		// display error in login screen
-	}, [input, history]);
+	}, [input, history, setErrorMessage, setInput]);
 
 	const createAccount = useCallback(() => history.push("/signUp"), [history]);
 
@@ -98,7 +119,7 @@ const Login = () => {
 								</Link>
 							</div>
 						</Grid>
-						{false && (
+						{errorMessage && (
 							<Grid item xs>
 								<Typography variant="body1" color="error">
 									! Usuario/Contraseña incorrecta. Intente de nuevo.
