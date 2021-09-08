@@ -11,7 +11,13 @@ import BarIcon from "@material-ui/icons/LocalBar";
 import styles from "./styles";
 import SettingsMenu from "./SettingsMenu";
 
-const AppBar = () => {
+import { connect } from "react-redux";
+
+type Props = {
+	accountName: string;
+};
+
+const AppBar = ({ accountName }: Props) => {
 	const history = useHistory();
 	const location = useLocation();
 	const classes = styles();
@@ -54,7 +60,7 @@ const AppBar = () => {
 						{location.pathname.startsWith("/dashboard") && (
 							<>
 								<Grid item>
-									<Typography>BAR_NAME</Typography>
+									<Typography>{accountName.toUpperCase()}</Typography>
 								</Grid>
 								<Grid item>
 									<SettingsMenu />
@@ -69,4 +75,16 @@ const AppBar = () => {
 	);
 };
 
-export default AppBar;
+type State = {
+	session: {
+		accountData: {
+			name: string;
+		};
+	};
+};
+
+const mapStateToProps = (state: State) => ({
+	accountName: state.session.accountData.name,
+});
+
+export default connect(mapStateToProps)(AppBar);

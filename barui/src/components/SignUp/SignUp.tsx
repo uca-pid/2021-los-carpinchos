@@ -65,7 +65,7 @@ const SignUp = () => {
 
 	const createAccount = useCallback(async () => {
 		setErrorMessage(false);
-		await fetch("http://127.0.0.1:8000/user_creation/", {
+		await fetch("http://127.0.0.1:8000/createAccount", {
 			method: "POST",
 			headers: {
 				Accept: "application/json",

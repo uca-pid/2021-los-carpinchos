@@ -13,7 +13,6 @@
 	},
 	"plugins": ["react", "react-hooks"],
 	"rules": {
-		"indent": ["warn", "tab"],
 		"linebreak-style": ["warn", "unix"],
 		"quotes": ["warn", "double"],
 		"semi": ["warn", "always"],

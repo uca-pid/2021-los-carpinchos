@@ -17,6 +17,10 @@ import TextFieldWithValidation from "../common/TextFieldWithValidation";
 
 import { settings, emailSetting } from "../SignUp/validationSettings";
 
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
+import { login } from "../../ducks/sessionReducer";
+
 export type Input = {
 	invalid: boolean;
 	value: string;
@@ -27,12 +31,19 @@ export type LoginInput = {
 	password: Input;
 };
 
-const Login = () => {
+type Props = {
+	actions: {
+		login: Function;
+	};
+	error: boolean;
+	errorMessage: string;
+};
+
+const Login = ({ actions, error, errorMessage }: Props) => {
 	const [input, setInput] = useState<LoginInput>({
 		email: { invalid: true, value: "" },
 		password: { invalid: true, value: "" },
 	});
-	const [errorMessage, setErrorMessage] = useState(false);
 
 	const history = useHistory();
 
@@ -48,37 +59,19 @@ const Login = () => {
 		[setInput]
 	);
 
-	const login = useCallback(async () => {
-		// authenticate user
-		setErrorMessage(false);
-		await fetch("http://127.0.0.1:8000/user_log_in/", {
-			method: "POST",
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				email: input.email.value,
-				password: input.password.value,
-			}),
-		}).then(response => {
-			if (response.status === 200) {
-				localStorage.setItem("isLoggedIn", "true");
+	const handleLogin = useCallback(() => {
+		actions
+			.login(input.email.value, input.password.value)
+			.then(() => {
 				history.push("/dashboard");
-			} else if (response.status === 400) {
-				setErrorMessage(true);
+			})
+			.catch(() => {
 				setInput({
 					email: { invalid: true, value: "" },
 					password: { invalid: true, value: "" },
 				});
-			}
-		});
-
-		// successful login
-
-		// login failed
-		// display error in login screen
-	}, [input, history, setErrorMessage, setInput]);
+			});
+	}, [input, actions, history, setInput]);
 
 	const createAccount = useCallback(() => history.push("/signUp"), [history]);
 
@@ -119,10 +112,10 @@ const Login = () => {
 								</Link>
 							</div>
 						</Grid>
-						{errorMessage && (
+						{error && (
 							<Grid item xs>
 								<Typography variant="body1" color="error">
-									! Usuario/Contraseña incorrecta. Intente de nuevo.
+									{errorMessage}
 								</Typography>
 							</Grid>
 						)}
@@ -136,7 +129,7 @@ const Login = () => {
 								className={classes.loginButton}
 								size="small"
 								variant="contained"
-								onClick={login}
+								onClick={handleLogin}
 								disabled={input.email.invalid || input.password.value === ""}
 							>
 								Iniciar Sesión
@@ -154,4 +147,28 @@ const Login = () => {
 		</Container>
 	);
 };
-export default Login;
+
+type State = {
+	session: {
+		error: {
+			value: boolean;
+			message: string;
+		};
+	};
+};
+
+const mapStateToProps = (state: State) => ({
+	error: state.session.error.value,
+	errorMessage: state.session.error.message,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+	actions: bindActionCreators(
+		{
+			login,
+		},
+		dispatch
+	),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -7,12 +7,41 @@ import PasswordTextField from "../../../common/PasswordTextField";
 
 import styles from "./styles";
 
-const DeleteAccount = () => {
+import { useHistory } from "react-router-dom";
+
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
+import { deleteAccount } from "../../../../ducks/sessionReducer";
+
+type Props = {
+	actions: {
+		deleteAccount: Function;
+	};
+	id: number;
+	email: string;
+	error: boolean;
+	errorMessage: string;
+};
+
+const DeleteAccount = ({ actions, id, error, email, errorMessage }: Props) => {
 	const classes = styles();
+	const history = useHistory();
 
 	const [password, setPassword] = useState("");
 
 	const handleChangePassword = useCallback((value, _) => setPassword(value), [setPassword]);
+
+	const handleDeleteAccount = useCallback(() => {
+		actions
+			.deleteAccount(id, email, password)
+			.then(() => {
+				localStorage.setItem("isLoggedIn", "false");
+				history.push("/");
+			})
+			.catch(() => {
+				setPassword("");
+			});
+	}, [actions, history, password]);
 	return (
 		<Grid container direction="column" spacing={3}>
 			<Grid item xs>
@@ -38,13 +67,21 @@ const DeleteAccount = () => {
 					/>
 				</div>
 			</Grid>
+			{error && (
+				<Grid item xs>
+					<Typography variant="body1" color="error">
+						{errorMessage}
+					</Typography>
+				</Grid>
+			)}
 			<Grid item xs>
-				<Typography variant="body1" color="error">
-					! Contraseña incorrecta. Intente de nuevo.
-				</Typography>
-			</Grid>
-			<Grid item xs>
-				<Button color="secondary" size="small" variant="contained" disabled={password.length === 0}>
+				<Button
+					color="secondary"
+					size="small"
+					variant="contained"
+					disabled={password.length === 0}
+					onClick={handleDeleteAccount}
+				>
 					Borrar cuenta
 				</Button>
 			</Grid>
@@ -52,4 +89,33 @@ const DeleteAccount = () => {
 	);
 };
 
-export default DeleteAccount;
+type State = {
+	session: {
+		accountData: {
+			id: number;
+			email: string;
+		};
+		error: {
+			value: boolean;
+			message: string;
+		};
+	};
+};
+
+const mapStateToProps = (state: State) => ({
+	id: state.session.accountData.id,
+	email: state.session.accountData.email,
+	error: state.session.error.value,
+	errorMessage: state.session.error.message,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+	actions: bindActionCreators(
+		{
+			deleteAccount,
+		},
+		dispatch
+	),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DeleteAccount);
