@@ -1,39 +1,61 @@
-// What is Redux Ducks?
-// https://medium.com/@matthew.holman/what-is-redux-ducks-46bcb1ad04b7
-
 import fetcher from "./fetcher";
-
-// WARNING: This is just a model to build the actual reducers.
 
 // Actions
 const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 const LOGIN_ERROR = "LOGIN_ERROR";
 
+const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+
+const UPDATE_DATA_SUCCESS = "UPDATE_DATA_SUCCESS";
+
 // Action Creators
 export const login = (email, password) => async dispatch => {
-	console.log(email);
-	console.log(password);
-
 	return await fetcher
-		.post("user_log_in/", { email, password })
+		.post("login", { email, password })
 		.then(response => {
-			console.log("login success");
 			console.log(response);
 			localStorage.setItem("isLoggedIn", "true");
-			dispatch({ type: LOGIN_SUCCESS, name: response.user_name, id: response.user_id });
+
+			dispatch({
+				type: LOGIN_SUCCESS,
+				name: response.name,
+				id: response.id,
+				manager: response.manager,
+				email: response.email,
+			});
 		})
 		.catch(() => {
-			console.log("login failed");
-
 			dispatch({ type: LOGIN_ERROR, message: "! Usuario/Contraseña incorrecta" });
+		});
+};
+
+export const updateAccountData = (userId, data) => async dispatch => {
+	console.log(data);
+	console.log(userId);
+	return await fetcher
+		.put(`updateUserData/${userId}`, data)
+		.then(response => {
+			console.log(response);
+
+			dispatch({
+				type: UPDATE_DATA_SUCCESS,
+				name: response.name,
+				manager: response.manager,
+				email: response.email,
+			});
+		})
+		.catch(() => {
+			console.log("UPDATE_DATA_ERROR");
 		});
 };
 
 // State
 const initialState = {
-	userData: {
+	accountData: {
 		id: null,
 		name: "",
+		manager: "",
+		email: "",
 	},
 	error: {
 		value: false,
@@ -47,9 +69,11 @@ const sessionReducer = (state = initialState, action) => {
 		case LOGIN_SUCCESS:
 			return {
 				...state,
-				userData: {
+				accountData: {
 					id: action.id,
 					name: action.name,
+					manager: action.manager,
+					email: action.email,
 				},
 				error: {
 					value: false,
@@ -62,6 +86,26 @@ const sessionReducer = (state = initialState, action) => {
 				error: {
 					value: true,
 					message: action.message,
+				},
+			};
+		case LOGOUT_SUCCESS:
+			return {
+				...state,
+				accountData: {
+					id: null,
+					name: "",
+					manager: "",
+					email: "",
+				},
+			};
+		case UPDATE_DATA_SUCCESS:
+			return {
+				...state,
+				accountData: {
+					...state.accountData,
+					name: action.name,
+					manager: action.manager,
+					email: action.email,
 				},
 			};
 		default:

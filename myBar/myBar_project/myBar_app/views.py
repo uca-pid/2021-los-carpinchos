@@ -40,7 +40,7 @@ def user_log_in(request):
     if user:
         password = user2.password
         if password == request.data.get('password'):
-            return Response({'user_name': user2.name , 'user_id': user2.id, 'manager':user2.manager},status=status.HTTP_200_OK)
+            return Response({'name': user2.name , 'id': user2.id, 'manager':user2.manager, 'email':user2.email},status=status.HTTP_200_OK)
 
     else:
         return Response(status = status.HTTP_400_BAD_REQUEST)
@@ -53,7 +53,7 @@ def user_reestablish_password(request, id):
         try:
             user2 = user2.modifyUser(**(request.data))
             user2.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'name': user2.name , 'id': user2.id, 'manager':user2.manager, 'email':user2.email},status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'message': str(e)},status = status.HTTP_400_BAD_REQUEST)
     else:

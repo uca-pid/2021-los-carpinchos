@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 import { Grid, IconButton, Typography } from "@material-ui/core";
 
@@ -12,16 +12,39 @@ import SaveIcon from "@material-ui/icons/Save";
 import CloseIcon from "@material-ui/icons/Close";
 import styles from "./styles";
 
-const ProfileScreen = () => {
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
+import { updateAccountData } from "../../../../ducks/sessionReducer";
+
+type Props = {
+	actions: {
+		updateAccountData: Function;
+	};
+	accountName: string;
+	manager: string;
+	email: string;
+	id: number;
+};
+
+const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 	const [input, setInput] = useState<SignUpInput>({
-		email: { invalid: true, value: "ACCOUNT_EMAIL" },
-		manager: { invalid: true, value: "ACCOUNT_MANAGER" },
-		name: { invalid: true, value: "BAR_NAME" },
-		password: { invalid: true, value: "AAAAAAAAAAA" },
+		email: { invalid: true, value: "" },
+		manager: { invalid: true, value: "" },
+		name: { invalid: true, value: "" },
+		password: { invalid: true, value: "" },
 	});
 	const [editMode, setEditMode] = useState(false);
 
 	const classes = styles();
+
+	useEffect(() => {
+		setInput({
+			email: { invalid: true, value: email },
+			manager: { invalid: true, value: manager },
+			name: { invalid: true, value: accountName },
+			password: { invalid: true, value: "xxxx" },
+		});
+	}, [email, manager, accountName]);
 
 	const handleChangeName = useCallback(
 		(value, invalid) => setInput(prev => ({ ...prev, name: { value, invalid } })),
@@ -48,7 +71,17 @@ const ProfileScreen = () => {
 	}, [setEditMode]);
 
 	const changeToEditMode = useCallback(() => setEditMode(true), [setEditMode]);
-	const saveChanges = useCallback(() => console.log(input), [input]);
+	const saveChanges = useCallback(() => {
+		const data = {
+			name: input.name.value !== accountName ? input.name.value : undefined,
+			manager: input.manager.value !== manager ? input.manager.value : undefined,
+			email: input.email.value !== email ? input.email.value : undefined,
+		};
+		actions.updateAccountData(id, data).then(() => {
+			setEditMode(false);
+		});
+		console.log(input);
+	}, [input]);
 
 	return (
 		<Grid container direction="column" spacing={3}>
@@ -67,7 +100,12 @@ const ProfileScreen = () => {
 					<IconButton
 						color="primary"
 						onClick={editMode ? saveChanges : changeToEditMode}
-						disabled={editMode && true}
+						disabled={
+							editMode &&
+							input.name.value === accountName &&
+							input.manager.value === manager &&
+							input.email.value === email
+						}
 					>
 						{editMode ? <SaveIcon /> : <EditIcon />}
 					</IconButton>
@@ -132,4 +170,31 @@ const ProfileScreen = () => {
 	);
 };
 
-export default ProfileScreen;
+type State = {
+	session: {
+		accountData: {
+			name: string;
+			manager: string;
+			email: string;
+			id: number;
+		};
+	};
+};
+
+const mapStateToProps = (state: State) => ({
+	accountName: state.session.accountData.name,
+	manager: state.session.accountData.manager,
+	email: state.session.accountData.email,
+	id: state.session.accountData.id,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+	actions: bindActionCreators(
+		{
+			updateAccountData,
+		},
+		dispatch
+	),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen);
