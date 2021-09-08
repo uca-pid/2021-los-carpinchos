@@ -13,7 +13,13 @@ from . import models
 
 def index(request):
     return HttpResponse("API myBar.")
-
+@swagger_auto_schema(method='post',
+                     request_body=openapi.Schema(
+                         type=openapi.TYPE_OBJECT, # object because the data is in json format
+                         properties={
+                             'test_token': openapi.Schema(type=openapi.TYPE_STRING, description='this test_token is used for...'),
+                         }
+                     ), operation_id="token_view")
 @api_view(['POST'])
 def user_create(request):
     try:
@@ -28,10 +34,13 @@ def user_create(request):
 
 @api_view(['POST'])
 def user_log_in(request):
-
-    user = Mb_user.getAllUsers().filter(email=request.data.get('email'))
+    user = Mb_user.users.filter(email=request.data.get('email'))
+    user2 = user.first()
+    #user = Mb_user.getAllUsers().filter(email=request.data.get('email'))
     if user:
-        return Response(status=status.HTTP_200_OK)
+        password = user2.password
+        if password == request.data.get('password'):
+            return Response({'user_name': user2.name , 'user_id': user2.id, 'manager':user2.manager},status=status.HTTP_200_OK)
 
     else:
         return Response(status = status.HTTP_400_BAD_REQUEST)
@@ -57,7 +66,9 @@ def modify_user_details(request, id):
     if user2:
         try:
             user2 = user2.modifyUser(**(request.data))
+            print(user2)
             user2.save()
+            print(user2)
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'message': str(e)},status = status.HTTP_400_BAD_REQUEST)
