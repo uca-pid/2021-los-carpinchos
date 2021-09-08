@@ -8,6 +8,9 @@ const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 
 const UPDATE_DATA_SUCCESS = "UPDATE_DATA_SUCCESS";
 
+const DELETE_ACCOUNT_SUCCESS = "DELETE_ACCOUNT_SUCCESS";
+const DELETE_ACCOUNT_ERROR = "DELETE_ACCOUNT_ERROR";
+
 // Action Creators
 export const login = (email, password) => async dispatch => {
 	return await fetcher
@@ -30,10 +33,8 @@ export const login = (email, password) => async dispatch => {
 };
 
 export const updateAccountData = (userId, data) => async dispatch => {
-	console.log(data);
-	console.log(userId);
 	return await fetcher
-		.put(`updateUserData/${userId}`, data)
+		.put(`updateAccountData/${userId}`, data)
 		.then(response => {
 			console.log(response);
 
@@ -46,6 +47,22 @@ export const updateAccountData = (userId, data) => async dispatch => {
 		})
 		.catch(() => {
 			console.log("UPDATE_DATA_ERROR");
+		});
+};
+
+export const deleteAccount = (userId, email, password) => async dispatch => {
+	return await fetcher
+		.post("login", { email, password })
+		.then(() => {
+			fetcher.delete(`deleteAccount/${userId}`).then(() => {
+				console.log("DELETE_ACCOUNT_SUCCESS");
+				dispatch({ type: DELETE_ACCOUNT_SUCCESS });
+			});
+		})
+		.catch(() => {
+			console.log("DELETE_ACCOUNT_ERROR");
+			dispatch({ type: DELETE_ACCOUNT_ERROR, message: "! Contraseña incorrecta. Vuelva a intentar." });
+			throw new Error();
 		});
 };
 
@@ -89,6 +106,7 @@ const sessionReducer = (state = initialState, action) => {
 				},
 			};
 		case LOGOUT_SUCCESS:
+		case DELETE_ACCOUNT_SUCCESS:
 			return {
 				...state,
 				accountData: {
@@ -106,6 +124,14 @@ const sessionReducer = (state = initialState, action) => {
 					name: action.name,
 					manager: action.manager,
 					email: action.email,
+				},
+			};
+		case DELETE_ACCOUNT_ERROR:
+			return {
+				...state,
+				error: {
+					value: true,
+					message: action.message,
 				},
 			};
 		default:
