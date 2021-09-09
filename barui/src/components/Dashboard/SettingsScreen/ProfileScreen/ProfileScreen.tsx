@@ -39,10 +39,10 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 
 	useEffect(() => {
 		setInput({
-			email: { invalid: true, value: email },
-			manager: { invalid: true, value: manager },
-			name: { invalid: true, value: accountName },
-			password: { invalid: true, value: "xxxx" },
+			email: { invalid: false, value: email },
+			manager: { invalid: false, value: manager },
+			name: { invalid: false, value: accountName },
+			password: { invalid: false, value: "AAAAAAAAAAAA" },
 		});
 	}, [email, manager, accountName]);
 
@@ -76,6 +76,7 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 			name: input.name.value !== accountName ? input.name.value : undefined,
 			manager: input.manager.value !== manager ? input.manager.value : undefined,
 			email: input.email.value !== email ? input.email.value : undefined,
+			password: input.password.value !== "AAAAAAAAAAAA" ? input.password.value : undefined,
 		};
 		actions.updateAccountData(id, data).then(() => {
 			setEditMode(false);
@@ -101,10 +102,15 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 						color="primary"
 						onClick={editMode ? saveChanges : changeToEditMode}
 						disabled={
-							editMode &&
-							input.name.value === accountName &&
-							input.manager.value === manager &&
-							input.email.value === email
+							(editMode &&
+								input.name.value === accountName &&
+								input.manager.value === manager &&
+								input.email.value === email &&
+								input.password.value === "AAAAAAAAAAAA") ||
+							input.name.invalid ||
+							input.manager.invalid ||
+							input.email.invalid ||
+							input.password.invalid
 						}
 					>
 						{editMode ? <SaveIcon /> : <EditIcon />}
@@ -162,7 +168,7 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 						onChange={handleChangePassword}
 						required
 						settings={[passwordSetting]}
-						disabled
+						disabled={!editMode}
 					/>
 				</div>
 			</Grid>
