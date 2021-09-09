@@ -97,7 +97,6 @@ def delete_user(request,id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-
 @api_view(['POST'])
 def register_product(request):
     try:
