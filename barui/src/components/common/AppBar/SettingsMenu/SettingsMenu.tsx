@@ -33,6 +33,7 @@ const SettingsMenu = () => {
 	const handleLogOut = useCallback(() => {
 		handleClose();
 		localStorage.setItem("isLoggedIn", "false");
+		localStorage.removeItem("userId");
 		history.push("/");
 	}, [history, handleClose]);
 

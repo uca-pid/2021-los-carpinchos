@@ -18,12 +18,25 @@ import TextFieldWithValidation from "../common/TextFieldWithValidation";
 
 import { settings, emailSetting, passwordSetting, ValidationSetting } from "./validationSettings";
 
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
+import { signUp } from "../../ducks/sessionReducer";
+
 export type SignUpInput = LoginInput & {
 	manager: Input;
 	name: Input;
 };
 
-const SignUp = () => {
+type Props = {
+	actions: {
+		signUp: Function;
+	};
+
+	error: boolean;
+	errorMessage: string;
+};
+
+const SignUp = ({ actions, error, errorMessage }: Props) => {
 	const [verifyPassword, setVerifyPassword] = useState("");
 	const [input, setInput] = useState<SignUpInput>({
 		email: { invalid: true, value: "" },
@@ -31,7 +44,6 @@ const SignUp = () => {
 		name: { invalid: true, value: "" },
 		password: { invalid: true, value: "" },
 	});
-	const [errorMessage, setErrorMessage] = useState(false);
 	const history = useHistory();
 
 	const classes = styles();
@@ -63,29 +75,16 @@ const SignUp = () => {
 
 	const login = useCallback(() => history.push("/login"), [history]);
 
-	const createAccount = useCallback(async () => {
-		setErrorMessage(false);
-		await fetch("http://127.0.0.1:8000/createAccount", {
-			method: "POST",
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				email: input.email.value,
-				name: input.name.value,
-				manager: input.manager.value,
-				password: input.password.value,
-			}),
-		}).then(response => {
-			if (response.status === 201) {
+	const createAccount = useCallback(() => {
+		actions
+			.signUp(input.name.value, input.manager.value, input.email.value, input.password.value)
+			.then(() => {
 				history.push("/login");
-			} else if (response.status === 400) {
-				setErrorMessage(true);
+			})
+			.catch(() => {
 				setInput(prev => ({ ...prev, email: { value: "", invalid: true } }));
-			}
-		});
-	}, [input, history, setErrorMessage]);
+			});
+	}, [input]);
 
 	const passwordCheckValidation: ValidationSetting = {
 		message: "La contraseña no coincide",
@@ -172,10 +171,10 @@ const SignUp = () => {
 							</Link>
 						</Grid>
 						<Grid item xs></Grid>
-						{errorMessage && (
+						{error && (
 							<Grid item xs>
 								<Typography variant="body1" color="error">
-									! Esta cuenta ya existe
+									{errorMessage}
 								</Typography>
 							</Grid>
 						)}
@@ -202,4 +201,28 @@ const SignUp = () => {
 		</Container>
 	);
 };
-export default SignUp;
+
+type State = {
+	session: {
+		error: {
+			value: boolean;
+			message: string;
+		};
+	};
+};
+
+const mapStateToProps = (state: State) => ({
+	error: state?.session?.error?.value,
+	errorMessage: state?.session?.error?.message,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+	actions: bindActionCreators(
+		{
+			signUp,
+		},
+		dispatch
+	),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

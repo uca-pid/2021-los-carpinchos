@@ -1,8 +1,12 @@
 import fetcher from "./fetcher";
 
 // Actions
+const SIGNUP_ERROR = "SIGNUP_ERROR";
+
 const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 const LOGIN_ERROR = "LOGIN_ERROR";
+
+const FETCH_USER_DATA_SUCCESS = "FETCH_USER_DATA_SUCCESS";
 
 const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 
@@ -12,12 +16,22 @@ const DELETE_ACCOUNT_SUCCESS = "DELETE_ACCOUNT_SUCCESS";
 const DELETE_ACCOUNT_ERROR = "DELETE_ACCOUNT_ERROR";
 
 // Action Creators
+export const signUp = (name, manager, email, password) => async dispatch => {
+	await fetcher.post("createAccount", { name, manager, email, password }).catch(() => {
+		dispatch({
+			type: SIGNUP_ERROR,
+			message: "! Cuenta ya existente. Utilice otro correo electrónico.",
+		});
+	});
+};
+
 export const login = (email, password) => async dispatch => {
 	return await fetcher
 		.post("login", { email, password })
 		.then(response => {
 			console.log(response);
 			localStorage.setItem("isLoggedIn", "true");
+			localStorage.setItem("userId", `${response.id}`);
 
 			dispatch({
 				type: LOGIN_SUCCESS,
@@ -29,6 +43,24 @@ export const login = (email, password) => async dispatch => {
 		})
 		.catch(() => {
 			dispatch({ type: LOGIN_ERROR, message: "! Usuario/Contraseña incorrecta" });
+		});
+};
+
+export const getUserData = userId => async dispatch => {
+	return await fetcher
+		.get(`accountDetails/${userId}`)
+		.then(response => {
+			console.log(response);
+			dispatch({
+				type: FETCH_USER_DATA_SUCCESS,
+				name: response.name,
+				id: response.id,
+				manager: response.manager,
+				email: response.email,
+			});
+		})
+		.catch(error => {
+			console.log(error);
 		});
 };
 
@@ -74,7 +106,7 @@ const initialState = {
 		manager: "",
 		email: "",
 	},
-	error: {
+	errors: {
 		value: false,
 		message: "",
 	},
@@ -84,6 +116,7 @@ const initialState = {
 const sessionReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case LOGIN_SUCCESS:
+		case FETCH_USER_DATA_SUCCESS:
 			return {
 				...state,
 				accountData: {
@@ -97,14 +130,6 @@ const sessionReducer = (state = initialState, action) => {
 					message: "",
 				},
 			};
-		case LOGIN_ERROR:
-			return {
-				...state,
-				error: {
-					value: true,
-					message: action.message,
-				},
-			};
 		case LOGOUT_SUCCESS:
 		case DELETE_ACCOUNT_SUCCESS:
 			return {
@@ -114,6 +139,10 @@ const sessionReducer = (state = initialState, action) => {
 					name: "",
 					manager: "",
 					email: "",
+				},
+				error: {
+					value: false,
+					message: "",
 				},
 			};
 		case UPDATE_DATA_SUCCESS:
@@ -125,7 +154,13 @@ const sessionReducer = (state = initialState, action) => {
 					manager: action.manager,
 					email: action.email,
 				},
+				error: {
+					value: false,
+					message: "",
+				},
 			};
+		case SIGNUP_ERROR:
+		case LOGIN_ERROR:
 		case DELETE_ACCOUNT_ERROR:
 			return {
 				...state,
