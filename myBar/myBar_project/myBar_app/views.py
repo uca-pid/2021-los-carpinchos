@@ -104,3 +104,11 @@ def register_product(request):
             return Response(status = status.HTTP_409_CONFLICT)
         else:
             return Response(status = status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_all_products(request):
+    product = Product.getAllProducts()
+    if product:
+        return Response(product.values(), status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)

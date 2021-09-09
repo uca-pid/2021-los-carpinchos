@@ -14,19 +14,19 @@ import { Container, Grid, IconButton, Typography } from "@material-ui/core";
 import styles from "./styles";
 import CreateProduct from "./CreateProduct";
 
-const createData = (name: string, price: number) => ({
-	name,
-	price,
-});
+import { connect } from "react-redux";
 
-const rows = [
-	createData("PRODUCT 1", 150),
-	createData("PRODUCT 2", 100),
-	createData("PRODUCT 3", 850),
-	createData("PRODUCT 4", 950),
-];
+type Product = {
+	id: string;
+	name: string;
+	price: number;
+};
 
-const MainScreen = () => {
+type Props = {
+	products: Product[];
+};
+
+const MainScreen = ({ products }: Props) => {
 	const classes = styles();
 
 	return (
@@ -53,7 +53,7 @@ const MainScreen = () => {
 								</TableRow>
 							</TableHead>
 							<TableBody>
-								{rows.map(row => (
+								{products.map((row: Product) => (
 									<TableRow key={row.name}>
 										<TableCell align="left">{row.name}</TableCell>
 										<TableCell align="right">$ {row.price}</TableCell>
@@ -76,4 +76,14 @@ const MainScreen = () => {
 	);
 };
 
-export default MainScreen;
+type State = {
+	session: {
+		products: Product[];
+	};
+};
+
+const mapStateToProps = (state: State) => ({
+	products: state?.session?.products,
+});
+
+export default connect(mapStateToProps)(MainScreen);

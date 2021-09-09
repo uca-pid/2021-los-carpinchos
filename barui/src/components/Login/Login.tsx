@@ -107,7 +107,8 @@ const Login = ({ actions, error, errorMessage }: Props) => {
 								required
 							/>
 							<div className={classes.resetPasswordText}>
-								<Link onClick={resetPassword}>
+								{/* <Link onClick={resetPassword}> */}
+								<Link>
 									<Typography>¿Olvidaste tu contraseña?</Typography>
 								</Link>
 							</div>
