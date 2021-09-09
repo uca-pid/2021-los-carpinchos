@@ -16,7 +16,7 @@ class Mb_user(models.Model):
 
     # setter method
     def setName(self, x):
-        print("holssss")
+        #print("holssss")
         self.name = x
 
     # getter method
@@ -57,9 +57,12 @@ class Mb_user(models.Model):
 
 
     def modifyUser(self, **argsToChange):
+        #print(type(argsToChange))
         keys = argsToChange.keys()
+        #print(keys)
         for arg in keys:
-            setattr(self, arg, argsToChange[arg][0])
+            #print('hola',argsToChange[arg])
+            setattr(self, arg, argsToChange[arg])
         return self
 
 class Product(models.Model):

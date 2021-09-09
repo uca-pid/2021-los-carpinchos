@@ -1,26 +1,25 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.forms.models import model_to_dict
-from django.http import JsonResponse
-from django.views import View
-
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework.decorators import api_view, renderer_classes
-from rest_framework.parsers import JSONParser
-from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import HttpResponse
-
-
-
 from .models import Mb_user
 from .models import Product
 from . import models
 
 def index(request):
     return HttpResponse("API myBar.")
-
+@swagger_auto_schema(method='post',
+                     request_body=openapi.Schema(
+                         type=openapi.TYPE_OBJECT, # object because the data is in json format
+                         properties={
+                             'test_token': openapi.Schema(type=openapi.TYPE_STRING, description='this test_token is used for...'),
+                         }
+                     ), operation_id="token_view")
 @api_view(['POST'])
 def user_create(request):
     try:
@@ -36,11 +35,12 @@ def user_create(request):
 @api_view(['POST'])
 def user_log_in(request):
     user = Mb_user.users.filter(email=request.data.get('email'))
-    user2 = user.first() 
+    user2 = user.first()
+    #user = Mb_user.getAllUsers().filter(email=request.data.get('email'))
     if user:
         password = user2.password
         if password == request.data.get('password'):
-            return Response({'name': user2.name , 'id': user2.id, 'manager':user2.manager, 'email':user2.email},status=status.HTTP_200_OK)
+            return Response({'user_name': user2.name , 'user_id': user2.id, 'manager':user2.manager},status=status.HTTP_200_OK)
 
     else:
         return Response(status = status.HTTP_400_BAD_REQUEST)
@@ -53,17 +53,39 @@ def user_reestablish_password(request, id):
         try:
             user2 = user2.modifyUser(**(request.data))
             user2.save()
-            return Response({'name': user2.name , 'id': user2.id, 'manager':user2.manager, 'email':user2.email},status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'message': str(e)},status = status.HTTP_400_BAD_REQUEST)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['PUT'])
+def modify_user_details(request, id):
+    user = Mb_user.users.filter(id=id)
+    user2 = user.first()
+    print('tipo',request.data)
+    if user2:
+        try:
+
+            user2 = user2.modifyUser(**(request.data))
+            #print(user2)
+            user2.full_clean()
+            user2.save()
+            #print(user2)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'message': str(e)},status = status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 def get_user_details(request,id):
-    method = request.method
-    return user_detail(request, id)
+    user_bis = Mb_user.getAllUsers().filter(id=id)
+    #user = user_bis.first()
+    if user_bis:
+        return Response(user_bis.values(), status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['DELETE'])
 def delete_user(request,id):
@@ -74,13 +96,6 @@ def delete_user(request,id):
     except Exception as e:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-def user_detail(request,id):
-    user_bis = Mb_user.getAllUsers().filter(id=id)
-    user = user_bis.first()
-    if user:
-        return Response(user, status=status.HTTP_200_OK)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
 def register_product(request):
