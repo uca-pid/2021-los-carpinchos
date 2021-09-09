@@ -15,6 +15,8 @@ const UPDATE_DATA_SUCCESS = "UPDATE_DATA_SUCCESS";
 const DELETE_ACCOUNT_SUCCESS = "DELETE_ACCOUNT_SUCCESS";
 const DELETE_ACCOUNT_ERROR = "DELETE_ACCOUNT_ERROR";
 
+const GET_ALL_PRODUCTS_SUCCESS = "GET_ALL_PRODUCTS_SUCCESS";
+
 // Action Creators
 export const signUp = (name, manager, email, password) => async dispatch => {
 	await fetcher.post("createAccount", { name, manager, email, password }).catch(() => {
@@ -98,6 +100,16 @@ export const deleteAccount = (userId, email, password) => async dispatch => {
 		});
 };
 
+export const getAllProducts = () => async dispatch => {
+	return await fetcher.get("getAllProducts").then(response => {
+		console.log(response);
+		dispatch({
+			type: GET_ALL_PRODUCTS_SUCCESS,
+			products: response,
+		});
+	});
+};
+
 // State
 const initialState = {
 	accountData: {
@@ -110,6 +122,7 @@ const initialState = {
 		value: false,
 		message: "",
 	},
+	products: [],
 };
 
 // Reducer
@@ -168,6 +181,11 @@ const sessionReducer = (state = initialState, action) => {
 					value: true,
 					message: action.message,
 				},
+			};
+		case GET_ALL_PRODUCTS_SUCCESS:
+			return {
+				...state,
+				products: action.products,
 			};
 		default:
 			return state;

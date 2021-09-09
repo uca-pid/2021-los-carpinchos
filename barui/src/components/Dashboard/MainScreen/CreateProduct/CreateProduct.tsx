@@ -12,7 +12,18 @@ import styles from "./styles";
 import { Grid, InputAdornment } from "@material-ui/core";
 import { settings } from "../../../SignUp/validationSettings";
 
-const CreateProduct = () => {
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
+import { getAllProducts } from "../../../../ducks/sessionReducer";
+import fetcher from "../../../../ducks/fetcher";
+
+type Props = {
+	actions: {
+		getAllProducts: Function;
+	};
+};
+
+const CreateProduct = ({ actions }: Props) => {
 	const [open, setOpen] = React.useState(false);
 	const [input, setInput] = useState({
 		productName: { invalid: true, value: "" },
@@ -38,12 +49,22 @@ const CreateProduct = () => {
 		[setInput]
 	);
 
+	const handleAddProduct = useCallback(() => {
+		fetcher
+			.post("addNewProduct", { name: input.productName.value, price: parseInt(input.price.value) })
+			.then(() => {
+				actions.getAllProducts().then(() => {
+					handleClose();
+				});
+			});
+	}, [handleClose, input]);
+
 	useEffect(() => {
 		setInput({
 			productName: { invalid: true, value: "" },
 			price: { invalid: true, value: "" },
 		});
-	}, [open]);
+	}, [open, setInput]);
 
 	return (
 		<>
@@ -89,7 +110,7 @@ const CreateProduct = () => {
 						<Grid item xs></Grid>
 						<Grid item>
 							<Button
-								onClick={handleClose}
+								onClick={handleAddProduct}
 								color="primary"
 								variant="outlined"
 								disabled={input.price.invalid || input.productName.invalid}
@@ -104,4 +125,13 @@ const CreateProduct = () => {
 	);
 };
 
-export default CreateProduct;
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+	actions: bindActionCreators(
+		{
+			getAllProducts,
+		},
+		dispatch
+	),
+});
+
+export default connect(null, mapDispatchToProps)(CreateProduct);

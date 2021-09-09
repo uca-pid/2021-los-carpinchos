@@ -10,5 +10,6 @@ urlpatterns = [
     path('updateAccountData/<int:id>', views.modify_user_details, name='modify_details'),
     path('accountDetails/<int:id>', views.get_user_details, name='get_user_details'),
     path('deleteAccount/<int:id>', views.delete_user, name='delete_user'),
-    path('register_product/', views.register_product, name='register_product'),
+    path('addNewProduct', views.register_product, name='register_product'),
+	path('getAllProducts', views.get_all_products, name='get_all_products'),
 ]
