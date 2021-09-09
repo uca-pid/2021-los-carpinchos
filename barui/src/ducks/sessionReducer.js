@@ -1,8 +1,12 @@
 import fetcher from "./fetcher";
 
 // Actions
+const SIGNUP_ERROR = "SIGNUP_ERROR";
+
 const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 const LOGIN_ERROR = "LOGIN_ERROR";
+
+const FETCH_USER_DATA_SUCCESS = "FETCH_USER_DATA_SUCCESS";
 
 const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 
@@ -10,8 +14,6 @@ const UPDATE_DATA_SUCCESS = "UPDATE_DATA_SUCCESS";
 
 const DELETE_ACCOUNT_SUCCESS = "DELETE_ACCOUNT_SUCCESS";
 const DELETE_ACCOUNT_ERROR = "DELETE_ACCOUNT_ERROR";
-
-const SIGNUP_ERROR = "SIGNUP_ERROR";
 
 // Action Creators
 export const signUp = (name, manager, email, password) => async dispatch => {
@@ -29,6 +31,7 @@ export const login = (email, password) => async dispatch => {
 		.then(response => {
 			console.log(response);
 			localStorage.setItem("isLoggedIn", "true");
+			localStorage.setItem("userId", `${response.id}`);
 
 			dispatch({
 				type: LOGIN_SUCCESS,
@@ -40,6 +43,24 @@ export const login = (email, password) => async dispatch => {
 		})
 		.catch(() => {
 			dispatch({ type: LOGIN_ERROR, message: "! Usuario/Contraseña incorrecta" });
+		});
+};
+
+export const getUserData = userId => async dispatch => {
+	return await fetcher
+		.get(`accountDetails/${userId}`)
+		.then(response => {
+			console.log(response);
+			dispatch({
+				type: FETCH_USER_DATA_SUCCESS,
+				name: response.name,
+				id: response.id,
+				manager: response.manager,
+				email: response.email,
+			});
+		})
+		.catch(error => {
+			console.log(error);
 		});
 };
 
@@ -95,6 +116,7 @@ const initialState = {
 const sessionReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case LOGIN_SUCCESS:
+		case FETCH_USER_DATA_SUCCESS:
 			return {
 				...state,
 				accountData: {

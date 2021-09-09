@@ -1,11 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 import MainScreen from "./MainScreen";
 import SettingsScreen from "./SettingsScreen";
 
-const Dashboard = () => {
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
+import { getUserData } from "../../ducks/sessionReducer";
+
+type Props = {
+	actions: {
+		getUserData: Function;
+	};
+};
+const Dashboard = ({ actions }: Props) => {
 	let { path } = useRouteMatch();
+
+	useEffect(() => {
+		let userId = localStorage.getItem("userId");
+
+		actions.getUserData(userId);
+	}, [actions]);
 
 	return (
 		<Switch>
@@ -19,4 +34,13 @@ const Dashboard = () => {
 	);
 };
 
-export default Dashboard;
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+	actions: bindActionCreators(
+		{
+			getUserData,
+		},
+		dispatch
+	),
+});
+
+export default connect(null, mapDispatchToProps)(Dashboard);

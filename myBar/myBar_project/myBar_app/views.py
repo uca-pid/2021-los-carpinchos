@@ -77,8 +77,9 @@ def modify_user_details(request, id):
 @api_view(['GET'])
 def get_user_details(request,id):
     user_bis = Mb_user.getAllUsers().filter(id=id)
+    user2 = user_bis.first()
     if user_bis:
-        return Response(user_bis.values(), status=status.HTTP_200_OK)
+        return Response({'name': user2.name , 'id': user2.id, 'manager':user2.manager, 'email':user2.email}, status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
