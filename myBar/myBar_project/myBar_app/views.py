@@ -63,12 +63,15 @@ def user_reestablish_password(request, id):
 def modify_user_details(request, id):
     user = Mb_user.users.filter(id=id)
     user2 = user.first()
+    print('tipo',request.data)
     if user2:
         try:
+
             user2 = user2.modifyUser(**(request.data))
-            print(user2)
+            #print(user2)
+            user2.full_clean()
             user2.save()
-            print(user2)
+            #print(user2)
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'message': str(e)},status = status.HTTP_400_BAD_REQUEST)
@@ -77,8 +80,12 @@ def modify_user_details(request, id):
 
 @api_view(['GET'])
 def get_user_details(request,id):
-    method = request.method
-    return user_detail(request, id)
+    user_bis = Mb_user.getAllUsers().filter(id=id)
+    #user = user_bis.first()
+    if user_bis:
+        return Response(user_bis.values(), status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['DELETE'])
 def delete_user(request,id):
@@ -89,13 +96,7 @@ def delete_user(request,id):
     except Exception as e:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-def user_detail(request,id):
-    user_bis = Mb_user.getAllUsers().filter(id=id)
-    user = user_bis.first()
-    if user:
-        return Response(user, status=status.HTTP_200_OK)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['POST'])
 def register_product(request):
