@@ -66,10 +66,10 @@ const Login = ({ actions, error, errorMessage }: Props) => {
 				history.push("/dashboard");
 			})
 			.catch(() => {
-				setInput({
-					email: { invalid: true, value: "" },
+				setInput(prev => ({
+					...prev,
 					password: { invalid: true, value: "" },
-				});
+				}));
 			});
 	}, [input, actions, history, setInput]);
 
@@ -158,8 +158,8 @@ type State = {
 };
 
 const mapStateToProps = (state: State) => ({
-	error: state.session.error.value,
-	errorMessage: state.session.error.message,
+	error: state?.session?.error?.value,
+	errorMessage: state?.session?.error?.message,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

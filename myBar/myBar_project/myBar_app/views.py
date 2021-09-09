@@ -36,11 +36,10 @@ def user_create(request):
 def user_log_in(request):
     user = Mb_user.users.filter(email=request.data.get('email'))
     user2 = user.first()
-    #user = Mb_user.getAllUsers().filter(email=request.data.get('email'))
     if user:
         password = user2.password
         if password == request.data.get('password'):
-            return Response({'user_name': user2.name , 'user_id': user2.id, 'manager':user2.manager},status=status.HTTP_200_OK)
+            return Response({'name': user2.name , 'id': user2.id, 'manager':user2.manager, 'email':user2.email},status=status.HTTP_200_OK)
 
     else:
         return Response(status = status.HTTP_400_BAD_REQUEST)
@@ -66,13 +65,10 @@ def modify_user_details(request, id):
     print('tipo',request.data)
     if user2:
         try:
-
             user2 = user2.modifyUser(**(request.data))
-            #print(user2)
             user2.full_clean()
             user2.save()
-            #print(user2)
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'name': user2.name , 'manager':user2.manager, 'email':user2.email},status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'message': str(e)},status = status.HTTP_400_BAD_REQUEST)
     else:
@@ -81,7 +77,6 @@ def modify_user_details(request, id):
 @api_view(['GET'])
 def get_user_details(request,id):
     user_bis = Mb_user.getAllUsers().filter(id=id)
-    #user = user_bis.first()
     if user_bis:
         return Response(user_bis.values(), status=status.HTTP_200_OK)
     else:

@@ -11,7 +11,18 @@ const UPDATE_DATA_SUCCESS = "UPDATE_DATA_SUCCESS";
 const DELETE_ACCOUNT_SUCCESS = "DELETE_ACCOUNT_SUCCESS";
 const DELETE_ACCOUNT_ERROR = "DELETE_ACCOUNT_ERROR";
 
+const SIGNUP_ERROR = "SIGNUP_ERROR";
+
 // Action Creators
+export const signUp = (name, manager, email, password) => async dispatch => {
+	await fetcher.post("createAccount", { name, manager, email, password }).catch(() => {
+		dispatch({
+			type: SIGNUP_ERROR,
+			message: "! Cuenta ya existente. Utilice otro correo electrónico.",
+		});
+	});
+};
+
 export const login = (email, password) => async dispatch => {
 	return await fetcher
 		.post("login", { email, password })
@@ -74,7 +85,7 @@ const initialState = {
 		manager: "",
 		email: "",
 	},
-	error: {
+	errors: {
 		value: false,
 		message: "",
 	},
@@ -97,14 +108,6 @@ const sessionReducer = (state = initialState, action) => {
 					message: "",
 				},
 			};
-		case LOGIN_ERROR:
-			return {
-				...state,
-				error: {
-					value: true,
-					message: action.message,
-				},
-			};
 		case LOGOUT_SUCCESS:
 		case DELETE_ACCOUNT_SUCCESS:
 			return {
@@ -114,6 +117,10 @@ const sessionReducer = (state = initialState, action) => {
 					name: "",
 					manager: "",
 					email: "",
+				},
+				error: {
+					value: false,
+					message: "",
 				},
 			};
 		case UPDATE_DATA_SUCCESS:
@@ -125,7 +132,13 @@ const sessionReducer = (state = initialState, action) => {
 					manager: action.manager,
 					email: action.email,
 				},
+				error: {
+					value: false,
+					message: "",
+				},
 			};
+		case SIGNUP_ERROR:
+		case LOGIN_ERROR:
 		case DELETE_ACCOUNT_ERROR:
 			return {
 				...state,
