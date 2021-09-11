@@ -18,6 +18,7 @@ manager = openapi.Schema(title='manager', type=openapi.TYPE_STRING)
 name = openapi.Schema(title='name', type=openapi.TYPE_STRING)
 productName = openapi.Schema(title='productName', type=openapi.TYPE_STRING)
 price = openapi.Schema(title='price', type=openapi.TYPE_INTEGER)
+accountId = openapi.Schema(title='price', type=openapi.TYPE_INTEGER)
 
 
 def index(request):
@@ -65,7 +66,7 @@ def user_log_in(request):
     if user:
         password = user2.password
         if password == request.data.get('password'):
-            return Response({'user_name': user2.name, 'user_id': user2.account_id, 'manager': user2.manager}, status=status.HTTP_200_OK)
+            return Response({'name': user2.name, 'id': user2.account_id, 'manager': user2.manager, 'email': user2.email}, status=status.HTTP_200_OK)
 
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -117,7 +118,12 @@ def modify_user_details(request, id):
                      responses={204: 'Details updated', 400: 'Invalid data'})
 @api_view(['GET'])
 def get_user_details(request, id):
-    return Response(user_bis.values(), status=status.HTTP_200_OK)
+    user_bis = Mb_user.getAllUsers().filter(account_id=id)
+    user2 = user_bis.first()
+    if user_bis:
+        return Response({'name': user2.name, 'id': user2.account_id, 'manager': user2.manager, 'email': user2.email}, status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @swagger_auto_schema(method='get',
@@ -157,12 +163,18 @@ def delete_user(request, id):
                          properties={
                              'name': name,
                              'price': price,
+                             'accountId': accountId,
                          }
                      ), responses={201: 'Product registration successfull', 400: 'Invalid request',  409: 'The product already exists'})
 @api_view(['POST'])
 def register_product(request):
     try:
-        product = Product(**request.data)
+        account = Mb_user.getAllUsers().filter(
+            account_id=request.data.get('accountId')).first()
+
+        product = Product(**{'name': request.data.get('name'),
+                          'price': request.data.get('price'), 'account': account})
+
         product.save()
         return Response(status=status.HTTP_201_CREATED)
     except Exception as e:

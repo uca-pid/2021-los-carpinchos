@@ -21,9 +21,10 @@ type Props = {
 	actions: {
 		getAllProducts: Function;
 	};
+	accountId: number
 };
 
-const CreateProduct = ({ actions }: Props) => {
+const CreateProduct = ({ actions, accountId }: Props) => {
 	const [open, setOpen] = React.useState(false);
 	const [input, setInput] = useState({
 		productName: { invalid: true, value: "" },
@@ -51,20 +52,20 @@ const CreateProduct = ({ actions }: Props) => {
 
 	const handleAddProduct = useCallback(() => {
 		fetcher
-			.post("addNewProduct", { name: input.productName.value, price: parseInt(input.price.value) })
+			.post("addNewProduct", { name: input.productName.value, price: parseInt(input.price.value), accountId })
 			.then(() => {
-				actions.getAllProducts().then(() => {
+				actions.getAllProducts(accountId).then(() => {
 					handleClose();
 				});
 			});
-	}, [handleClose, input]);
+	}, [handleClose, input, accountId]);
 
 	useEffect(() => {
 		setInput({
 			productName: { invalid: true, value: "" },
 			price: { invalid: true, value: "" },
 		});
-	}, [open, setInput]);
+	}, [open, accountId, setInput]);
 
 	return (
 		<>
@@ -125,6 +126,18 @@ const CreateProduct = ({ actions }: Props) => {
 	);
 };
 
+type State = {
+	session: {
+		accountData: {
+			id: number
+		}
+	}
+}
+
+const mapStateToProps = (state :State) => ({
+	accountId: state.session.accountData.id
+})
+
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	actions: bindActionCreators(
 		{
@@ -134,4 +147,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 	),
 });
 
-export default connect(null, mapDispatchToProps)(CreateProduct);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateProduct);

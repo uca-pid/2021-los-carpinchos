@@ -100,8 +100,8 @@ export const deleteAccount = (userId, email, password) => async dispatch => {
 		});
 };
 
-export const getAllProducts = () => async dispatch => {
-	return await fetcher.get("getAllProducts").then(response => {
+export const getAllProducts = accountId => async dispatch => {
+	return await fetcher.get(`getAllProducts/${accountId}`).then(response => {
 		console.log(response);
 		dispatch({
 			type: GET_ALL_PRODUCTS_SUCCESS,
