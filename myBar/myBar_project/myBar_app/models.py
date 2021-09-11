@@ -89,7 +89,6 @@ class Product(models.Model):
     def setPrice(self, x):
         self.price = x
 
-
     @classmethod
     def getAllProducts(cls):
         return cls.products.filter()
