@@ -1,0 +1,14 @@
+{
+	"python.testing.unittestArgs": [
+		"-v",
+		"-s",
+		"./myBar_app",
+		"-p",
+		"test_*.py"
+	],
+	"python.testing.pytestEnabled": true,
+	"python.testing.unittestEnabled": false,
+	"python.testing.pytestArgs": [
+		"myBar_app"
+	]
+}
