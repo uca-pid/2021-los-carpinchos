@@ -14,9 +14,18 @@ class TestUser(APITestCase):
         user = mb_user(name='Sofia', email='sofia@gmail.com', manager='Toto', password= 'Pass')
         user.full_clean()
         user.save()
-        product = p(name='cafe', price = 9)
+        user2 = mb_user(name='Pepe', email='pepe@gmail.com', manager='Toto', password= 'Pass')
+        user2.full_clean()
+        user2.save()
+        product = p(name='cafe', price = 9 , account = user)
         product.full_clean()
         product.save()
+        product2 = p(name='coca', price = 9, account = user2)
+        product2.full_clean()
+        product2.save()
+        product3 = p(name='coca', price = 9, account = user)
+        product3.full_clean()
+        product3.save()
 
     def test_user_was_succefully_saved(self):
         user = mb_user.users.first()
@@ -48,34 +57,44 @@ class TestUser(APITestCase):
         self.assertEqual(response.status_code,200)
 
     def test_reestablish_password(self):
-        user = mb_user.getAllUsers().filter(id=1).first()
+        user = mb_user.getAllUsers().filter(account_id=1).first()
         webClient = self.client
         response = webClient.put('/reestablish_password/1', {'password': 'Pass3'},format = "json")
         self.assertEqual(response.status_code,204)
-        user = mb_user.getAllUsers().filter(id=1).first()
+        user = mb_user.getAllUsers().filter(account_id=1).first()
         self.assertEqual(user.getPassword(), 'Pass3')
 
     def test_modify_details(self):
-        user = mb_user.getAllUsers().filter(id=1).first()
+        user = mb_user.getAllUsers().filter(account_id=1).first()
         webClient = self.client
         response = webClient.put('/modify_details/1', {"password": "Pass4","manager":"Glenn"},format = "json")
         self.assertEqual(response.status_code,204)
-        user = mb_user.getAllUsers().filter(id=1).first()
+        user = mb_user.getAllUsers().filter(account_id=1).first()
         self.assertEqual(user.getPassword(), 'Pass4')
         self.assertEqual(user.getManager(), 'Glenn')
 
     def test_delete_user(self):
-        user = mb_user.getAllUsers().filter(id=1).first()
+        user = mb_user.getAllUsers().filter(account_id=1).first()
         webClient = self.client
         response = webClient.delete('/delete_user/1')
         self.assertEqual(response.status_code,200)
-        user = mb_user.getAllUsers().filter(id=1).first()
+        user = mb_user.getAllUsers().filter(account_id=1).first()
         self.assertEqual(user,None)
 
     def test_product_was_succefully_saved(self):
         product = p.products.first()
         self.assertEqual(product.getName(),'cafe')
         self.assertEqual(product.getPrice(),9)
+
+    def test_get_all_products(self):
+        products = p.getAllProducts()
+        webClient = self.client
+        response = webClient.get('/get_all_products/2')
+        print(response.data)
+        self.assertEqual(len(response.data) , 2)
+
+
+
 
 
 

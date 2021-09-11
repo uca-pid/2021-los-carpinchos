@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class Mb_user(models.Model):
 
-    id = models.AutoField(primary_key=True)
+    account_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=25)
     manager = models.CharField(max_length=30)
     email = models.EmailField(max_length=254,unique=True)
@@ -49,7 +49,7 @@ class Mb_user(models.Model):
 
     @classmethod
     def delete(cls,id):
-        user = cls.users.filter(id=id)
+        user = cls.users.filter(account_id=id)
         if len(user) == 0:
             raise Exception("El usuario a eliminar no existe")
         else:
@@ -69,6 +69,8 @@ class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=25)
     price = models.IntegerField()
+    account = models.ForeignKey(Mb_user, on_delete=models.CASCADE)
+
     products = models.Manager()
 
     # getter method
