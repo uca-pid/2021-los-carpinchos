@@ -82,7 +82,7 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 			setEditMode(false);
 		});
 		console.log(input);
-	}, [input]);
+	}, [actions, input, accountName, manager, email, id]);
 
 	return (
 		<Grid container direction="column" spacing={3}>

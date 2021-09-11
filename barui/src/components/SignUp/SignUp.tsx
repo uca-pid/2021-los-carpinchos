@@ -84,7 +84,7 @@ const SignUp = ({ actions, error, errorMessage }: Props) => {
 			.catch(() => {
 				setInput(prev => ({ ...prev, email: { value: "", invalid: true } }));
 			});
-	}, [input]);
+	}, [actions, input, history, setInput]);
 
 	const passwordCheckValidation: ValidationSetting = {
 		message: "La contraseña no coincide",

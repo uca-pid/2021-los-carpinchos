@@ -21,13 +21,9 @@ const Dashboard = ({ actions }: Props) => {
 		let userId = localStorage.getItem("userId");
 
 		actions.getUserData(userId);
-<<<<<<< HEAD
 		actions.getAllProducts(userId).catch(() => {
 			console.log("error");
 		});
-=======
-		actions.getAllProducts();
->>>>>>> origin/develop
 	}, [actions]);
 
 	return (

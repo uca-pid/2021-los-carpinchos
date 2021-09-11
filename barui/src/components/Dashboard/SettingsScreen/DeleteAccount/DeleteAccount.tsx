@@ -41,7 +41,7 @@ const DeleteAccount = ({ actions, id, error, email, errorMessage }: Props) => {
 			.catch(() => {
 				setPassword("");
 			});
-	}, [actions, history, password]);
+	}, [actions, history, password, email, id]);
 	return (
 		<Grid container direction="column" spacing={3}>
 			<Grid item xs>
@@ -51,8 +51,8 @@ const DeleteAccount = ({ actions, id, error, email, errorMessage }: Props) => {
 			</Grid>
 			<Grid item xs>
 				<Typography color="primary" variant="body1">
-					Esta acción es irreversible. Para borrar tu cuenta de MyBar ingresa a continuación tu contraseña y
-					confirma.
+					Esta acción es irreversible. Para borrar tu cuenta de MyBar ingresa a continuación tu
+					contraseña y confirma.
 				</Typography>
 			</Grid>
 			<Grid item>
