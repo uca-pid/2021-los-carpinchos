@@ -61,6 +61,11 @@ const CreateProduct = ({ actions, accountId }: Props) => {
 			});
 	}, [actions, handleClose, input, accountId]);
 
+	const handleEnterPress = useCallback(
+		() => !input.price.invalid && !input.productName.invalid && handleAddProduct(),
+		[handleAddProduct, input]
+	);
+
 	useEffect(() => {
 		setInput({
 			productName: { invalid: true, value: "" },
@@ -95,6 +100,7 @@ const CreateProduct = ({ actions, accountId }: Props) => {
 								placeholder="Ingresar precio del producto"
 								value={input.price.value}
 								onChange={handleChangePrice}
+								onEnterPress={handleEnterPress}
 								required
 								InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
 								settings={[...settings, numericSetting]}

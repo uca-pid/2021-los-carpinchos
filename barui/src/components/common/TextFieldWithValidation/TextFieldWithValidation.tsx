@@ -10,6 +10,7 @@ export type TextFieldWithValidationProps = {
 	placeholder: string;
 	value: string;
 	onChange: Function;
+	onEnterPress?: Function;
 	required?: boolean;
 	settings?: Array<ValidationSetting>;
 	type?: "text" | "password" | "email" | "number";
@@ -24,6 +25,7 @@ const TextFieldWithValidation = ({
 	placeholder,
 	value,
 	onChange,
+	onEnterPress,
 	required,
 	settings,
 	type = "text",
@@ -54,6 +56,13 @@ const TextFieldWithValidation = ({
 		[onChange, settings, error, setError, setHelperText, isValidCallback]
 	);
 
+	const handleOnKeyDown = useCallback(
+		e => {
+			e.key === "Enter" && !error && onEnterPress && onEnterPress();
+		},
+		[onEnterPress, error]
+	);
+
 	return (
 		<TextField
 			className={className}
@@ -70,6 +79,7 @@ const TextFieldWithValidation = ({
 			InputProps={InputProps}
 			value={value}
 			onChange={handleChange}
+			onKeyDown={handleOnKeyDown}
 			required={error && required}
 			type={type}
 			disabled={disabled}

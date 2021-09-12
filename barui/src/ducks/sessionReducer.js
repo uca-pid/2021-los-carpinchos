@@ -3,19 +3,15 @@ import { showErrorMessage, showSuccessMessage } from "./notificationsReducer";
 
 // Actions
 const SIGNUP_SUCCESS = "SIGNUP_SUCCESS";
-const SIGNUP_ERROR = "SIGNUP_ERROR";
 
 const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 const LOGIN_ERROR = "LOGIN_ERROR";
 
 const FETCH_USER_DATA_SUCCESS = "FETCH_USER_DATA_SUCCESS";
 
-const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
-
 const UPDATE_DATA_SUCCESS = "UPDATE_DATA_SUCCESS";
 
 const DELETE_ACCOUNT_SUCCESS = "DELETE_ACCOUNT_SUCCESS";
-const DELETE_ACCOUNT_ERROR = "DELETE_ACCOUNT_ERROR";
 
 const GET_ALL_PRODUCTS_SUCCESS = "GET_ALL_PRODUCTS_SUCCESS";
 
@@ -47,7 +43,13 @@ export const login = (email, password) => async dispatch =>
 				email: response.email,
 			});
 		})
-		.catch(() => dispatch(showErrorMessage("Usuario/Contraseña incorrecta.")));
+		.catch(() => {
+			dispatch({
+				type: LOGIN_ERROR,
+				email: email,
+			});
+			dispatch(showErrorMessage("Usuario/Contraseña incorrecta."));
+		});
 
 export const getUserData = userId => async dispatch =>
 	await fetcher
@@ -156,12 +158,7 @@ const sessionReducer = (state = initialState, action) => {
 					manager: action.manager,
 					email: action.email,
 				},
-				error: {
-					value: false,
-					message: "",
-				},
 			};
-		case LOGOUT_SUCCESS:
 		case DELETE_ACCOUNT_SUCCESS:
 			return {
 				...state,
@@ -170,10 +167,6 @@ const sessionReducer = (state = initialState, action) => {
 					name: "",
 					manager: "",
 					email: "",
-				},
-				error: {
-					value: false,
-					message: "",
 				},
 			};
 		case UPDATE_DATA_SUCCESS:
@@ -185,19 +178,13 @@ const sessionReducer = (state = initialState, action) => {
 					manager: action.manager,
 					email: action.email,
 				},
-				error: {
-					value: false,
-					message: "",
-				},
 			};
-		case SIGNUP_ERROR:
 		case LOGIN_ERROR:
-		case DELETE_ACCOUNT_ERROR:
 			return {
 				...state,
-				error: {
-					value: true,
-					message: action.message,
+				accountData: {
+					...state.accountData,
+					email: action.email,
 				},
 			};
 		case GET_ALL_PRODUCTS_SUCCESS:

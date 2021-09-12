@@ -83,6 +83,17 @@ const SignUp = ({ actions }: Props) => {
 			});
 	}, [actions, input, history, setInput]);
 
+	const handleEnterPress = useCallback(
+		() =>
+			!input.name.invalid &&
+			!input.manager.invalid &&
+			!input.email.invalid &&
+			!input.password.invalid &&
+			input.password.value === verifyPassword &&
+			createAccount(),
+		[createAccount, input]
+	);
+
 	const passwordCheckValidation: ValidationSetting = {
 		message: "La contraseña no coincide",
 		validate: useCallback(password => password !== input.password.value, [input]),
@@ -153,6 +164,7 @@ const SignUp = ({ actions }: Props) => {
 									placeholder="Ingresa nuevamente la contraseña"
 									value={verifyPassword}
 									onChange={handleChangeVerifyPassword}
+									onEnterPress={handleEnterPress}
 									required
 									settings={[passwordSetting, passwordCheckValidation]}
 								/>

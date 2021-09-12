@@ -59,18 +59,12 @@ const Login = ({ actions, email }: Props) => {
 	);
 
 	const handleLogin = useCallback(() => {
-		actions
-			.login(input.email.value, input.password.value)
-			.then(() => {
-				history.push("/dashboard");
-			})
-			.catch(() => {
-				setInput(prev => ({
-					...prev,
-					password: { invalid: true, value: "" },
-				}));
-			});
-	}, [input, actions, history, setInput]);
+		actions.login(input.email.value, input.password.value).then(() => {
+			history.push("/dashboard");
+		});
+	}, [input, actions, history]);
+
+	const handleEnterPress = useCallback(() => handleLogin(), [handleLogin]);
 
 	const createAccount = useCallback(() => history.push("/signUp"), [history]);
 
@@ -103,6 +97,7 @@ const Login = ({ actions, email }: Props) => {
 								placeholder="Ingresar contraseña"
 								value={input.password.value}
 								onChange={handleChangePassword}
+								onEnterPress={handleEnterPress}
 								required
 							/>
 							<div className={classes.resetPasswordText}>
