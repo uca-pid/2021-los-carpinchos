@@ -14,12 +14,12 @@ import { settings } from "../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { getAllProducts } from "../../../../ducks/sessionReducer";
-import fetcher from "../../../../ducks/fetcher";
+import { getAllProducts, addNewProduct } from "../../../../ducks/sessionReducer";
 
 type Props = {
 	actions: {
 		getAllProducts: Function;
+		addNewProduct: Function;
 	};
 
 	accountId: number;
@@ -52,12 +52,8 @@ const CreateProduct = ({ actions, accountId }: Props) => {
 	);
 
 	const handleAddProduct = useCallback(() => {
-		fetcher
-			.post("addNewProduct", {
-				name: input.productName.value,
-				price: parseInt(input.price.value),
-				accountId,
-			})
+		actions
+			.addNewProduct(input.productName.value, parseInt(input.price.value), accountId)
 			.then(() => {
 				actions.getAllProducts(accountId).then(() => {
 					handleClose();
@@ -146,6 +142,7 @@ const mapStateToProps = (state: State) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	actions: bindActionCreators(
 		{
+			addNewProduct,
 			getAllProducts,
 		},
 		dispatch

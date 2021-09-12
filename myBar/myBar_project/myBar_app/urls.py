@@ -14,11 +14,6 @@ urlpatterns = [
          views.get_user_details, name='get_user_details'),
     path('deleteAccount/<int:id>', views.delete_user, name='delete_user'),
     path('addNewProduct', views.register_product, name='register_product'),
-<<<<<<< HEAD
     path('getAllProducts/<int:accountid>',
          views.get_all_products, name='get_all_products'),
 ]
-=======
-	path('getAllProducts', views.get_all_products, name='get_all_products'),
-]
->>>>>>> origin/develop

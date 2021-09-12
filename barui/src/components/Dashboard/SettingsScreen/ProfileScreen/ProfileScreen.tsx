@@ -81,7 +81,6 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 		actions.updateAccountData(id, data).then(() => {
 			setEditMode(false);
 		});
-		console.log(input);
 	}, [actions, input, accountName, manager, email, id]);
 
 	return (

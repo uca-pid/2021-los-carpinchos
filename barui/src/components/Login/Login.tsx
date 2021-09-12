@@ -35,13 +35,12 @@ type Props = {
 	actions: {
 		login: Function;
 	};
-	error: boolean;
-	errorMessage: string;
+	email: string;
 };
 
-const Login = ({ actions, error, errorMessage }: Props) => {
+const Login = ({ actions, email }: Props) => {
 	const [input, setInput] = useState<LoginInput>({
-		email: { invalid: true, value: "" },
+		email: { invalid: email === "", value: email },
 		password: { invalid: true, value: "" },
 	});
 
@@ -113,13 +112,6 @@ const Login = ({ actions, error, errorMessage }: Props) => {
 								</Link>
 							</div>
 						</Grid>
-						{error && (
-							<Grid item xs>
-								<Typography variant="body1" color="error">
-									{errorMessage}
-								</Typography>
-							</Grid>
-						)}
 					</Grid>
 				</CardContent>
 				<CardActions className={classes.cardActions}>
@@ -151,16 +143,14 @@ const Login = ({ actions, error, errorMessage }: Props) => {
 
 type State = {
 	session: {
-		error: {
-			value: boolean;
-			message: string;
+		accountData: {
+			email: string;
 		};
 	};
 };
 
 const mapStateToProps = (state: State) => ({
-	error: state?.session?.error?.value,
-	errorMessage: state?.session?.error?.message,
+	email: state.session.accountData.email ?? "",
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

@@ -19,11 +19,9 @@ type Props = {
 	};
 	id: number;
 	email: string;
-	error: boolean;
-	errorMessage: string;
 };
 
-const DeleteAccount = ({ actions, id, error, email, errorMessage }: Props) => {
+const DeleteAccount = ({ actions, id, email }: Props) => {
 	const classes = styles();
 	const history = useHistory();
 
@@ -42,6 +40,7 @@ const DeleteAccount = ({ actions, id, error, email, errorMessage }: Props) => {
 				setPassword("");
 			});
 	}, [actions, history, password, email, id]);
+	
 	return (
 		<Grid container direction="column" spacing={3}>
 			<Grid item xs>
@@ -67,13 +66,6 @@ const DeleteAccount = ({ actions, id, error, email, errorMessage }: Props) => {
 					/>
 				</div>
 			</Grid>
-			{error && (
-				<Grid item xs>
-					<Typography variant="body1" color="error">
-						{errorMessage}
-					</Typography>
-				</Grid>
-			)}
 			<Grid item xs>
 				<Button
 					color="secondary"
@@ -95,18 +87,12 @@ type State = {
 			id: number;
 			email: string;
 		};
-		error: {
-			value: boolean;
-			message: string;
-		};
 	};
 };
 
 const mapStateToProps = (state: State) => ({
 	id: state.session.accountData.id,
 	email: state.session.accountData.email,
-	error: state.session.error.value,
-	errorMessage: state.session.error.message,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

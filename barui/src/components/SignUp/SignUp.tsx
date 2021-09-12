@@ -31,12 +31,9 @@ type Props = {
 	actions: {
 		signUp: Function;
 	};
-
-	error: boolean;
-	errorMessage: string;
 };
 
-const SignUp = ({ actions, error, errorMessage }: Props) => {
+const SignUp = ({ actions }: Props) => {
 	const [verifyPassword, setVerifyPassword] = useState("");
 	const [input, setInput] = useState<SignUpInput>({
 		email: { invalid: true, value: "" },
@@ -171,13 +168,6 @@ const SignUp = ({ actions, error, errorMessage }: Props) => {
 							</Link>
 						</Grid>
 						<Grid item xs></Grid>
-						{error && (
-							<Grid item xs>
-								<Typography variant="body1" color="error">
-									{errorMessage}
-								</Typography>
-							</Grid>
-						)}
 						<Grid item>
 							<Button
 								color="secondary"
@@ -202,20 +192,6 @@ const SignUp = ({ actions, error, errorMessage }: Props) => {
 	);
 };
 
-type State = {
-	session: {
-		error: {
-			value: boolean;
-			message: string;
-		};
-	};
-};
-
-const mapStateToProps = (state: State) => ({
-	error: state?.session?.error?.value,
-	errorMessage: state?.session?.error?.message,
-});
-
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	actions: bindActionCreators(
 		{
@@ -225,4 +201,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 	),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
+export default connect(null, mapDispatchToProps)(SignUp);
