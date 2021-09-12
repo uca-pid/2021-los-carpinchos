@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from rest_framework.test import APITestCase
-from .models import Mb_user as mb_user
-from .models import Product as p
+from ..models.user import Mb_user as mb_user
+from ..models.product import Product as p
 
 
 class TestUser(APITestCase):
@@ -17,15 +17,6 @@ class TestUser(APITestCase):
                         manager='Toto', password='Pass')
         user2.full_clean()
         user2.save()
-        product = p(name='cafe', price=9, account=user)
-        product.full_clean()
-        product.save()
-        product2 = p(name='coca', price=9, account=user2)
-        product2.full_clean()
-        product2.save()
-        product3 = p(name='coca', price=9, account=user2)
-        product3.full_clean()
-        product3.save()
 
     def test_user_was_succefully_saved(self):
         user = mb_user.users.first()
@@ -79,7 +70,7 @@ class TestUser(APITestCase):
         webClient = self.client
         response = webClient.put(
             '/updateAccountData/1', {"password": "Pass4", "manager": "Glenn"}, format="json")
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
         user = mb_user.getAllUsers().filter(account_id=1).first()
         self.assertEqual(user.getPassword(), 'Pass4')
         self.assertEqual(user.getManager(), 'Glenn')
@@ -94,16 +85,3 @@ class TestUser(APITestCase):
         user = mb_user.getAllUsers().filter(account_id=1).first()
 
         self.assertEqual(user, None)
-
-    def test_product_was_succefully_saved(self):
-        product = p.products.first()
-
-        self.assertEqual(product.getName(), 'cafe')
-        self.assertEqual(product.getPrice(), 9)
-
-    def test_get_all_products(self):
-        products = p.getAllProducts()
-        webClient = self.client
-        response = webClient.get('/getAllProducts/2')
-
-        self.assertEqual(len(response.data), 2)
