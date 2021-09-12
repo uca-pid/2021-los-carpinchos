@@ -83,6 +83,23 @@ export const updateAccountData = (userId, data) => async dispatch =>
 			dispatch(showErrorMessage("No fue posible actualizar los datos de la cuenta. Intente de nuevo."))
 		);
 
+export const changePassword = (userId, email, currentPassword, newPassword) => async dispatch =>
+	await fetcher
+		.post("login", { email, password: currentPassword })
+		.then(() =>
+			fetcher
+				.put(`updateAccountData/${userId}`, { password: newPassword })
+				.then(() => {
+					dispatch(showSuccessMessage("Su contraseña ha sido modificada éxitosamente."));
+				})
+				.catch(() =>
+					dispatch(showErrorMessage("No fue posible actualizar su contraseña. Intente de nuevo."))
+				)
+		)
+		.catch(() => {
+			dispatch(showErrorMessage("Contraseña actual incorrecta. Vuelva a intentar."));
+		});
+
 export const deleteAccount = (userId, email, password) => async dispatch => {
 	return await fetcher
 		.post("login", { email, password })

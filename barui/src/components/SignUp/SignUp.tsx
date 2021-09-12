@@ -91,7 +91,7 @@ const SignUp = ({ actions }: Props) => {
 			!input.password.invalid &&
 			input.password.value === verifyPassword &&
 			createAccount(),
-		[createAccount, input]
+		[createAccount, input, verifyPassword]
 	);
 
 	const passwordCheckValidation: ValidationSetting = {
