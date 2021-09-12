@@ -13,6 +13,15 @@ export const settings: ValidationSetting[] = [
 		validate: (input: string) => input.length === 0,
 	},
 ];
+// new Regex(@"^\d$");
+
+export const numericSetting: ValidationSetting = {
+	message: "Solo se aceptan numeros.",
+	validate: (input: string) => {
+		const re = /^-?\d*\.?\d*$/;
+		return !re.test(input);
+	},
+};
 
 export const emailSetting: ValidationSetting = {
 	message: "Esta dirección de correo no es válida",

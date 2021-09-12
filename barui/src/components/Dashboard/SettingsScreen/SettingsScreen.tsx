@@ -7,9 +7,11 @@ import Tab from "@material-ui/core/Tab";
 import { Card, Container } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
 import WarningIcon from "@material-ui/icons/Warning";
+import LockIcon from "@material-ui/icons/Lock";
 
 import ProfileScreen from "./ProfileScreen";
 import DeleteAccount from "./DeleteAccount";
+import SecurityScreen from "./SecurityScreen";
 
 import styles from "./styles";
 
@@ -39,6 +41,7 @@ const SettingsScreen = () => {
 			<Card className={classes.root}>
 				<Tabs orientation="vertical" value={value} onChange={handleChange} className={classes.tabs}>
 					<Tab icon={<PersonIcon />} label="Perfil" value="profile" />
+					<Tab icon={<LockIcon />} label="Seguridad" value="security" />
 					<Tab icon={<WarningIcon />} label="Eliminar cuenta" value="deleteAccount" />
 				</Tabs>
 
@@ -49,6 +52,9 @@ const SettingsScreen = () => {
 						</Route>
 						<Route exact path={`${path}/deleteAccount`}>
 							<DeleteAccount />
+						</Route>
+						<Route exact path={`${path}/security`}>
+							<SecurityScreen />
 						</Route>
 					</Switch>
 				</div>

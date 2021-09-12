@@ -2,10 +2,8 @@ import React, { useState, useCallback, useEffect } from "react";
 
 import { Grid, IconButton, Typography } from "@material-ui/core";
 
-import { SignUpInput } from "../../../SignUp/SignUp";
-import { emailSetting, passwordSetting, settings } from "../../../SignUp/validationSettings";
+import { emailSetting, settings } from "../../../SignUp/validationSettings";
 import TextFieldWithValidation from "../../../common/TextFieldWithValidation";
-import PasswordTextField from "../../../common/PasswordTextField";
 
 import EditIcon from "@material-ui/icons/Edit";
 import SaveIcon from "@material-ui/icons/Save";
@@ -15,6 +13,13 @@ import styles from "./styles";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { updateAccountData } from "../../../../ducks/sessionReducer";
+import { Input } from "../../../Login/Login";
+
+type ProfileInput = {
+	manager: Input;
+	name: Input;
+	email: Input;
+};
 
 type Props = {
 	actions: {
@@ -27,11 +32,10 @@ type Props = {
 };
 
 const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
-	const [input, setInput] = useState<SignUpInput>({
+	const [input, setInput] = useState<ProfileInput>({
 		email: { invalid: true, value: "" },
 		manager: { invalid: true, value: "" },
 		name: { invalid: true, value: "" },
-		password: { invalid: true, value: "" },
 	});
 	const [editMode, setEditMode] = useState(false);
 
@@ -42,7 +46,6 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 			email: { invalid: false, value: email },
 			manager: { invalid: false, value: manager },
 			name: { invalid: false, value: accountName },
-			password: { invalid: false, value: "AAAAAAAAAAAA" },
 		});
 	}, [email, manager, accountName]);
 
@@ -61,11 +64,6 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 		[setInput]
 	);
 
-	const handleChangePassword = useCallback(
-		(value, invalid) => setInput(prev => ({ ...prev, password: { value, invalid } })),
-		[setInput]
-	);
-
 	const cancelChanges = useCallback(() => {
 		setEditMode(false);
 	}, [setEditMode]);
@@ -76,13 +74,11 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 			name: input.name.value !== accountName ? input.name.value : undefined,
 			manager: input.manager.value !== manager ? input.manager.value : undefined,
 			email: input.email.value !== email ? input.email.value : undefined,
-			password: input.password.value !== "AAAAAAAAAAAA" ? input.password.value : undefined,
 		};
 		actions.updateAccountData(id, data).then(() => {
 			setEditMode(false);
 		});
-		console.log(input);
-	}, [input]);
+	}, [actions, input, accountName, manager, email, id]);
 
 	return (
 		<Grid container direction="column" spacing={3}>
@@ -105,12 +101,10 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 							(editMode &&
 								input.name.value === accountName &&
 								input.manager.value === manager &&
-								input.email.value === email &&
-								input.password.value === "AAAAAAAAAAAA") ||
+								input.email.value === email) ||
 							input.name.invalid ||
 							input.manager.invalid ||
-							input.email.invalid ||
-							input.password.invalid
+							input.email.invalid
 						}
 					>
 						{editMode ? <SaveIcon /> : <EditIcon />}
@@ -154,20 +148,6 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 						required
 						settings={[...settings, emailSetting]}
 						type="email"
-						disabled={!editMode}
-					/>
-				</div>
-			</Grid>
-			<Grid item>
-				<div className={classes.singleInputRow}>
-					<PasswordTextField
-						className={classes.textField}
-						label="Contraseña"
-						placeholder="Ingresar contraseña"
-						value={input.password.value}
-						onChange={handleChangePassword}
-						required
-						settings={[passwordSetting]}
 						disabled={!editMode}
 					/>
 				</div>

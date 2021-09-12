@@ -10,27 +10,22 @@ import TextFieldWithValidation from "../../../common/TextFieldWithValidation";
 
 import styles from "./styles";
 import { Grid, InputAdornment } from "@material-ui/core";
-import { settings } from "../../../SignUp/validationSettings";
+import { settings, numericSetting } from "../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { getAllProducts } from "../../../../ducks/sessionReducer";
-import fetcher from "../../../../ducks/fetcher";
+import { getAllProducts, addNewProduct } from "../../../../ducks/sessionReducer";
 
 type Props = {
 	actions: {
 		getAllProducts: Function;
+		addNewProduct: Function;
 	};
-<<<<<<< HEAD
-	accountId: number
+
+	accountId: number;
 };
 
 const CreateProduct = ({ actions, accountId }: Props) => {
-=======
-};
-
-const CreateProduct = ({ actions }: Props) => {
->>>>>>> origin/develop
 	const [open, setOpen] = React.useState(false);
 	const [input, setInput] = useState({
 		productName: { invalid: true, value: "" },
@@ -57,35 +52,26 @@ const CreateProduct = ({ actions }: Props) => {
 	);
 
 	const handleAddProduct = useCallback(() => {
-		fetcher
-<<<<<<< HEAD
-			.post("addNewProduct", { name: input.productName.value, price: parseInt(input.price.value), accountId })
+		actions
+			.addNewProduct(input.productName.value, parseFloat(input.price.value), accountId)
 			.then(() => {
 				actions.getAllProducts(accountId).then(() => {
 					handleClose();
 				});
 			});
-	}, [handleClose, input, accountId]);
-=======
-			.post("addNewProduct", { name: input.productName.value, price: parseInt(input.price.value) })
-			.then(() => {
-				actions.getAllProducts().then(() => {
-					handleClose();
-				});
-			});
-	}, [handleClose, input]);
->>>>>>> origin/develop
+	}, [actions, handleClose, input, accountId]);
+
+	const handleEnterPress = useCallback(
+		() => !input.price.invalid && !input.productName.invalid && handleAddProduct(),
+		[handleAddProduct, input]
+	);
 
 	useEffect(() => {
 		setInput({
 			productName: { invalid: true, value: "" },
 			price: { invalid: true, value: "" },
 		});
-<<<<<<< HEAD
 	}, [open, accountId, setInput]);
-=======
-	}, [open, setInput]);
->>>>>>> origin/develop
 
 	return (
 		<>
@@ -114,9 +100,10 @@ const CreateProduct = ({ actions }: Props) => {
 								placeholder="Ingresar precio del producto"
 								value={input.price.value}
 								onChange={handleChangePrice}
+								onEnterPress={handleEnterPress}
 								required
 								InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
-								settings={settings}
+								settings={[...settings, numericSetting]}
 							/>
 						</Grid>
 					</Grid>
@@ -146,32 +133,26 @@ const CreateProduct = ({ actions }: Props) => {
 	);
 };
 
-<<<<<<< HEAD
 type State = {
 	session: {
 		accountData: {
-			id: number
-		}
-	}
-}
+			id: number;
+		};
+	};
+};
 
-const mapStateToProps = (state :State) => ({
-	accountId: state.session.accountData.id
-})
+const mapStateToProps = (state: State) => ({
+	accountId: state.session.accountData.id,
+});
 
-=======
->>>>>>> origin/develop
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	actions: bindActionCreators(
 		{
+			addNewProduct,
 			getAllProducts,
 		},
 		dispatch
 	),
 });
 
-<<<<<<< HEAD
 export default connect(mapStateToProps, mapDispatchToProps)(CreateProduct);
-=======
-export default connect(null, mapDispatchToProps)(CreateProduct);
->>>>>>> origin/develop

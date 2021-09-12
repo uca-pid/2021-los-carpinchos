@@ -14,6 +14,7 @@ const PasswordTextField = ({
 	placeholder,
 	value,
 	onChange,
+	onEnterPress,
 	required,
 	settings,
 	disabled,
@@ -36,6 +37,7 @@ const PasswordTextField = ({
 			placeholder={placeholder}
 			value={value}
 			onChange={onChange}
+			onEnterPress={onEnterPress}
 			required={required}
 			settings={settings}
 			type={showPassword ? "text" : "password"}

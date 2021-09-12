@@ -31,12 +31,9 @@ type Props = {
 	actions: {
 		signUp: Function;
 	};
-
-	error: boolean;
-	errorMessage: string;
 };
 
-const SignUp = ({ actions, error, errorMessage }: Props) => {
+const SignUp = ({ actions }: Props) => {
 	const [verifyPassword, setVerifyPassword] = useState("");
 	const [input, setInput] = useState<SignUpInput>({
 		email: { invalid: true, value: "" },
@@ -84,7 +81,18 @@ const SignUp = ({ actions, error, errorMessage }: Props) => {
 			.catch(() => {
 				setInput(prev => ({ ...prev, email: { value: "", invalid: true } }));
 			});
-	}, [input]);
+	}, [actions, input, history, setInput]);
+
+	const handleEnterPress = useCallback(
+		() =>
+			!input.name.invalid &&
+			!input.manager.invalid &&
+			!input.email.invalid &&
+			!input.password.invalid &&
+			input.password.value === verifyPassword &&
+			createAccount(),
+		[createAccount, input, verifyPassword]
+	);
 
 	const passwordCheckValidation: ValidationSetting = {
 		message: "La contraseña no coincide",
@@ -156,6 +164,7 @@ const SignUp = ({ actions, error, errorMessage }: Props) => {
 									placeholder="Ingresa nuevamente la contraseña"
 									value={verifyPassword}
 									onChange={handleChangeVerifyPassword}
+									onEnterPress={handleEnterPress}
 									required
 									settings={[passwordSetting, passwordCheckValidation]}
 								/>
@@ -171,13 +180,6 @@ const SignUp = ({ actions, error, errorMessage }: Props) => {
 							</Link>
 						</Grid>
 						<Grid item xs></Grid>
-						{error && (
-							<Grid item xs>
-								<Typography variant="body1" color="error">
-									{errorMessage}
-								</Typography>
-							</Grid>
-						)}
 						<Grid item>
 							<Button
 								color="secondary"
@@ -202,20 +204,6 @@ const SignUp = ({ actions, error, errorMessage }: Props) => {
 	);
 };
 
-type State = {
-	session: {
-		error: {
-			value: boolean;
-			message: string;
-		};
-	};
-};
-
-const mapStateToProps = (state: State) => ({
-	error: state?.session?.error?.value,
-	errorMessage: state?.session?.error?.message,
-});
-
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	actions: bindActionCreators(
 		{
@@ -225,4 +213,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 	),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
+export default connect(null, mapDispatchToProps)(SignUp);

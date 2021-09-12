@@ -41,7 +41,7 @@ def user_create(request):
     try:
         user = Mb_user(**request.data)
         user.save()
-        return Response(status=status.HTTP_201_CREATED)
+        return Response({'email': user.email}, status=status.HTTP_201_CREATED)
     except Exception as e:
         if str(e) == "El usuario ya existe":
             return Response(status=status.HTTP_409_CONFLICT)
@@ -107,7 +107,7 @@ def modify_user_details(request, id):
             user2 = user2.modifyUser(**(request.data))
             user2.full_clean()
             user2.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'name': user2.name, 'manager': user2.manager, 'email': user2.email}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
@@ -181,16 +181,4 @@ def register_product(request):
         if str(e) == "El producto ya existe":
             return Response(status=status.HTTP_409_CONFLICT)
         else:
-<<<<<<< HEAD
             return Response(status=status.HTTP_400_BAD_REQUEST)
-=======
-            return Response(status = status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-def get_all_products(request):
-    product = Product.getAllProducts()
-    if product:
-        return Response(product.values(), status=status.HTTP_200_OK)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
->>>>>>> origin/develop
