@@ -19,11 +19,9 @@ type Props = {
 	};
 	id: number;
 	email: string;
-	error: boolean;
-	errorMessage: string;
 };
 
-const DeleteAccount = ({ actions, id, error, email, errorMessage }: Props) => {
+const DeleteAccount = ({ actions, id, email }: Props) => {
 	const classes = styles();
 	const history = useHistory();
 
@@ -41,7 +39,8 @@ const DeleteAccount = ({ actions, id, error, email, errorMessage }: Props) => {
 			.catch(() => {
 				setPassword("");
 			});
-	}, [actions, history, password]);
+	}, [actions, history, password, email, id]);
+	
 	return (
 		<Grid container direction="column" spacing={3}>
 			<Grid item xs>
@@ -51,8 +50,8 @@ const DeleteAccount = ({ actions, id, error, email, errorMessage }: Props) => {
 			</Grid>
 			<Grid item xs>
 				<Typography color="primary" variant="body1">
-					Esta acción es irreversible. Para borrar tu cuenta de MyBar ingresa a continuación tu contraseña y
-					confirma.
+					Esta acción es irreversible. Para borrar tu cuenta de MyBar ingresa a continuación tu
+					contraseña y confirma.
 				</Typography>
 			</Grid>
 			<Grid item>
@@ -67,13 +66,6 @@ const DeleteAccount = ({ actions, id, error, email, errorMessage }: Props) => {
 					/>
 				</div>
 			</Grid>
-			{error && (
-				<Grid item xs>
-					<Typography variant="body1" color="error">
-						{errorMessage}
-					</Typography>
-				</Grid>
-			)}
 			<Grid item xs>
 				<Button
 					color="secondary"
@@ -95,18 +87,12 @@ type State = {
 			id: number;
 			email: string;
 		};
-		error: {
-			value: boolean;
-			message: string;
-		};
 	};
 };
 
 const mapStateToProps = (state: State) => ({
 	id: state.session.accountData.id,
 	email: state.session.accountData.email,
-	error: state.session.error.value,
-	errorMessage: state.session.error.message,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

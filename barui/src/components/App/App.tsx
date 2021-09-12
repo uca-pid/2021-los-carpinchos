@@ -13,11 +13,13 @@ import ResetPassword from "../ResetPassword";
 import Route from "./RedirectRoute";
 
 import theme from "./theme";
+import Notifications from "../common/Notification";
 
 const App = () => (
 	<ThemeProvider theme={theme}>
 		<Router>
 			<AppBar />
+			<Notifications />
 			<Switch>
 				<Route exact path="/">
 					<Home />

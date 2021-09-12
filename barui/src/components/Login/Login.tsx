@@ -35,13 +35,12 @@ type Props = {
 	actions: {
 		login: Function;
 	};
-	error: boolean;
-	errorMessage: string;
+	email: string;
 };
 
-const Login = ({ actions, error, errorMessage }: Props) => {
+const Login = ({ actions, email }: Props) => {
 	const [input, setInput] = useState<LoginInput>({
-		email: { invalid: true, value: "" },
+		email: { invalid: email === "", value: email },
 		password: { invalid: true, value: "" },
 	});
 
@@ -60,18 +59,12 @@ const Login = ({ actions, error, errorMessage }: Props) => {
 	);
 
 	const handleLogin = useCallback(() => {
-		actions
-			.login(input.email.value, input.password.value)
-			.then(() => {
-				history.push("/dashboard");
-			})
-			.catch(() => {
-				setInput(prev => ({
-					...prev,
-					password: { invalid: true, value: "" },
-				}));
-			});
-	}, [input, actions, history, setInput]);
+		actions.login(input.email.value, input.password.value).then(() => {
+			history.push("/dashboard");
+		});
+	}, [input, actions, history]);
+
+	const handleEnterPress = useCallback(() => handleLogin(), [handleLogin]);
 
 	const createAccount = useCallback(() => history.push("/signUp"), [history]);
 
@@ -104,6 +97,7 @@ const Login = ({ actions, error, errorMessage }: Props) => {
 								placeholder="Ingresar contraseña"
 								value={input.password.value}
 								onChange={handleChangePassword}
+								onEnterPress={handleEnterPress}
 								required
 							/>
 							<div className={classes.resetPasswordText}>
@@ -113,13 +107,6 @@ const Login = ({ actions, error, errorMessage }: Props) => {
 								</Link>
 							</div>
 						</Grid>
-						{error && (
-							<Grid item xs>
-								<Typography variant="body1" color="error">
-									{errorMessage}
-								</Typography>
-							</Grid>
-						)}
 					</Grid>
 				</CardContent>
 				<CardActions className={classes.cardActions}>
@@ -151,16 +138,14 @@ const Login = ({ actions, error, errorMessage }: Props) => {
 
 type State = {
 	session: {
-		error: {
-			value: boolean;
-			message: string;
+		accountData: {
+			email: string;
 		};
 	};
 };
 
 const mapStateToProps = (state: State) => ({
-	error: state?.session?.error?.value,
-	errorMessage: state?.session?.error?.message,
+	email: state.session.accountData.email ?? "",
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

@@ -53,8 +53,8 @@ const MainScreen = ({ products }: Props) => {
 								</TableRow>
 							</TableHead>
 							<TableBody>
-								{products.map((row: Product) => (
-									<TableRow key={row.name}>
+								{products.map((row: Product, index: number) => (
+									<TableRow key={`${row.name}-${index}`}>
 										<TableCell align="left">{row.name}</TableCell>
 										<TableCell align="right">$ {row.price}</TableCell>
 										<TableCell align="right">

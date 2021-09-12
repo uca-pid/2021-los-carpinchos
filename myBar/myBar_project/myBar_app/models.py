@@ -64,7 +64,7 @@ class Mb_user(models.Model):
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=25)
-    price = models.IntegerField()
+    price = models.FloatField()
     account = models.ForeignKey(
         Mb_user, on_delete=models.CASCADE, default=None)
 
