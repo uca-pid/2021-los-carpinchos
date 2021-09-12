@@ -84,15 +84,15 @@ export const updateAccountData = (userId, data) => async dispatch =>
 export const deleteAccount = (userId, email, password) => async dispatch => {
 	return await fetcher
 		.post("login", { email, password })
-		.then(() => {
+		.then(() =>
 			fetcher
 				.delete(`deleteAccount/${userId}`)
 				.then(() => {
 					dispatch({ type: DELETE_ACCOUNT_SUCCESS });
 					dispatch(showSuccessMessage("Sus cuenta ha sido borrada éxitosamente."));
 				})
-				.catch(() => dispatch(showErrorMessage("Algo salió mal borrar la cuenta. Intente de nuevo.")));
-		})
+				.catch(() => dispatch(showErrorMessage("Algo salió mal borrar la cuenta. Intente de nuevo.")))
+		)
 		.catch(() => {
 			dispatch(showErrorMessage("Contraseña incorrecta. Vuelva a intentar."));
 			throw new Error();

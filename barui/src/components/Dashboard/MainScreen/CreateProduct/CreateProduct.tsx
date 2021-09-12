@@ -10,7 +10,7 @@ import TextFieldWithValidation from "../../../common/TextFieldWithValidation";
 
 import styles from "./styles";
 import { Grid, InputAdornment } from "@material-ui/core";
-import { settings } from "../../../SignUp/validationSettings";
+import { settings, numericSetting } from "../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -53,7 +53,7 @@ const CreateProduct = ({ actions, accountId }: Props) => {
 
 	const handleAddProduct = useCallback(() => {
 		actions
-			.addNewProduct(input.productName.value, parseInt(input.price.value), accountId)
+			.addNewProduct(input.productName.value, parseFloat(input.price.value), accountId)
 			.then(() => {
 				actions.getAllProducts(accountId).then(() => {
 					handleClose();
@@ -97,7 +97,7 @@ const CreateProduct = ({ actions, accountId }: Props) => {
 								onChange={handleChangePrice}
 								required
 								InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
-								settings={settings}
+								settings={[...settings, numericSetting]}
 							/>
 						</Grid>
 					</Grid>
