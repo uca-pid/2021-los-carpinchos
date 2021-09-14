@@ -6,7 +6,8 @@ import SettingsScreen from "./SettingsScreen";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { getUserData, getAllProducts } from "../../ducks/sessionReducer";
+import { getUserData } from "../../ducks/sessionReducer";
+import { getAllProducts } from "../../ducks/productsReducer";
 
 type Props = {
 	actions: {

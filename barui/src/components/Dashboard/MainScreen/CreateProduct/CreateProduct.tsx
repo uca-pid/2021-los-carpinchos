@@ -14,7 +14,7 @@ import { settings, numericSetting } from "../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { getAllProducts, addNewProduct } from "../../../../ducks/sessionReducer";
+import { getAllProducts, addNewProduct } from "../../../../ducks/productsReducer";
 
 type Props = {
 	actions: {

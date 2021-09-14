@@ -77,13 +77,13 @@ const MainScreen = ({ products }: Props) => {
 };
 
 type State = {
-	session: {
-		products: Product[];
+	products: {
+		userProducts: Product[];
 	};
 };
 
 const mapStateToProps = (state: State) => ({
-	products: state?.session?.products,
+	products: state?.products?.userProducts,
 });
 
 export default connect(mapStateToProps)(MainScreen);
