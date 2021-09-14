@@ -13,8 +13,6 @@ const UPDATE_DATA_SUCCESS = "UPDATE_DATA_SUCCESS";
 
 const DELETE_ACCOUNT_SUCCESS = "DELETE_ACCOUNT_SUCCESS";
 
-const GET_ALL_PRODUCTS_SUCCESS = "GET_ALL_PRODUCTS_SUCCESS";
-
 // Action Creators
 export const signUp = (name, manager, email, password) => async dispatch =>
 	await fetcher
@@ -118,31 +116,6 @@ export const deleteAccount = (userId, email, password) => async dispatch => {
 		});
 };
 
-export const getAllProducts = accountId => async dispatch =>
-	await fetcher
-		.get(`getAllProducts/${accountId}`)
-		.then(response =>
-			dispatch({
-				type: GET_ALL_PRODUCTS_SUCCESS,
-				products: response,
-			})
-		)
-		.catch(() => {
-			dispatch(showErrorMessage("No se pudieron obtener los productos. Intente de nuevo."));
-		});
-
-export const addNewProduct = (name, price, accountId) => async dispatch =>
-	await fetcher
-		.post("addNewProduct", {
-			name,
-			price,
-			accountId,
-		})
-		.then(() => dispatch(showSuccessMessage("Un nuevo producto ha sido agregado a la carta.")))
-		.catch(() => {
-			dispatch(showErrorMessage("No se pudo agrega el nuevo producto. Intente de nuevo."));
-		});
-
 // State
 const initialState = {
 	accountData: {
@@ -151,7 +124,6 @@ const initialState = {
 		manager: "",
 		email: "",
 	},
-	products: [],
 };
 
 // Reducer
@@ -203,11 +175,6 @@ const sessionReducer = (state = initialState, action) => {
 					...state.accountData,
 					email: action.email,
 				},
-			};
-		case GET_ALL_PRODUCTS_SUCCESS:
-			return {
-				...state,
-				products: action.products,
 			};
 		default:
 			return state;
