@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-
 import TextFieldWithValidation from "../../../common/TextFieldWithValidation";
 
 import styles from "./styles";
@@ -15,6 +9,7 @@ import { settings, numericSetting } from "../../../SignUp/validationSettings";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { getAllProducts, addNewProduct } from "../../../../ducks/productsReducer";
+import AddButton from "../../../common/DataView/AddButton";
 
 type Props = {
 	actions: {
@@ -33,14 +28,6 @@ const CreateProduct = ({ actions, accountId }: Props) => {
 	});
 	const classes = styles();
 
-	const handleClickOpen = useCallback(() => {
-		setOpen(true);
-	}, [setOpen]);
-
-	const handleClose = useCallback(() => {
-		setOpen(false);
-	}, [setOpen]);
-
 	const handleChangeName = useCallback(
 		(value, invalid) => setInput(prev => ({ ...prev, productName: { value, invalid } })),
 		[setInput]
@@ -56,10 +43,10 @@ const CreateProduct = ({ actions, accountId }: Props) => {
 			.addNewProduct(input.productName.value, parseFloat(input.price.value), accountId)
 			.then(() => {
 				actions.getAllProducts(accountId).then(() => {
-					handleClose();
+					setOpen(false);
 				});
 			});
-	}, [actions, handleClose, input, accountId]);
+	}, [actions, setOpen, input, accountId]);
 
 	const handleEnterPress = useCallback(
 		() => !input.price.invalid && !input.productName.invalid && handleAddProduct(),
@@ -73,63 +60,50 @@ const CreateProduct = ({ actions, accountId }: Props) => {
 		});
 	}, [open, accountId, setInput]);
 
+	const dialogContent = useCallback(
+		() => (
+			<Grid container direction="column" spacing={2}>
+				<Grid item xs>
+					<TextFieldWithValidation
+						className={classes.textField}
+						label="Nombre del producto"
+						placeholder="Ingresar nombre del producto"
+						value={input.productName.value}
+						onChange={handleChangeName}
+						required
+						settings={settings}
+					/>
+				</Grid>
+				<Grid item xs>
+					<TextFieldWithValidation
+						className={classes.textField}
+						label="Precio"
+						placeholder="Ingresar precio del producto"
+						value={input.price.value}
+						onChange={handleChangePrice}
+						onEnterPress={handleEnterPress}
+						required
+						InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
+						settings={[...settings, numericSetting]}
+					/>
+				</Grid>
+			</Grid>
+		),
+		[classes, input, handleChangeName, handleChangePrice, handleEnterPress]
+	);
+
 	return (
-		<>
-			<Button color="secondary" onClick={handleClickOpen} size="small" variant="contained">
-				Agregar Producto
-			</Button>
-			<Dialog open={open} onClose={handleClose}>
-				<DialogTitle>Producto Nuevo</DialogTitle>
-				<DialogContent>
-					<Grid container direction="column" spacing={2}>
-						<Grid item xs>
-							<TextFieldWithValidation
-								className={classes.textField}
-								label="Nombre del producto"
-								placeholder="Ingresar nombre del producto"
-								value={input.productName.value}
-								onChange={handleChangeName}
-								required
-								settings={settings}
-							/>
-						</Grid>
-						<Grid item xs>
-							<TextFieldWithValidation
-								className={classes.textField}
-								label="Precio"
-								placeholder="Ingresar precio del producto"
-								value={input.price.value}
-								onChange={handleChangePrice}
-								onEnterPress={handleEnterPress}
-								required
-								InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
-								settings={[...settings, numericSetting]}
-							/>
-						</Grid>
-					</Grid>
-				</DialogContent>
-				<DialogActions className={classes.dialogActions}>
-					<Grid container>
-						<Grid item>
-							<Button onClick={handleClose} color="primary">
-								Cancelar
-							</Button>
-						</Grid>
-						<Grid item xs></Grid>
-						<Grid item>
-							<Button
-								onClick={handleAddProduct}
-								color="primary"
-								variant="outlined"
-								disabled={input.price.invalid || input.productName.invalid}
-							>
-								Agregar
-							</Button>
-						</Grid>
-					</Grid>
-				</DialogActions>
-			</Dialog>
-		</>
+		<AddButton
+			buttonLabel="Agregar producto!"
+			dialogContent={dialogContent}
+			dialogTitle="Agregar nuevo producto"
+			open={open}
+			onSubmit={handleAddProduct}
+			setOpen={setOpen}
+			submitButtonDisabled={input.price.invalid || input.productName.invalid}
+			submitButtonLabel="Agregar"
+			title="Producto Nuevo"
+		/>
 	);
 };
 
