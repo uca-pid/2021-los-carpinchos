@@ -1,32 +1,49 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
+
+import { Grid, InputAdornment } from "@material-ui/core";
+import DataDialog from "../../../common/DataDialog";
 
 import TextFieldWithValidation from "../../../common/TextFieldWithValidation";
 
 import styles from "./styles";
-import { Grid, InputAdornment } from "@material-ui/core";
-import { settings, numericSetting } from "../../../SignUp/validationSettings";
+import { numericSetting, settings } from "../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { getAllProducts, addNewProduct } from "../../../../ducks/productsReducer";
-import AddButton from "../../../common/AddButton";
+import { getAllProducts, addNewProduct, selectProduct } from "../../../../ducks/productsReducer";
+import { Product } from "../ProductsScreen";
 
 type Props = {
 	actions: {
 		getAllProducts: Function;
 		addNewProduct: Function;
 	};
-
+	open: boolean;
+	setOpen: Function;
 	accountId: number;
+	selectedProduct?: Product;
 };
 
-const CreateProduct = ({ actions, accountId }: Props) => {
-	const [open, setOpen] = React.useState(false);
+const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: Props) => {
 	const [input, setInput] = useState({
 		productName: { invalid: true, value: "" },
 		price: { invalid: true, value: "" },
 	});
 	const classes = styles();
+
+	useEffect(() => {
+		setInput({
+			productName: { invalid: true, value: "" },
+			price: { invalid: true, value: "" },
+		});
+	}, [open, accountId, setInput]);
+
+	useEffect(() => {
+		setInput({
+			productName: { invalid: true, value: selectedProduct?.name ?? "" },
+			price: { invalid: true, value: String(selectedProduct?.price) ?? "" },
+		});
+	}, [selectedProduct]);
 
 	const handleChangeName = useCallback(
 		(value, invalid) => setInput(prev => ({ ...prev, productName: { value, invalid } })),
@@ -38,7 +55,7 @@ const CreateProduct = ({ actions, accountId }: Props) => {
 		[setInput]
 	);
 
-	const handleAddProduct = useCallback(() => {
+	const addProduct = useCallback(() => {
 		actions
 			.addNewProduct(input.productName.value, parseFloat(input.price.value), accountId)
 			.then(() => {
@@ -49,19 +66,19 @@ const CreateProduct = ({ actions, accountId }: Props) => {
 	}, [actions, setOpen, input, accountId]);
 
 	const handleEnterPress = useCallback(
-		() => !input.price.invalid && !input.productName.invalid && handleAddProduct(),
-		[handleAddProduct, input]
+		() => !input.price.invalid && !input.productName.invalid && addProduct(),
+		[addProduct, input]
 	);
 
-	useEffect(() => {
-		setInput({
-			productName: { invalid: true, value: "" },
-			price: { invalid: true, value: "" },
-		});
-	}, [open, accountId, setInput]);
-
-	const dialogContent = useCallback(
-		() => (
+	return (
+		<DataDialog
+			open={open}
+			onSubmit={addProduct}
+			setOpen={setOpen}
+			submitButtonDisabled={input.price.invalid || input.productName.invalid}
+			submitButtonLabel="Agregar"
+			title="Producto Nuevo"
+		>
 			<Grid container direction="column" spacing={2}>
 				<Grid item xs>
 					<TextFieldWithValidation
@@ -88,22 +105,7 @@ const CreateProduct = ({ actions, accountId }: Props) => {
 					/>
 				</Grid>
 			</Grid>
-		),
-		[classes, input, handleChangeName, handleChangePrice, handleEnterPress]
-	);
-
-	return (
-		<AddButton
-			buttonLabel="Agregar producto!"
-			dialogContent={dialogContent}
-			dialogTitle="Agregar nuevo producto"
-			open={open}
-			onSubmit={handleAddProduct}
-			setOpen={setOpen}
-			submitButtonDisabled={input.price.invalid || input.productName.invalid}
-			submitButtonLabel="Agregar"
-			title="Producto Nuevo"
-		/>
+		</DataDialog>
 	);
 };
 
@@ -113,20 +115,19 @@ type State = {
 			id: number;
 		};
 	};
+	products: {
+		userProducts: Product[];
+		selectedProduct?: Product;
+	};
 };
 
 const mapStateToProps = (state: State) => ({
-	accountId: state.session.accountData.id,
+	accountId: state?.session?.accountData?.id,
+	selectedProduct: state?.products?.selectedProduct,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators(
-		{
-			addNewProduct,
-			getAllProducts,
-		},
-		dispatch
-	),
+	actions: bindActionCreators({ addNewProduct, getAllProducts }, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateProduct);
+export default connect(mapStateToProps, mapDispatchToProps)(ProductDialog);

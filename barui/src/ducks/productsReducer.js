@@ -3,6 +3,9 @@ import { showErrorMessage, showSuccessMessage } from "./notificationsReducer";
 
 const GET_ALL_PRODUCTS_SUCCESS = "GET_ALL_PRODUCTS_SUCCESS";
 
+const SELECT_PRODUCT = "SELECT_PRODUCT";
+const SAVE_PRODUCT_SUCCESS = "SAVE_PRODUCT_SUCCESS";
+
 export const getAllProducts = accountId => async dispatch =>
 	await fetcher
 		.get(`getAllProducts/${accountId}`)
@@ -23,14 +26,24 @@ export const addNewProduct = (name, price, accountId) => async dispatch =>
 			price,
 			accountId,
 		})
-		.then(() => dispatch(showSuccessMessage("Un nuevo producto ha sido agregado a la carta.")))
+		.then(() => {
+			dispatch({ type: SAVE_PRODUCT_SUCCESS });
+			dispatch(showSuccessMessage("Un nuevo producto ha sido agregado a la carta."));
+		})
 		.catch(() => {
 			dispatch(showErrorMessage("No se pudo agrega el nuevo producto. Intente de nuevo."));
 		});
 
+export const selectProduct = product => dispatch =>
+	dispatch({
+		type: SELECT_PRODUCT,
+		product,
+	});
+
 // State
 const initialState = {
 	userProducts: [],
+	selectedProduct: null,
 };
 
 // Reducer
@@ -40,6 +53,16 @@ const productsReducer = (state = initialState, action) => {
 			return {
 				...state,
 				userProducts: action.products,
+			};
+		case SELECT_PRODUCT:
+			return {
+				...state,
+				selectedProduct: action.product,
+			};
+		case SAVE_PRODUCT_SUCCESS:
+			return {
+				...state,
+				selectedProduct: null,
 			};
 		default:
 			return state;
