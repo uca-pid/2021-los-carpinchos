@@ -27,7 +27,7 @@ const columnsDef: ColumnDef[] = [
 	},
 ];
 
-const MainScreen = ({ products }: Props) => {
+const ProductsScreen = ({ products }: Props) => {
 	return (
 		<DataView
 			addButton={<CreateProduct />}
@@ -48,4 +48,4 @@ const mapStateToProps = (state: State) => ({
 	products: state?.products?.userProducts,
 });
 
-export default connect(mapStateToProps)(MainScreen);
+export default connect(mapStateToProps)(ProductsScreen);
