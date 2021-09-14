@@ -10,7 +10,7 @@ import WarningIcon from "@material-ui/icons/Warning";
 import LockIcon from "@material-ui/icons/Lock";
 
 import ProfileScreen from "./ProfileScreen";
-import DeleteAccount from "./DeleteAccount";
+import DeleteAccountScreen from "./DeleteAccountScreen";
 import SecurityScreen from "./SecurityScreen";
 
 import styles from "./styles";
@@ -51,7 +51,7 @@ const SettingsScreen = () => {
 							<ProfileScreen />
 						</Route>
 						<Route exact path={`${path}/deleteAccount`}>
-							<DeleteAccount />
+							<DeleteAccountScreen />
 						</Route>
 						<Route exact path={`${path}/security`}>
 							<SecurityScreen />

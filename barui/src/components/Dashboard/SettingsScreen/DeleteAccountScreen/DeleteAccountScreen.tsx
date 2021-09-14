@@ -21,7 +21,7 @@ type Props = {
 	email: string;
 };
 
-const DeleteAccount = ({ actions, id, email }: Props) => {
+const DeleteAccountScreen = ({ actions, id, email }: Props) => {
 	const classes = styles();
 	const history = useHistory();
 
@@ -40,7 +40,7 @@ const DeleteAccount = ({ actions, id, email }: Props) => {
 				setPassword("");
 			});
 	}, [actions, history, password, email, id]);
-	
+
 	return (
 		<Grid container direction="column" spacing={3}>
 			<Grid item xs>
@@ -104,4 +104,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 	),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(DeleteAccount);
+export default connect(mapStateToProps, mapDispatchToProps)(DeleteAccountScreen);

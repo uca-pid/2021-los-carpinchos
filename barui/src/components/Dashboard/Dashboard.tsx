@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 
 import { Switch, Route, useRouteMatch } from "react-router-dom";
-import MainScreen from "./MainScreen";
+import ProductsScreen from "./ProductsScreen";
 import SettingsScreen from "./SettingsScreen";
 
 import { connect } from "react-redux";
@@ -28,7 +28,7 @@ const Dashboard = ({ actions }: Props) => {
 	return (
 		<Switch>
 			<Route exact path={path}>
-				<MainScreen />
+				<ProductsScreen />
 			</Route>
 			<Route path={`${path}/settings`}>
 				<SettingsScreen />
