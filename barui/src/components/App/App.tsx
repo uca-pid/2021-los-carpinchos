@@ -13,7 +13,7 @@ import ResetPassword from "../ResetPassword";
 import Route from "./RedirectRoute";
 
 import theme from "./theme";
-import Notifications from "../common/Notification";
+import Notifications from "./Notification";
 
 const App = () => (
 	<ThemeProvider theme={theme}>

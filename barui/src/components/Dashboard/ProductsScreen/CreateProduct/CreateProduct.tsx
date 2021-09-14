@@ -9,7 +9,7 @@ import { settings, numericSetting } from "../../../SignUp/validationSettings";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { getAllProducts, addNewProduct } from "../../../../ducks/productsReducer";
-import AddButton from "../../../common/DataView/AddButton";
+import AddButton from "../../../common/AddButton";
 
 type Props = {
 	actions: {
