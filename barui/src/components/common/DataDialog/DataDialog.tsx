@@ -10,13 +10,13 @@ import styles from "./styles";
 import { Grid } from "@material-ui/core";
 
 type Props = {
-	children: any;
+	children?: any;
 	title: string;
 	open: boolean;
 	onDialogClose?: Function;
 	onSubmit: Function;
 	setOpen: Function;
-	submitButtonDisabled: boolean;
+	submitButtonDisabled?: boolean;
 	submitButtonLabel: string;
 };
 
