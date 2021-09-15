@@ -1,12 +1,14 @@
 import React, { useState, useCallback } from "react";
 
-import DataView, { ColumnDef } from "../../common/DataView/DataView";
+import DataTable, { ColumnDef } from "../../common/DataTable/DataTable";
 import { Button, Container, Grid, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { selectProduct } from "../../../ducks/productsReducer";
 import ProductDialog from "./ProductDialog";
+import DataDialog from "../../common/DataDialog";
+import DeleteProductDialog from "./DeleteProductDialog";
 
 export type Product = {
 	id: string;
@@ -23,6 +25,7 @@ type Props = {
 
 const ProductsScreen = ({ actions, products }: Props) => {
 	const [open, setOpen] = useState(false);
+	const [deleteOpen, setDeleteOpen] = useState(false);
 
 	const columnsDef: ColumnDef[] = [
 		{
@@ -46,9 +49,20 @@ const ProductsScreen = ({ actions, products }: Props) => {
 		[actions, setOpen]
 	);
 
+	const handleDeleteRow = useCallback(
+		product => {
+			actions.selectProduct(product);
+			setDeleteOpen(true);
+		},
+		[actions, setOpen]
+	);
+
 	return (
 		<Container maxWidth="md">
 			<ProductDialog open={open} setOpen={setOpen} />
+
+			<DeleteProductDialog open={deleteOpen} setOpen={setDeleteOpen} />
+
 			<Grid container direction="column" spacing={3}>
 				<Grid alignItems="center" container item>
 					<Grid item xs>
@@ -63,7 +77,12 @@ const ProductsScreen = ({ actions, products }: Props) => {
 					</Grid>
 				</Grid>
 				<Grid item>
-					<DataView columnsDef={columnsDef} data={products} onEditRow={handleEditRow} />
+					<DataTable
+						columnsDef={columnsDef}
+						data={products}
+						onEditRow={handleEditRow}
+						onDeleteRow={handleDeleteRow}
+					/>
 				</Grid>
 			</Grid>
 		</Container>

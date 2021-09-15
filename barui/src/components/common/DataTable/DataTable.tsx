@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -7,12 +7,9 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
-import { IconButton } from "@material-ui/core";
 
 import styles from "./styles";
-import DataViewTableRow from "./DataViewTableRow";
+import DataTableRow from "./DataTableRow";
 
 export type ColumnDef = {
 	title: string;
@@ -24,12 +21,11 @@ type Props = {
 	data: any[];
 	columnsDef: ColumnDef[];
 	onEditRow?: Function;
+	onDeleteRow?: Function;
 };
 
-const DataView = ({ columnsDef, data, onEditRow }: Props) => {
+const DataTable = ({ columnsDef, data, onEditRow, onDeleteRow }: Props) => {
 	const classes = styles();
-
-	const handleEdit = useCallback(() => {}, []);
 
 	return (
 		<TableContainer component={Paper}>
@@ -46,10 +42,11 @@ const DataView = ({ columnsDef, data, onEditRow }: Props) => {
 				</TableHead>
 				<TableBody>
 					{data.map((row, index) => (
-						<DataViewTableRow
+						<DataTableRow
 							columnsDef={columnsDef}
 							key={`row-${index}}`}
 							onEditRow={onEditRow}
+							onDeleteRow={onDeleteRow}
 							row={row}
 						/>
 					))}
@@ -59,4 +56,4 @@ const DataView = ({ columnsDef, data, onEditRow }: Props) => {
 	);
 };
 
-export default DataView;
+export default DataTable;

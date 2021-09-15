@@ -10,13 +10,14 @@ import { numericSetting, settings } from "../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { getAllProducts, addNewProduct, selectProduct } from "../../../../ducks/productsReducer";
+import { getAllProducts, addNewProduct, updateProduct } from "../../../../ducks/productsReducer";
 import { Product } from "../ProductsScreen";
 
 type Props = {
 	actions: {
 		getAllProducts: Function;
 		addNewProduct: Function;
+		updateProduct: Function;
 	};
 	open: boolean;
 	setOpen: Function;
@@ -26,27 +27,28 @@ type Props = {
 
 const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: Props) => {
 	const [input, setInput] = useState({
-		productName: { invalid: true, value: "" },
+		name: { invalid: true, value: "" },
 		price: { invalid: true, value: "" },
 	});
 	const classes = styles();
 
 	useEffect(() => {
 		setInput({
-			productName: { invalid: true, value: "" },
+			name: { invalid: true, value: "" },
 			price: { invalid: true, value: "" },
 		});
 	}, [open, accountId, setInput]);
 
 	useEffect(() => {
-		setInput({
-			productName: { invalid: true, value: selectedProduct?.name ?? "" },
-			price: { invalid: true, value: String(selectedProduct?.price) ?? "" },
-		});
+		selectedProduct &&
+			setInput({
+				name: { invalid: false, value: selectedProduct.name },
+				price: { invalid: false, value: String(selectedProduct.price) },
+			});
 	}, [selectedProduct]);
 
 	const handleChangeName = useCallback(
-		(value, invalid) => setInput(prev => ({ ...prev, productName: { value, invalid } })),
+		(value, invalid) => setInput(prev => ({ ...prev, name: { value, invalid } })),
 		[setInput]
 	);
 
@@ -56,26 +58,42 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 	);
 
 	const addProduct = useCallback(() => {
-		actions
-			.addNewProduct(input.productName.value, parseFloat(input.price.value), accountId)
-			.then(() => {
-				actions.getAllProducts(accountId).then(() => {
-					setOpen(false);
-				});
+		actions.addNewProduct(input.name.value, parseFloat(input.price.value), accountId).then(() => {
+			actions.getAllProducts(accountId).then(() => {
+				setOpen(false);
 			});
+		});
 	}, [actions, setOpen, input, accountId]);
 
+	const updateProduct = useCallback(() => {
+		if (selectedProduct) {
+			const data = {
+				name: input.name.value !== selectedProduct.name ? input.name.value : undefined,
+				price: parseFloat(input.price.value) !== selectedProduct.price ? input.price.value : undefined,
+			};
+			actions.updateProduct(selectedProduct.id, data);
+		}
+	}, [actions, selectedProduct, input]);
+
 	const handleEnterPress = useCallback(
-		() => !input.price.invalid && !input.productName.invalid && addProduct(),
+		() => !input.price.invalid && !input.name.invalid && addProduct(),
 		[addProduct, input]
 	);
 
 	return (
 		<DataDialog
 			open={open}
-			onSubmit={addProduct}
+			onSubmit={selectedProduct ? updateProduct : addProduct}
 			setOpen={setOpen}
-			submitButtonDisabled={input.price.invalid || input.productName.invalid}
+			submitButtonDisabled={
+				input.price.invalid ||
+				input.name.invalid ||
+				Boolean(
+					selectedProduct &&
+						selectedProduct.name === input.name.value &&
+						String(selectedProduct.price) === input.price.value
+				)
+			}
 			submitButtonLabel="Agregar"
 			title="Producto Nuevo"
 		>
@@ -85,7 +103,7 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 						className={classes.textField}
 						label="Nombre del producto"
 						placeholder="Ingresar nombre del producto"
-						value={input.productName.value}
+						value={input.name.value}
 						onChange={handleChangeName}
 						required
 						settings={settings}
@@ -127,7 +145,7 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({ addNewProduct, getAllProducts }, dispatch),
+	actions: bindActionCreators({ addNewProduct, getAllProducts, updateProduct }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductDialog);

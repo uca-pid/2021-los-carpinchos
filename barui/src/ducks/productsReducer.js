@@ -40,6 +40,15 @@ export const selectProduct = product => dispatch =>
 		product,
 	});
 
+export const updateProduct = (productId, data) => async dispatch => {
+	console.log(`updateProductId - ${productId}`);
+	console.log(data);
+};
+
+export const deleteProduct = productId => async dispatch => {
+	console.log(`deleteProductId - ${productId}`);
+};
+
 // State
 const initialState = {
 	userProducts: [],
