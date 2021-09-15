@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 
 import { Grid, InputAdornment } from "@material-ui/core";
-import DataDialog from "../../../common/DataDialog";
+import AppDialog from "../../../common/AppDialog";
 
 import TextFieldWithValidation from "../../../common/TextFieldWithValidation";
 
@@ -12,6 +12,7 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { getAllProducts, addNewProduct, updateProduct } from "../../../../ducks/productsReducer";
 import { Product } from "../ProductsScreen";
+import CategoryCombo from "../../../common/CategoryCombo";
 
 type Props = {
 	actions: {
@@ -81,7 +82,7 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 	);
 
 	return (
-		<DataDialog
+		<AppDialog
 			open={open}
 			onSubmit={selectedProduct ? updateProduct : addProduct}
 			setOpen={setOpen}
@@ -110,6 +111,9 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 					/>
 				</Grid>
 				<Grid item xs>
+					<CategoryCombo />
+				</Grid>
+				<Grid item xs>
 					<TextFieldWithValidation
 						className={classes.textField}
 						label="Precio"
@@ -123,7 +127,7 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 					/>
 				</Grid>
 			</Grid>
-		</DataDialog>
+		</AppDialog>
 	);
 };
 
