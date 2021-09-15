@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import DataDialog from "../../../common/DataDialog";
+import AppDialog from "../../../common/AppDialog";
 import { Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
@@ -24,7 +24,7 @@ const DeleteProductDialog = ({ actions, open, setOpen, selectedProduct }: Props)
 	);
 
 	return (
-		<DataDialog
+		<AppDialog
 			open={open}
 			setOpen={setOpen}
 			title="Borrar producto"
@@ -32,7 +32,7 @@ const DeleteProductDialog = ({ actions, open, setOpen, selectedProduct }: Props)
 			submitButtonLabel="Borrar"
 		>
 			<Typography variant="body1">¿Queres borrar este producto?</Typography>
-		</DataDialog>
+		</AppDialog>
 	);
 };
 
