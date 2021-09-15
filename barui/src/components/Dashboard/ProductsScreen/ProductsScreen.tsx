@@ -7,7 +7,6 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { selectProduct } from "../../../ducks/productsReducer";
 import ProductDialog from "./ProductDialog";
-import DataDialog from "../../common/DataDialog";
 import DeleteProductDialog from "./DeleteProductDialog";
 
 export type Product = {

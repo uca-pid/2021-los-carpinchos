@@ -20,7 +20,7 @@ type Props = {
 	submitButtonLabel: string;
 };
 
-const DataDialog = ({
+const AppDialog = ({
 	title,
 	open,
 	onDialogClose,
@@ -67,4 +67,4 @@ const DataDialog = ({
 	);
 };
 
-export default DataDialog;
+export default AppDialog;
