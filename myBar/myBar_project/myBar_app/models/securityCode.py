@@ -23,8 +23,6 @@ class SecurityCode(models.Model):
 
     @classmethod
     def delete(cls, user):
-        security_code = cls.objects.filter(account = user)
-        if len(security_code) == 0:
-            raise Exception("El codigo de seguridad ya no existe")
-        else:
-            security_code.delete()
+        security_code = cls.objects.filter(account=user)
+
+        security_code.delete()
