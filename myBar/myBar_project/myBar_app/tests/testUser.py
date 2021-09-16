@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from rest_framework.test import APITestCase
 from ..models.user import Mb_user as mb_user
-from ..models.product import Product as p
+from ..models.securityCode import SecurityCode as Sc
+from django.core import mail
 
 
 class TestUser(APITestCase):
@@ -85,3 +86,19 @@ class TestUser(APITestCase):
         user = mb_user.getAllUsers().filter(account_id=1).first()
 
         self.assertEqual(user, None)
+
+    def test_reestablish_password(self):
+        user = mb_user.getAllUsers().filter(account_id=1).first()
+        webClient = self.client
+        response = webClient.post('/allow_password_reestablishment', {'email': 'sofia@gmail.com'}, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(Sc.objects.filter()), 1)
+        self.assertEqual(len(mail.outbox), 1)
+        response = webClient.put('/reestablish_password', {'email': 'sofia@gmail.com', 'password': 'hola',
+                                                           'security_code': Sc.objects.filter().first().security_code},
+                                 format="json")
+
+        self.assertEqual(response.status_code, 200)
+        user = mb_user.getAllUsers().filter(account_id=1).first()
+        self.assertEqual(user.getPassword(), 'hola')
+        self.assertEqual(len(Sc.objects.filter()), 0)

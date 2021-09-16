@@ -8,11 +8,14 @@ urlpatterns = [
     path('', userView.index, name="home"),
     path('createAccount', userView.user_create, name='user_creation'),
     path('login', userView.user_log_in, name='user_log_in'),
-    path('resetPassword/<int:id>', userView.user_reestablish_password, name='reestablish_password'),
+    path('reestablish_password', userView.reestablish_password, name='reestablish_password'),
     path('updateAccountData/<int:id>', userView.modify_user_details, name='modify_details'),
     path('accountDetails/<int:id>',  userView.get_user_details, name='get_user_details'),
     path('deleteAccount/<int:id>', userView.delete_user, name='delete_user'),
+    path('allow_password_reestablishment', userView.allow_password_reestablishment, name='allow_password_reestablishment'),
     # product
     path('addNewProduct', productsView.register_product, name='register_product'),
     path('getAllProducts/<int:accountid>', productsView.get_all_products, name='get_all_products'),
+
+
 ]
