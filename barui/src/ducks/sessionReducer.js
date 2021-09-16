@@ -13,6 +13,12 @@ const UPDATE_DATA_SUCCESS = "UPDATE_DATA_SUCCESS";
 
 const DELETE_ACCOUNT_SUCCESS = "DELETE_ACCOUNT_SUCCESS";
 
+const PASSWORD_CHANGE_REQUEST_LOADING = "PASSWORD_CHANGE_REQUEST_LOADING";
+const PASSWORD_CHANGE_REQUEST_SUCCESS = "PASSWORD_CHANGE_REQUEST_SUCCESS";
+const PASSWORD_CHANGE_REQUEST_ERROR = "PASSWORD_CHANGE_REQUEST_ERROR";
+
+const PASSWORD_VALIDATION_SUCCESS = "PASSWORD_VALIDATION_SUCCESS";
+
 // Action Creators
 export const signUp = (name, manager, email, password) => async dispatch =>
 	await fetcher
@@ -98,8 +104,8 @@ export const changePassword = (userId, email, currentPassword, newPassword) => a
 			dispatch(showErrorMessage("Contraseña actual incorrecta. Vuelva a intentar."));
 		});
 
-export const deleteAccount = (userId, email, password) => async dispatch => {
-	return await fetcher
+export const deleteAccount = (userId, email, password) => async dispatch =>
+	await fetcher
 		.post("login", { email, password })
 		.then(() =>
 			fetcher
@@ -114,6 +120,45 @@ export const deleteAccount = (userId, email, password) => async dispatch => {
 			dispatch(showErrorMessage("Contraseña incorrecta. Vuelva a intentar."));
 			throw new Error();
 		});
+
+export const requestPasswordChange = email => async dispatch => {
+	dispatch({ type: PASSWORD_CHANGE_REQUEST_LOADING });
+
+	await fetcher
+		.post("requestPasswordReestablishment", { email })
+		.then(() => {
+			dispatch({ type: PASSWORD_CHANGE_REQUEST_SUCCESS, email, previousPath: "requestPasswordReset" });
+			dispatch(showSuccessMessage("Código de seguridad enviado."));
+		})
+		.catch(errorMessage => {
+			dispatch({ type: PASSWORD_CHANGE_REQUEST_ERROR });
+			dispatch(showErrorMessage(errorMessage));
+			throw new Error();
+		});
+};
+
+export const validateCode = (email, code) => async dispatch => {
+	await fetcher
+		.post("validateCode", { email, code })
+		.then(response => {
+			dispatch({ type: PASSWORD_VALIDATION_SUCCESS, email, previousPath: "securityCodeValidation" });
+			dispatch(showSuccessMessage(response.message));
+		})
+		.catch(errorMessage => {
+			dispatch(showErrorMessage(errorMessage));
+			throw new Error();
+		});
+};
+
+export const resetPassword = (email, newPassword) => async dispatch => {
+	await fetcher
+		.put("resetPassword", { email, newPassword })
+		.then(response => {
+			dispatch(showSuccessMessage(response.message));
+		})
+		.catch(errorMessage => {
+			dispatch(showErrorMessage(errorMessage));
+		});
 };
 
 // State
@@ -124,6 +169,8 @@ const initialState = {
 		manager: "",
 		email: "",
 	},
+	previousPath: "",
+	loading: false,
 };
 
 // Reducer
@@ -175,6 +222,27 @@ const sessionReducer = (state = initialState, action) => {
 					...state.accountData,
 					email: action.email,
 				},
+			};
+		case PASSWORD_CHANGE_REQUEST_LOADING:
+			return {
+				...state,
+				loading: true,
+			};
+		case PASSWORD_CHANGE_REQUEST_SUCCESS:
+		case PASSWORD_VALIDATION_SUCCESS:
+			return {
+				...state,
+				previousPath: action.previousPath,
+				loading: false,
+				accountData: {
+					...state.accountData,
+					email: action.email,
+				},
+			};
+		case PASSWORD_CHANGE_REQUEST_ERROR:
+			return {
+				...state,
+				loading: false,
 			};
 		default:
 			return state;

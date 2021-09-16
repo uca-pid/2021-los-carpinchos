@@ -10,8 +10,9 @@ const fetcher = ({ method, url, body, headers = null }) => {
 
 	return fetch(`http://127.0.0.1:8000/${url}`, settings).then(response => {
 		if (!response.ok) {
-			return response.json().then(({ error }) => {
-				throw new Error(error);
+			return response.json().then(({ message }) => {
+				console.log(message);
+				throw new Error(message);
 			});
 		}
 		// the catch is for responses with 200 but with no body.

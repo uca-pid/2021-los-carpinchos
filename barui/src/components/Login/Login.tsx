@@ -68,7 +68,7 @@ const Login = ({ actions, email }: Props) => {
 
 	const createAccount = useCallback(() => history.push("/signUp"), [history]);
 
-	const resetPassword = useCallback(() => history.push("/resetPassword"), [history]);
+	const resetPassword = useCallback(() => history.push("/requestPasswordReset"), [history]);
 
 	return (
 		<Container maxWidth="sm">
@@ -101,8 +101,7 @@ const Login = ({ actions, email }: Props) => {
 								required
 							/>
 							<div className={classes.resetPasswordText}>
-								{/* <Link onClick={resetPassword}> */}
-								<Link>
+								<Link onClick={resetPassword}>
 									<Typography>¿Olvidaste tu contraseña?</Typography>
 								</Link>
 							</div>
