@@ -79,42 +79,56 @@ def user_log_in(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['PUT'])
-def reestablish_password(request):
-    user = Mb_user.users.filter(email=request.data.get('email'))
-    user2 = user.first()
-    security_code = SecurityCode.getAllSecurityCodes().filter(security_code=request.data.get('security_code'))
-    security_code2 = security_code.first()
-    if user2 and security_code2:
-        try:
-            user2 = user2.modifyUser(**(request.data))
-            user2.full_clean()
-            user2.save()
-            security_code2.delete(user2)
-
-            return Response(status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-
 @api_view(['POST'])
 def allow_password_reestablishment(request):
     user = Mb_user.users.filter(email=request.data.get('email'))
     user2 = user.first()
     if user2:
+        SecurityCode.delete(user2)
         try:
             security_code = SecurityCode.create(user2)
             security_code.full_clean()
             security_code.save()
-            sendEmail(request.data.get('email'), security_code)
+            sendEmail(request.data.get('email'), security_code.security_code)
 
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': "La cuenta ingresada no es valida."}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def validate_code(request):
+    user = Mb_user.users.filter(email=request.data.get('email'))
+    user2 = user.first()
+    security_code = SecurityCode.getAllSecurityCodes().filter(account=user2)
+    security_code2 = security_code.first()
+    if security_code2:
+        if security_code2.security_code == int(request.data.get('code')):
+            security_code2.delete(user2)
+            return Response({'message': "Código validado éxitosamente."}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': "Código Incorrento."}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({'message': "No se ha generado un código para esta cuenta."}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+def reestablish_password(request):
+    user = Mb_user.users.filter(email=request.data.get('email'))
+    user2 = user.first()
+    if user2:
+        try:
+            user2 = user2.modifyUser(**{'password': request.data.get('newPassword')})
+            user2.full_clean()
+            user2.save()
+
+            return Response({'message': "Contraseña reestablecida."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({'message': "Cuenta no encontrada."}, status=status.HTTP_404_NOT_FOUND)
 
 
 @swagger_auto_schema(method='put',
