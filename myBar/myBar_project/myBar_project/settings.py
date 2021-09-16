@@ -25,6 +25,15 @@ SECRET_KEY = 'fm2j1iu6mh5c_cx1t(rxqkpwo*jw=&^qt-a1gfhoo9mj$0n@44'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'loscarpinchitos@gmail.com'
+EMAIL_HOST_PASSWORD = 'zmjhxeiffiodadcl' #past the key or password app here
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'default from email'
+
+
 ALLOWED_HOSTS = []
 
 
@@ -38,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'corsheaders',
     'myBar_app',
     'drf_yasg',
 ]

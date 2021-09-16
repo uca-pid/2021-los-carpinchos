@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from django.shortcuts import render
 
 # Create your views here.
@@ -7,8 +8,14 @@ from rest_framework.decorators import api_view, renderer_classes
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import HttpResponse
-from ..models.user import Mb_user
 
+from ..models.securityCode import SecurityCode
+from ..models.user import Mb_user
+# from ...myBar_project.settings import
+
+import myBar_project
+
+EMAIL_HOST_USER = myBar_project.settings.EMAIL_HOST_USER
 
 password = openapi.Schema(title='password', type=openapi.TYPE_STRING)
 email = openapi.Schema(title='email', type=openapi.TYPE_STRING)
@@ -64,21 +71,46 @@ def user_log_in(request):
     if user:
         password = user2.password
         if password == request.data.get('password'):
-            return Response({'name': user2.name, 'id': user2.account_id, 'manager': user2.manager, 'email': user2.email}, status=status.HTTP_200_OK)
+            return Response(
+                {'name': user2.name, 'id': user2.account_id, 'manager': user2.manager, 'email': user2.email},
+                status=status.HTTP_200_OK)
 
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['PUT'])
-def user_reestablish_password(request, id):
-    user = Mb_user.users.filter(account_id=id)
+def reestablish_password(request):
+    user = Mb_user.users.filter(email=request.data.get('email'))
+    user2 = user.first()
+    security_code = SecurityCode.getAllSecurityCodes().filter(security_code=request.data.get('security_code'))
+    security_code2 = security_code.first()
+    if user2 and security_code2:
+        try:
+            user2 = user2.modifyUser(**(request.data))
+            user2.full_clean()
+            user2.save()
+            security_code2.delete(request.data.get('security_code'))
+
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def allow_password_reestablishment(request):
+    user = Mb_user.users.filter(email=request.data.get('email'))
     user2 = user.first()
     if user2:
         try:
-            user2 = user2.modifyUser(**(request.data))
-            user2.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            security_code = SecurityCode.create(user2)
+            security_code.full_clean()
+            security_code.save()
+            sendEmail(request.data.get('email'), security_code)
+
+            return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
@@ -105,7 +137,8 @@ def modify_user_details(request, id):
             user2 = user2.modifyUser(**(request.data))
             user2.full_clean()
             user2.save()
-            return Response({'name': user2.name, 'manager': user2.manager, 'email': user2.email}, status=status.HTTP_200_OK)
+            return Response({'name': user2.name, 'manager': user2.manager, 'email': user2.email},
+                            status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
@@ -119,7 +152,8 @@ def get_user_details(request, id):
     user_bis = Mb_user.getAllUsers().filter(account_id=id)
     user2 = user_bis.first()
     if user_bis:
-        return Response({'name': user2.name, 'id': user2.account_id, 'manager': user2.manager, 'email': user2.email}, status=status.HTTP_200_OK)
+        return Response({'name': user2.name, 'id': user2.account_id, 'manager': user2.manager, 'email': user2.email},
+                        status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -143,3 +177,10 @@ def delete_user(request, id):
         return Response(status=status.HTTP_200_OK)
     except Exception as e:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+def sendEmail(email_receiver, security_code):
+    subject = 'Password Reset'
+    message = 'This email is being send because a password reset was requested. If that is not the case , let us know. Your security code is : ' + str(
+        security_code)
+    send_mail(subject, message, EMAIL_HOST_USER, [email_receiver], fail_silently=False)
