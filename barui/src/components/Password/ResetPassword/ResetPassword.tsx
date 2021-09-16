@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 import { useHistory } from "react-router-dom";
-import { Input } from "../Login/Login";
+import { Input } from "../../Login/Login";
 
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -11,11 +11,15 @@ import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { Grid } from "@material-ui/core";
 
-import PasswordTextField from "../common/PasswordTextField";
+import PasswordTextField from "../../common/PasswordTextField";
 
 import styles from "./styles";
 
-import { passwordSetting, ValidationSetting } from "../SignUp/validationSettings";
+import { passwordSetting, ValidationSetting } from "../../SignUp/validationSettings";
+
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
+import { resetPassword } from "../../../ducks/sessionReducer";
 
 export type LoginInput = {
 	password: Input;
@@ -23,10 +27,14 @@ export type LoginInput = {
 };
 
 type Props = {
-	accountEmail?: string;
+	actions: {
+		resetPassword: Function;
+	};
+	savedEmail: string;
+	previousPath: string;
 };
 
-const ResetPassword = ({ accountEmail }: Props) => {
+const ResetPassword = ({ actions, savedEmail, previousPath }: Props) => {
 	const [input, setInput] = useState<LoginInput>({
 		password: { invalid: true, value: "" },
 		verifyPassword: { invalid: true, value: "" },
@@ -34,6 +42,10 @@ const ResetPassword = ({ accountEmail }: Props) => {
 	const history = useHistory();
 
 	const classes = styles();
+
+	useEffect(() => {
+		previousPath !== "securityCodeValidation" && history.replace("/");
+	}, [previousPath]);
 
 	const handleChangePassword = useCallback(
 		(value, invalid) => setInput(prev => ({ ...prev, password: { value, invalid } })),
@@ -46,8 +58,7 @@ const ResetPassword = ({ accountEmail }: Props) => {
 	);
 
 	const resetPassword = useCallback(() => {
-		history.push("/login");
-		console.log(input);
+		actions.resetPassword(savedEmail, input.password.value).then(() => history.push("/login"));
 	}, [input, history]);
 
 	const passwordCheckValidation: ValidationSetting = {
@@ -62,7 +73,7 @@ const ResetPassword = ({ accountEmail }: Props) => {
 					<Typography className={classes.title} variant="h5" component="h2">
 						Reiniciar Contraseña
 						<Typography variant="body1" component="h2">
-							Cuenta: {accountEmail ?? "ACCOUNT_EMAIL"}
+							Cuenta: {savedEmail ?? "ACCOUNT_EMAIL"}
 						</Typography>
 					</Typography>
 					<Grid container direction="column" spacing={3}>
@@ -111,4 +122,27 @@ const ResetPassword = ({ accountEmail }: Props) => {
 	);
 };
 
-export default ResetPassword;
+type State = {
+	session: {
+		accountData: {
+			email: string;
+		};
+		previousPath: string;
+	};
+};
+
+const mapStateToProps = (state: State) => ({
+	savedEmail: state.session.accountData.email ?? "",
+	previousPath: state.session.previousPath,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+	actions: bindActionCreators(
+		{
+			resetPassword,
+		},
+		dispatch
+	),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ResetPassword);
