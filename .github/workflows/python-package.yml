@@ -34,3 +34,10 @@ jobs:
         cd myBar_project
         pytest
     - name: Run coverage
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        cd myBar
+        cd myBar_project
+        coverage run --source='myBar_app' manage.py test
+        coveralls --service=github
