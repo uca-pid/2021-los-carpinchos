@@ -54,18 +54,6 @@ class TestUser(APITestCase):
 
         self.assertEqual(response.status_code, 200)
 
-    def test_reestablish_password(self):
-        user = mb_user.getAllUsers().filter(account_id=1).first()
-        webClient = self.client
-        response = webClient.put(
-            '/resetPassword/1', {'password': 'Pass3'}, format="json")
-
-        self.assertEqual(response.status_code, 204)
-
-        user = mb_user.getAllUsers().filter(account_id=1).first()
-
-        self.assertEqual(user.getPassword(), 'Pass3')
-
     def test_modify_details(self):
         user = mb_user.getAllUsers().filter(account_id=1).first()
         webClient = self.client
@@ -90,7 +78,8 @@ class TestUser(APITestCase):
     def test_reestablish_password(self):
         user = mb_user.getAllUsers().filter(account_id=1).first()
         webClient = self.client
-        response = webClient.post('/allow_password_reestablishment', {'email': 'sofia@gmail.com'}, format="json")
+        response = webClient.post('/allow_password_reestablishment',
+                                  {'email': 'sofia@gmail.com'}, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(Sc.objects.filter()), 1)
         self.assertEqual(len(mail.outbox), 1)
