@@ -90,7 +90,7 @@ def reestablish_password(request):
             user2 = user2.modifyUser(**(request.data))
             user2.full_clean()
             user2.save()
-            security_code2.delete(request.data.get('security_code'))
+            security_code2.delete(user2)
 
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
