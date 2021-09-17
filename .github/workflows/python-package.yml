@@ -32,7 +32,7 @@ jobs:
       run: |
         cd myBar
         cd myBar_project
-        pytest
+        python manage.py test
     - name: Run coverage
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
