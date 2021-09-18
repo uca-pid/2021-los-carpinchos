@@ -1,13 +1,14 @@
 import React, { useState, useCallback } from "react";
 
 import DataTable, { ColumnDef } from "../../common/DataTable/DataTable";
-import { Button, Container, Grid, Typography } from "@material-ui/core";
+import { Button, Container, Grid, IconButton, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { selectProduct } from "../../../ducks/productsReducer";
 import ProductDialog from "./ProductDialog";
 import DeleteProductDialog from "./DeleteProductDialog";
+import AddIcon from "@material-ui/icons/Add";
 
 export type Product = {
 	id: string;
@@ -53,7 +54,7 @@ const ProductsScreen = ({ actions, products }: Props) => {
 			actions.selectProduct(product);
 			setDeleteOpen(true);
 		},
-		[actions, setOpen]
+		[actions]
 	);
 
 	return (
@@ -70,8 +71,13 @@ const ProductsScreen = ({ actions, products }: Props) => {
 						</Typography>
 					</Grid>
 					<Grid item>
-						<Button color="secondary" onClick={handleOpenDialog} variant="contained">
-							Agregar Producto
+						<Button
+							color="secondary"
+							onClick={handleOpenDialog}
+							variant="contained"
+							startIcon={<AddIcon />}
+						>
+							Crear
 						</Button>
 					</Grid>
 				</Grid>

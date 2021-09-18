@@ -45,6 +45,7 @@ const App = () => (
 				<PrivateRoute path="/dashboard">
 					<Dashboard />
 				</PrivateRoute>
+				<Route path="*">Page not found</Route>
 			</Switch>
 		</Router>
 	</ThemeProvider>
