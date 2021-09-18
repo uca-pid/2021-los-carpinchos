@@ -53,7 +53,7 @@ const ProductsScreen = ({ actions, products }: Props) => {
 			actions.selectProduct(product);
 			setDeleteOpen(true);
 		},
-		[actions, setOpen]
+		[actions]
 	);
 
 	return (

@@ -35,7 +35,7 @@ const SecurityCodeValidation = ({ actions, savedEmail, previousPath }: Props) =>
 		if (previousPath !== "requestPasswordReset") {
 			history.replace("/");
 		}
-	}, [previousPath]);
+	}, [history, previousPath]);
 
 	const handleValidate = useCallback(() => {
 		actions
@@ -44,7 +44,7 @@ const SecurityCodeValidation = ({ actions, savedEmail, previousPath }: Props) =>
 				history.push("/resetPassword");
 			})
 			.catch(() => setCode({ value: "", invalid: true }));
-	}, [actions, code, history]);
+	}, [actions, savedEmail, code, history]);
 
 	const handleChangeCode = useCallback((value, invalid) => setCode({ value, invalid }), [setCode]);
 
