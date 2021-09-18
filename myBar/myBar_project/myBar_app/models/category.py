@@ -2,6 +2,7 @@ from django.db import models
 
 from .user import Mb_user
 
+
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
     category_name = models.CharField(max_length=40)
@@ -44,5 +45,3 @@ class Category(models.Model):
         for arg in keys:
             setattr(self, arg, argsToChange[arg])
         return self
-
-
