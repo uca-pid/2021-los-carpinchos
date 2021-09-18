@@ -4,8 +4,8 @@ import { useHistory, useLocation } from "react-router-dom";
 import { Grid } from "@material-ui/core";
 import MaterialAppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import withWidth from "@material-ui/core/withWidth";
 import Typography from "@material-ui/core/Typography";
+import withWidth from "@material-ui/core/withWidth";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 import Button from "@material-ui/core/Button";
 
@@ -34,7 +34,7 @@ const AppBar = ({ accountName, width }: Props) => {
 
 	const handleSignUpButton = useCallback(() => history.push("/signUp"), [history]);
 
-	const handleProductsButton = useCallback(() => history.push("/dashboard"), [history]);
+	const handleProductsButton = useCallback(() => history.push("/dashboard/products"), [history]);
 
 	const handleSalesButton = useCallback(() => history.push("/dashboard/sales"), [history]);
 
@@ -58,7 +58,7 @@ const AppBar = ({ accountName, width }: Props) => {
 										variant="text"
 										color="inherit"
 										className={`${classes.navigationButtons} ${
-											location.pathname === "/dashboard" && classes.currentLocation
+											location.pathname === "/dashboard/products" && classes.currentLocation
 										}`}
 										onClick={handleProductsButton}
 										startIcon={<ProductsMenuIcon fontSize="small" />}

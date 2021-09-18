@@ -33,16 +33,16 @@ const SettingsMenu = ({ width }: Props) => {
 	}, [setAnchorEl]);
 
 	const goToProducts = useCallback(() => {
-		history.push("/dashboard");
-		handleClose();
-	}, [history, handleClose]);
-
-	const goToSettings = useCallback(() => {
-		history.push("/dashboard ");
+		history.push("/dashboard/products");
 		handleClose();
 	}, [history, handleClose]);
 
 	const goToSales = useCallback(() => {
+		history.push("/dashboard/sales");
+		handleClose();
+	}, [history, handleClose]);
+
+	const goToSettings = useCallback(() => {
 		history.push("/dashboard/settings/profile");
 		handleClose();
 	}, [history, handleClose]);
@@ -90,7 +90,7 @@ const SettingsMenu = ({ width }: Props) => {
 					<ListItemIcon>
 						<ProfileIcon fontSize="small" />
 					</ListItemIcon>
-					<ListItemText primary="Perfil" />
+					<ListItemText primary="Cuenta" />
 				</MenuItem>
 				<MenuItem onClick={handleLogOut}>
 					<ListItemIcon>
