@@ -51,3 +51,27 @@ def register_product(request):
             return Response(status=status.HTTP_409_CONFLICT)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+@api_view(['PUT'])
+def update_product_details(request, id):
+    product = Product.products.filter(product_id=id)
+    product_found = product.first()
+    if product_found:
+        try:
+            product_found = product_found.modifyProduct(**(request.data))
+            product_found.full_clean()
+            product_found.save()
+            return Response({'name': product_found.name, 'price': product_found.price , 'product_id': product_found.product_id},
+                            status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+def delete_product(request, id):
+    product = Product.getAllProducts().filter(product_id=id)
+    try:
+        Product.delete(id)
+        return Response(status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(status=status.HTTP_404_NOT_FOUND)

@@ -4,7 +4,7 @@ from .user import Mb_user
 
 
 class Product(models.Model):
-    id = models.AutoField(primary_key=True)
+    product_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=25)
     price = models.FloatField()
     account = models.ForeignKey(
@@ -34,7 +34,7 @@ class Product(models.Model):
 
     @classmethod
     def delete(cls, id):
-        product = cls.products.filter(id=id)
+        product = cls.products.filter(product_id=id)
         if len(product) == 0:
             raise Exception("El usuario a eliminar no existe")
         else:
@@ -43,5 +43,5 @@ class Product(models.Model):
     def modifyProduct(self, **argsToChange):
         keys = argsToChange.keys()
         for arg in keys:
-            setattr(self, arg, argsToChange[arg][0])
+            setattr(self, arg, argsToChange[arg])
         return self
