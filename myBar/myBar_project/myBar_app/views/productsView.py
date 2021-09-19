@@ -51,6 +51,7 @@ def register_product(request):
             return Response(status=status.HTTP_409_CONFLICT)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+			
 @api_view(['PUT'])
 def update_product_details(request, id):
     product = Product.products.filter(product_id=id)
@@ -60,7 +61,7 @@ def update_product_details(request, id):
             product_found = product_found.modifyProduct(**(request.data))
             product_found.full_clean()
             product_found.save()
-            return Response({'name': product_found.name, 'price': product_found.price , 'product_id': product_found.product_id},
+            return Response({'name': product_found.name, 'price': product_found.price , 'id': product_found.product_id},
                             status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)

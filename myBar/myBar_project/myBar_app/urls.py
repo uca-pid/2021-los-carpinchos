@@ -22,6 +22,7 @@ urlpatterns = [
     path('getAllProducts/<int:accountid>', productsView.get_all_products, name='get_all_products'),
     path('updateProductData/<int:id>', productsView.update_product_details, name='update_product_details'),
     path('deleteProduct/<int:id>', productsView.delete_product, name='delete_product'),
+	# categories
     path('getAllStaticCategories/<int:accountid>', categoryView.get_all_static_categories, name='get_all_static_categories'),
     path('getAllNonStaticCategories/<int:accountid>', categoryView.get_all_non_static_categories, name='get_all_non_static_categories'),
     path('updateCategoryData/<int:id>', categoryView.update_category_details, name='update_category_details'),
