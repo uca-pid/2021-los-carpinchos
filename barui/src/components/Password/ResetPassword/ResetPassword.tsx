@@ -45,7 +45,7 @@ const ResetPassword = ({ actions, savedEmail, previousPath }: Props) => {
 
 	useEffect(() => {
 		previousPath !== "securityCodeValidation" && history.replace("/");
-	}, [previousPath]);
+	}, [previousPath, history]);
 
 	const handleChangePassword = useCallback(
 		(value, invalid) => setInput(prev => ({ ...prev, password: { value, invalid } })),
@@ -59,7 +59,7 @@ const ResetPassword = ({ actions, savedEmail, previousPath }: Props) => {
 
 	const resetPassword = useCallback(() => {
 		actions.resetPassword(savedEmail, input.password.value).then(() => history.push("/login"));
-	}, [input, history]);
+	}, [actions, savedEmail, input, history]);
 
 	const passwordCheckValidation: ValidationSetting = {
 		message: "La contraseña no coincide",
