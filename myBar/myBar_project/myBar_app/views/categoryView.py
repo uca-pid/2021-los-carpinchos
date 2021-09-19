@@ -44,3 +44,52 @@ def category_creation(request):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET'])
+def get_all_static_categories(request, accountid):
+    try:
+        category = Category.categories.filter(account_id=accountid)
+        staticCategory = category.filter(static=True)
+        return Response(staticCategory.values(), status=status.HTTP_200_OK)
+    except Exception as e:
+        if str(e) == "La cuenta no tiene categorias creadas":
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def get_all_non_static_categories(request, accountid):
+    try:
+        category = Category.categories.filter(account_id=accountid)
+        staticCategory = category.filter(static=False)
+        return Response(staticCategory.values(), status=status.HTTP_200_OK)
+    except Exception as e:
+        if str(e) == "La cuenta no tiene categorias no estaticas creadas":
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+def update_category_details(request, id):
+    category = Category.categories.filter(category_id=id)
+    category_found = category.first()
+    print(category_found)
+    if category_found and category_found.static == False:
+        try:
+            category_found = category_found.modifyCategory(**(request.data))
+            category_found.full_clean()
+            category_found.save()
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+@api_view(['DELETE'])
+def delete_category(request,id):
+    category = Category.getAllCategories().filter(category_id=id).first()
+    print(category.static)
+    if category.static == False:
+        try:
+            Category.delete(id)
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
