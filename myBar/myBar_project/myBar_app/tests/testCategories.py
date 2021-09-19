@@ -30,6 +30,8 @@ class TestProducts(APITestCase):
         category1.full_clean()
         category1.save()
         category2 = c(category_name='alcohol',static=False,account=user)
+        category2.full_clean()
+        category2.save()
 
 
     def test_category_was_succesfully_saved(self):
@@ -52,4 +54,41 @@ class TestProducts(APITestCase):
         with self.assertRaises(ValidationError):
             category.full_clean()
             category.save()
+
+    def test_get_all_static_categories(self):
+        categories = c.getAllCategories()
+        webClient = self.client
+        response = webClient.get('/getAllStaticCategories/1')
+        self.assertEqual(len(response.data), 1)
+
+    def test_modify_category_details(self):
+        webClient = self.client
+        response = webClient.put(
+            '/updateCategoryData/2', {"category_name": 'gaseosas'},format="json")
+        self.assertEqual(response.status_code,200)
+        category = c.getAllCategories().filter(category_id=2).first()
+        self.assertEqual(category.getCategoryname(),'gaseosas')
+
+    def test_modify_static_category_details(self):
+        webClient = self.client
+        response = webClient.put(
+            '/updateCategoryData/1', {"category_name": 'gaseosas'}, format="json")
+        self.assertEqual(response.status_code,403)
+        category = c.getAllCategories().filter(category_id=1).first()
+        self.assertEqual(category.getCategoryname(), 'bebidas')
+
+    def test_get_all_non_static_categories(self):
+        categories = c.getAllCategories()
+        webClient = self.client
+        response = webClient.get('/getAllNonStaticCategories/1')
+        self.assertEqual(len(response.data), 1)
+
+    def test_delete_non_static_category(self):
+        webClient = self.client
+        response = webClient.delete('/deleteCategory/2')
+        self.assertEqual(response.status_code,200)
+        category = c.getAllCategories().filter(category_id=2).first()
+        self.assertEqual(category, None)
+
+
 
