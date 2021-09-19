@@ -4,7 +4,13 @@ import { showErrorMessage, showSuccessMessage } from "./notificationsReducer";
 const GET_ALL_PRODUCTS_SUCCESS = "GET_ALL_PRODUCTS_SUCCESS";
 
 const SELECT_PRODUCT = "SELECT_PRODUCT";
+const DESELECT_PRODUCT = "DESELECT_PRODUCT";
+
 const SAVE_PRODUCT_SUCCESS = "SAVE_PRODUCT_SUCCESS";
+
+const UPDATE_PRODUCT_SUCCESS = "UPDATE_PRODUCT_SUCCESS";
+
+const DELETE_PRODUCT_SUCCESS = "DELETE_PRODUCT_SUCCESS";
 
 export const getAllProducts = accountId => async dispatch =>
 	await fetcher
@@ -40,14 +46,27 @@ export const selectProduct = product => dispatch =>
 		product,
 	});
 
-export const updateProduct = (productId, data) => async dispatch => {
-	console.log(`updateProductId - ${productId}`);
-	console.log(data);
-};
+export const deselectProduct = () => dispatch => dispatch({ type: DESELECT_PRODUCT });
 
-export const deleteProduct = productId => async dispatch => {
-	console.log(`deleteProductId - ${productId}`);
-};
+export const updateProduct = (productId, data) => async dispatch =>
+	await fetcher
+		.put(`updateProductData/${productId}`, data)
+		.then(() => {
+			dispatch({ type: UPDATE_PRODUCT_SUCCESS });
+			dispatch(showSuccessMessage("El producto se ha actualizado éxitosamente."));
+		})
+		.catch(() =>
+			dispatch(showErrorMessage("No fue posible actualizar los datos del producto. Intente de nuevo."))
+		);
+
+export const deleteProduct = productId => async dispatch =>
+	await fetcher
+		.delete(`deleteProduct/${productId}`)
+		.then(() => {
+			dispatch({ type: DELETE_PRODUCT_SUCCESS });
+			dispatch(showSuccessMessage("El producto se ha borrada éxitosamente."));
+		})
+		.catch(() => dispatch(showErrorMessage("Algo salió mal borrar el producto. Intente de nuevo.")));
 
 // State
 const initialState = {
@@ -68,7 +87,10 @@ const productsReducer = (state = initialState, action) => {
 				...state,
 				selectedProduct: action.product,
 			};
+		case DESELECT_PRODUCT:
 		case SAVE_PRODUCT_SUCCESS:
+		case DELETE_PRODUCT_SUCCESS:
+		case UPDATE_PRODUCT_SUCCESS:
 			return {
 				...state,
 				selectedProduct: null,

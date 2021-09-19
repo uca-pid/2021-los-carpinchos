@@ -54,8 +54,8 @@ const AppDialog = ({
 					<Grid item>
 						<Button
 							onClick={handleSubmit}
-							color="primary"
-							variant="outlined"
+							color="secondary"
+							variant="contained"
 							disabled={submitButtonDisabled}
 						>
 							{submitButtonLabel}

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 
 import DataTable, { ColumnDef } from "../../common/DataTable/DataTable";
-import { Button, Container, Grid, IconButton, Typography } from "@material-ui/core";
+import { Button, Container, Grid, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -11,7 +11,7 @@ import DeleteProductDialog from "./DeleteProductDialog";
 import AddIcon from "@material-ui/icons/Add";
 
 export type Product = {
-	id: string;
+	product_id: string;
 	name: string;
 	price: number;
 };
