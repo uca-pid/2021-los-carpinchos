@@ -92,4 +92,5 @@ def delete_category(request,id):
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
+    else:
+        return Response(status=status.HTTP_403_FORBIDDEN)

@@ -69,7 +69,7 @@ class TestProducts(APITestCase):
         category = c.getAllCategories().filter(category_id=2).first()
         self.assertEqual(category.getCategoryname(),'gaseosas')
 
-    def test_modify_static_category_details(self):
+    def test_modify_static_category_details_throws_exception(self):
         webClient = self.client
         response = webClient.put(
             '/updateCategoryData/1', {"category_name": 'gaseosas'}, format="json")
@@ -89,6 +89,13 @@ class TestProducts(APITestCase):
         self.assertEqual(response.status_code,200)
         category = c.getAllCategories().filter(category_id=2).first()
         self.assertEqual(category, None)
+
+    def test_delete_static_category_throws_exception(self):
+        webClient = self.client
+        response = webClient.delete('/deleteCategory/1')
+        self.assertEqual(response.status_code,403)
+        category = c.getAllCategories().filter(category_id=1).first()
+        self.assertEqual(category.getCategoryname(), 'bebidas')
 
 
 
