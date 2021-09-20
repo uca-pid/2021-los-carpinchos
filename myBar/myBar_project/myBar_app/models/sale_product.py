@@ -7,8 +7,6 @@ from .product import Product
 class Sale_Product(models.Model):
 
     id_sale_product = models.AutoField(primary_key=True)
-    sale = models.ForeignKey(
-        Sale , on_delete=models.CASCADE, default=None)
     product = models.ForeignKey(
         Product , on_delete=models.CASCADE, default=None)
     quantity_of_product = models.IntegerField()
@@ -16,12 +14,7 @@ class Sale_Product(models.Model):
     sales_products = models.Manager()
 
     # getter method
-    def getSale(self):
-        return self.sale
 
-    # setter method
-    def setSale(self, x):
-        self.sale = x
 
     # getter method
     def getQuantity_of_product(self):

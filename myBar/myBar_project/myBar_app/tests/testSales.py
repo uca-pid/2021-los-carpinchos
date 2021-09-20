@@ -4,7 +4,7 @@ from rest_framework.test import APITestCase
 from ..models.user import Mb_user as mb_user
 from ..models.product import Product as p
 from ..models.category import Category as c
-from ..models.sale import Sale as sale
+from ..models.sale import Sale as s
 
 class TestProducts(APITestCase):
 
@@ -33,7 +33,15 @@ class TestProducts(APITestCase):
         category2.full_clean()
         category2.save()
 
+        sale_product1 = sp( product = prodcut1 , quantity_of_product = 3)
+        sale_product2 = sp( product=prodcut2, quantity_of_product=3)
+        sale_product3 = sp( product=prodcut1, quantity_of_product=4)
+        sale_product_list = [sale_product1,sale_product2,sale_product3]
+        sale1 = s(creation_date='12/12/12', account=user, sale_product_array=sale_product_list)
+
+
     def test_sale_creation(self):
-        product = p.products.first()
-        self.assertEqual(product.getName(), 'cafe')
-        self.assertEqual(product.getPrice(), 9)
+        sale = s.sales.first()
+        print(sale.sale_product_array)
+        #self.assertEqual(sale.getSaleId(),1)
+        #self.assertEqual(sale.getCreationDate(),'12/12/12')
