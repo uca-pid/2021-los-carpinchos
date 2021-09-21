@@ -17,27 +17,37 @@ class TestProducts(APITestCase):
                             manager='Toto', password='Pass')
         user2.full_clean()
         user2.save()
-        product = p(name='cafe', price=9, account=user)
-        product.full_clean()
-        product.save()
-        product2 = p(name='coca', price=9, account=user2)
-        product2.full_clean()
-        product2.save()
-        product3 = p(name='coca', price=9, account=user2)
-        product3.full_clean()
-        product3.save()
         category1 = c(category_name='bebidas',static=True,account=user)
         category1.full_clean()
         category1.save()
         category2 = c(category_name='alcohol',static=False,account=user)
         category2.full_clean()
         category2.save()
+        product = p(name='cafe', price=9, account=user, category= category1)
+        product.full_clean()
+        product.save()
+        product2 = p(name='coca', price=9, account=user2 , category = category2)
+        product2.full_clean()
+        product2.save()
+        product3 = p(name='coca', price=9, account=user2, category = category2)
+        product3.full_clean()
+        product3.save()
+
 
 
     def test_category_was_succesfully_saved(self):
         category = c.categories.first()
         self.assertEqual(category.getCategoryname(),'bebidas')
         self.assertEqual(category.getStatic(),True)
+
+    def test_category_creation_endPoint(self):
+
+        user = mb_user.getAllUsers().filter(account_id=1).first()
+        webClient = self.client
+        response = webClient.post(
+            '/createCategory/1', {'category_name': 'Queso' , 'static': False})
+
+        self.assertEqual(response.status_code, 201)
 
     def test_category_creation_fail(self):
         user = mb_user(name='Sofia', email='sofia@gmail.com',
@@ -50,8 +60,9 @@ class TestProducts(APITestCase):
     def test_category_already_exists(self):
         user = mb_user(name='Sofia', email='sofia@gmail.com',
                        manager='Toto', password='Pass')
+
         category = c(category_name='bebidas', static=True,account=user)
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             category.full_clean()
             category.save()
 
@@ -69,7 +80,7 @@ class TestProducts(APITestCase):
         category = c.getAllCategories().filter(category_id=2).first()
         self.assertEqual(category.getCategoryname(),'gaseosas')
 
-    def test_modify_static_category_details(self):
+    def test_modify_static_category_details_throws_exception(self):
         webClient = self.client
         response = webClient.put(
             '/updateCategoryData/1', {"category_name": 'gaseosas'}, format="json")
@@ -89,6 +100,13 @@ class TestProducts(APITestCase):
         self.assertEqual(response.status_code,200)
         category = c.getAllCategories().filter(category_id=2).first()
         self.assertEqual(category, None)
+
+    def test_delete_static_category_throws_exception(self):
+        webClient = self.client
+        response = webClient.delete('/deleteCategory/1')
+        self.assertEqual(response.status_code,403)
+        category = c.getAllCategories().filter(category_id=1).first()
+        self.assertEqual(category.getCategoryname(), 'bebidas')
 
 
 

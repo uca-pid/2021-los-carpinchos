@@ -1,5 +1,6 @@
 from django.db import models
 
+from .category import Category
 from .user import Mb_user
 
 
@@ -9,6 +10,8 @@ class Product(models.Model):
     price = models.FloatField()
     account = models.ForeignKey(
         Mb_user, on_delete=models.CASCADE, default=None)
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, default=None)
 
     products = models.Manager()
 
