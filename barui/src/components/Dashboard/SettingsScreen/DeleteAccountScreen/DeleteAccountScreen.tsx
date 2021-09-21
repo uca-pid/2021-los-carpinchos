@@ -27,7 +27,7 @@ const DeleteAccountScreen = ({ actions, id, email }: Props) => {
 
 	const [password, setPassword] = useState("");
 
-	const handleChangePassword = useCallback((value, _) => setPassword(value), [setPassword]);
+	const handleChangePassword = useCallback(value => setPassword(value), [setPassword]);
 
 	const handleDeleteAccount = useCallback(() => {
 		actions

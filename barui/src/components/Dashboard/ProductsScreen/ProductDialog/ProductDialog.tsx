@@ -10,7 +10,12 @@ import { numericSetting, settings } from "../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { getAllProducts, addNewProduct, updateProduct } from "../../../../ducks/productsReducer";
+import {
+	getAllProducts,
+	addNewProduct,
+	updateProduct,
+	deselectProduct,
+} from "../../../../ducks/productsReducer";
 import { Product } from "../ProductsScreen";
 import CategoryCombo from "../../../common/CategoryCombo";
 
@@ -19,6 +24,7 @@ type Props = {
 		getAllProducts: Function;
 		addNewProduct: Function;
 		updateProduct: Function;
+		deselectProduct: Function;
 	};
 	open: boolean;
 	setOpen: Function;
@@ -72,19 +78,23 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 				name: input.name.value !== selectedProduct.name ? input.name.value : undefined,
 				price: parseFloat(input.price.value) !== selectedProduct.price ? input.price.value : undefined,
 			};
-			actions.updateProduct(selectedProduct.id, data);
+			console.log(selectedProduct);
+			actions
+				.updateProduct(selectedProduct.product_id, data)
+				.then(() => actions.getAllProducts(accountId).then(() => setOpen(false)));
 		}
-	}, [actions, selectedProduct, input]);
+	}, [actions, selectedProduct, input, accountId, setOpen]);
 
-	const handleEnterPress = useCallback(
-		() => !input.price.invalid && !input.name.invalid && addProduct(),
-		[addProduct, input]
+	const handleOnDialogClose = useCallback(
+		() => selectedProduct && actions.deselectProduct(),
+		[actions, selectedProduct]
 	);
 
 	return (
 		<AppDialog
 			open={open}
 			onSubmit={selectedProduct ? updateProduct : addProduct}
+			onDialogClose={handleOnDialogClose}
 			setOpen={setOpen}
 			submitButtonDisabled={
 				input.price.invalid ||
@@ -95,7 +105,7 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 						String(selectedProduct.price) === input.price.value
 				)
 			}
-			submitButtonLabel="Agregar"
+			submitButtonLabel={selectedProduct ? "Actualizar" : "Crear"}
 			title="Producto Nuevo"
 		>
 			<Grid container direction="column" spacing={2}>
@@ -120,7 +130,6 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 						placeholder="Ingresar precio del producto"
 						value={input.price.value}
 						onChange={handleChangePrice}
-						onEnterPress={handleEnterPress}
 						required
 						InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
 						settings={[...settings, numericSetting]}
@@ -149,7 +158,10 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({ addNewProduct, getAllProducts, updateProduct }, dispatch),
+	actions: bindActionCreators(
+		{ addNewProduct, getAllProducts, updateProduct, deselectProduct },
+		dispatch
+	),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductDialog);
