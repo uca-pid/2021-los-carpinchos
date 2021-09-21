@@ -50,8 +50,9 @@ class TestProducts(APITestCase):
     def test_category_already_exists(self):
         user = mb_user(name='Sofia', email='sofia@gmail.com',
                        manager='Toto', password='Pass')
+
         category = c(category_name='bebidas', static=True,account=user)
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             category.full_clean()
             category.save()
 

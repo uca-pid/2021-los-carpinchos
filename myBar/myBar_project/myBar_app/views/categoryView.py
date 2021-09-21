@@ -39,7 +39,7 @@ def category_creation(request):
         category.save()
         return Response( status=status.HTTP_201_CREATED)
     except Exception as e:
-        if str(e) == "El usuario ya existe":
+        if str(e) == "La categoria ya existe":
             return Response(status=status.HTTP_409_CONFLICT)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)

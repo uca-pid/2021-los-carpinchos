@@ -1,14 +1,11 @@
 from django.db import models
 
 from .user import Mb_user
-from .sale_product import Sale_Product
 
 
 class Sale(models.Model):
     sale_id = models.AutoField(primary_key=True)
     creation_date = models.CharField(max_length=20)
-    sale_product_array = models.ForeignKey(
-        Sale_Product, on_delete=models.CASCADE, default=None)
     account = models.ForeignKey(
         Mb_user, on_delete=models.CASCADE, default=None)
 
