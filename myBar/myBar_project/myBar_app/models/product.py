@@ -19,17 +19,10 @@ class Product(models.Model):
     def getName(self):
         return self.name
 
-    # setter method
-    def setName(self, x):
-        self.name = x
-
     # getter method
     def getPrice(self):
         return self.price
 
-    # setter method
-    def setPrice(self, x):
-        self.price = x
 
     @classmethod
     def getAllProducts(cls):

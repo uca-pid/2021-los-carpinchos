@@ -10,37 +10,23 @@ class Mb_user(models.Model):
     password = models.CharField(max_length=256)
     users = models.Manager()
 
+    def getId(self):
+        return self.account_id
     # getter method
     def getName(self):
         return self.name
-
-    # setter method
-    def setName(self, x):
-        self.name = x
 
     # getter method
     def getEmail(self):
         return self.email
 
-    # setter method
-    def setEmail(self, x):
-        self.email = x
-
     # getter method
     def getManager(self):
         return self.manager
 
-    # setter method
-    def setManager(self, x):
-        self.manager = x
-
     # getter method
     def getPassword(self):
         return self.password
-
-    # setter method
-    def setPassword(self, x):
-        self.password = x
 
     @classmethod
     def getAllUsers(cls):
