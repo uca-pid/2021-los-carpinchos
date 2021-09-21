@@ -8,7 +8,7 @@ class Category(models.Model):
     category_name = models.CharField(max_length=40)
     static = models.BooleanField()
     account = models.ForeignKey(
-        Mb_user, on_delete=models.CASCADE, default=None)
+        Mb_user, on_delete=models.CASCADE, default=None, blank=True , null=True)
 
     categories = models.Manager()
 
