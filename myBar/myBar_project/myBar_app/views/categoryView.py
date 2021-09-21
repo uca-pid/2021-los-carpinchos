@@ -32,9 +32,12 @@ def index(request):
 
 
 @api_view(['POST'])
-def category_creation(request):
+def category_creation(request, accountid):
     try:
-        category = Category(**request.data)
+        account = Mb_user.getAllUsers().filter(
+            account_id=accountid).first()
+        category = Category(**{'category_name': request.data.get('category_name'),'static': request.data.get('static'),
+                              'account': account})
         category.full_clean()
         category.save()
         return Response( status=status.HTTP_201_CREATED)
@@ -70,7 +73,6 @@ def get_all_non_static_categories(request, accountid):
 def update_category_details(request, id):
     category = Category.categories.filter(category_id=id)
     category_found = category.first()
-    print(category_found)
     if category_found and category_found.static == False:
         try:
             category_found = category_found.modifyCategory(**(request.data))
@@ -85,7 +87,6 @@ def update_category_details(request, id):
 @api_view(['DELETE'])
 def delete_category(request,id):
     category = Category.getAllCategories().filter(category_id=id).first()
-    print(category.static)
     if category.static == False:
         try:
             Category.delete(id)
