@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 import DataTable, { ColumnDef } from "../../common/DataTable/DataTable";
 import { Button, Container, Grid, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
+import { getSales } from "../../../ducks/salesReducer";
 
 // import ProductDialog from "./ProductDialog";
 // import DeleteProductDialog from "./DeleteProductDialog";
@@ -15,11 +16,14 @@ export type Sale = {
 };
 
 type Props = {
-	actions: {};
+	actions: {
+		getSales: Function;
+	};
+	accountId: number;
 	sales: Sale[];
 };
 
-const ProductsScreen = ({ actions, sales = [] }: Props) => {
+const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 	const [open, setOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -29,6 +33,10 @@ const ProductsScreen = ({ actions, sales = [] }: Props) => {
 			propName: (row: Sale) => `Venta #${row.id}`,
 		},
 	];
+
+	useEffect(() => {
+		accountId && actions.getSales(accountId);
+	}, [actions, accountId]);
 
 	const handleOpenDialog = useCallback(() => setOpen(true), [setOpen]);
 
@@ -86,17 +94,23 @@ const ProductsScreen = ({ actions, sales = [] }: Props) => {
 };
 
 type State = {
+	session: {
+		accountData: {
+			id: number;
+		};
+	};
 	sales: {
 		userSales: Sale[];
 	};
 };
 
 const mapStateToProps = (state: State) => ({
+	accountId: state.session.accountData.id,
 	sales: state?.sales?.userSales,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({}, dispatch),
+	actions: bindActionCreators({ getSales }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductsScreen);
