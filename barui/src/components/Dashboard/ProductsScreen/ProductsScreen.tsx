@@ -25,7 +25,7 @@ type Props = {
 	products: Product[];
 };
 
-const ProductsScreen = ({ actions, products }: Props) => {
+const ProductsScreen = ({ actions, products = [] }: Props) => {
 	const [open, setOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 

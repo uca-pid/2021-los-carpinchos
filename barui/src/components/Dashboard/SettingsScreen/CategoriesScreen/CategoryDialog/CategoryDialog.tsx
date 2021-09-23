@@ -63,7 +63,7 @@ const CategoryDialog = ({ actions, accountId, open, setOpen, selectedCategory }:
 				setOpen(false);
 			});
 		});
-	}, [selectedCategory, actions, accountId, setOpen, input]);
+	}, [actions, accountId, setOpen, input]);
 
 	const updateProduct = useCallback(() => {
 		if (selectedCategory) {
@@ -74,7 +74,7 @@ const CategoryDialog = ({ actions, accountId, open, setOpen, selectedCategory }:
 				.updateCategory(selectedCategory.id, data)
 				.then(() => actions.getUserCategories(accountId).then(() => setOpen(false)));
 		}
-	}, [selectedCategory, actions, setOpen, input]);
+	}, [selectedCategory, actions, setOpen, input, accountId]);
 
 	const handleOnDialogClose = useCallback(
 		() => selectedCategory && actions.deselectCategory(),
