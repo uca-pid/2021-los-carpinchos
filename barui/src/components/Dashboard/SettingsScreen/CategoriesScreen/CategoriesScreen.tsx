@@ -3,8 +3,6 @@ import React, { useState, useCallback, useEffect } from "react";
 import { Button, Container, Grid, Typography } from "@material-ui/core";
 import DataTable, { ColumnDef } from "../../../common/DataTable/DataTable";
 
-import { useHistory } from "react-router-dom";
-
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { selectCategory, getUserCategories } from "../../../../ducks/categoriesReducer";
@@ -35,25 +33,25 @@ const CategoriesScreen = ({ actions, accountId, userCategories }: Props) => {
 	];
 
 	useEffect(() => {
-		actions.getUserCategories(accountId);
-	}, [accountId]);
+		accountId && actions.getUserCategories(accountId);
+	}, [actions, accountId]);
 
 	const handleOpenDialog = useCallback(() => setOpen(true), [setOpen]);
 
 	const handleEditRow = useCallback(
-		product => {
-			actions.selectCategory(product);
+		category => {
+			actions.selectCategory(category);
 			setOpen(true);
 		},
 		[actions, setOpen]
 	);
 
 	const handleDeleteRow = useCallback(
-		product => {
-			actions.selectCategory(product);
+		category => {
+			actions.selectCategory(category);
 			setDeleteOpen(true);
 		},
-		[actions]
+		[actions, setDeleteOpen]
 	);
 
 	return (
@@ -86,6 +84,7 @@ const CategoriesScreen = ({ actions, accountId, userCategories }: Props) => {
 						data={userCategories}
 						onEditRow={handleEditRow}
 						onDeleteRow={handleDeleteRow}
+						variant="outlined"
 					/>
 				</Grid>
 			</Grid>
