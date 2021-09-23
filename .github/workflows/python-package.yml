@@ -28,8 +28,8 @@ jobs:
         pip install -r ./myBar/requirements.txt
         pip install coverage 
         pip install coveralls
-  - name: Run migrations
-       run: |
+    - name: Run migrations
+      run: |
          cd myBar
          cd myBar_project
          python manage.py migrate
