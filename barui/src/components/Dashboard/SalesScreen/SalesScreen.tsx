@@ -14,6 +14,7 @@ import { GridColDef } from "@mui/x-data-grid";
 
 export type Sale = {
 	id: string;
+	date: Date;
 };
 
 type Props = {
@@ -28,7 +29,10 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 	const [open, setOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
-	const columns: GridColDef[] = [{ field: "name", headerName: "Nombre", flex: 1 }];
+	const columns: GridColDef[] = [
+		{ field: "name", headerName: "Nombre", flex: 1 },
+		{ field: "date", headerName: "Fecha", flex: 1 },
+	];
 
 	useEffect(() => {
 		accountId && actions.getSales(accountId);
@@ -82,6 +86,7 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 						rows={sales.map(s => ({
 							id: s.id,
 							name: `Venta #${s.id}`,
+							date: s.date,
 							actions: s,
 						}))}
 						onEditRow={handleEditRow}
