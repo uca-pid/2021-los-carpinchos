@@ -41,7 +41,6 @@ class TestProducts(APITestCase):
         self.assertEqual(category.getStatic(),True)
 
     def test_category_creation_endPoint(self):
-
         user = mb_user.getAllUsers().filter(account_id=1).first()
         webClient = self.client
         response = webClient.post(
@@ -53,6 +52,13 @@ class TestProducts(APITestCase):
         user = mb_user(name='Sofia', email='sofia@gmail.com',
                        manager='Toto', password='Pass')
         category = c(category_name='',static=False,account=user)
+        with self.assertRaises(ValidationError):
+            category.full_clean()
+            category.save()
+    def test_category_creation_fail_with_no_accout(self):
+        user = mb_user(name='Sofia', email='sofia@gmail.com',
+                       manager='Toto', password='Pass')
+        category = c(category_name='helado',static='hola', account = user)
         with self.assertRaises(ValidationError):
             category.full_clean()
             category.save()
