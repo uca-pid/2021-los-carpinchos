@@ -30,6 +30,7 @@ jobs:
       run: |
         cd myBar
         cd myBar_project
+        python manage.py makemigrations
         python manage.py migrate
     - name: Run tests
       run: |
