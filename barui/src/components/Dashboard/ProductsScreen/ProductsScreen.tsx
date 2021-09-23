@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 
 import DataTable, { ColumnDef } from "../../common/DataTable/DataTable";
-import { Button, Container, Grid, IconButton, Typography } from "@material-ui/core";
+import { Button, Container, Grid, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -9,11 +9,13 @@ import { selectProduct } from "../../../ducks/productsReducer";
 import ProductDialog from "./ProductDialog";
 import DeleteProductDialog from "./DeleteProductDialog";
 import AddIcon from "@material-ui/icons/Add";
+import { Category } from "../../common/CategoryCombo/CategoryCombo";
 
 export type Product = {
 	id: string;
 	name: string;
 	price: number;
+	category: Category;
 };
 
 type Props = {
@@ -23,18 +25,23 @@ type Props = {
 	products: Product[];
 };
 
-const ProductsScreen = ({ actions, products }: Props) => {
+const ProductsScreen = ({ actions, products = [] }: Props) => {
 	const [open, setOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
 	const columnsDef: ColumnDef[] = [
 		{
 			title: "Nombre",
-			propName: "name",
+			propName: (row: Product) => row.name,
 		},
 		{
 			title: "Precio ($)",
-			propName: "price",
+			propName: (row: Product) => row.price,
+			align: "right",
+		},
+		{
+			title: "Categoría",
+			propName: (row: Product) => row.category.name,
 			align: "right",
 		},
 	];

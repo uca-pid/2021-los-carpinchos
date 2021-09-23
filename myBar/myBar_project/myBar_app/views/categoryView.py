@@ -30,11 +30,11 @@ def category_creation(request, accountid):
     try:
         account = Mb_user.getAllUsers().filter(
             account_id=accountid).first()
-        category = Category(**{'category_name': request.data.get('category_name'),'static': request.data.get('static'),
-                              'account': account})
+        category = Category(**{'category_name': request.data.get('name'),
+                            'static': False, 'account': account})
         category.full_clean()
         category.save()
-        return Response( status=status.HTTP_201_CREATED)
+        return Response({'category_id': category.category_id, 'category_name': category.category_name, 'static': category.static}, status=status.HTTP_201_CREATED)
     except Exception as e:
         if str(e) == "La categoria ya existe":
             return Response(status=status.HTTP_409_CONFLICT)
@@ -42,17 +42,17 @@ def category_creation(request, accountid):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-def get_all_static_categories(request, accountid):
+@ api_view(['GET'])
+def get_all_static_categories(request):
     try:
-        category = Category.categories.filter(account_id=accountid)
-        staticCategory = category.filter(static=True)
+        staticCategory = Category.categories.filter(static=True)
         return Response(staticCategory.values(), status=status.HTTP_200_OK)
     except Exception as e:
         if str(e) == "La cuenta no tiene categorias creadas":
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET'])
+
+@ api_view(['GET'])
 def get_all_non_static_categories(request, accountid):
     try:
         category = Category.categories.filter(account_id=accountid)
@@ -63,7 +63,7 @@ def get_all_non_static_categories(request, accountid):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['PUT'])
+@ api_view(['PUT'])
 def update_category_details(request, id):
     category = Category.categories.filter(category_id=id)
     category_found = category.first()
@@ -78,8 +78,9 @@ def update_category_details(request, id):
     else:
         return Response(status=status.HTTP_403_FORBIDDEN)
 
-@api_view(['DELETE'])
-def delete_category(request,id):
+
+@ api_view(['DELETE'])
+def delete_category(request, id):
     category = Category.getAllCategories().filter(category_id=id).first()
     if category.static == False:
         try:

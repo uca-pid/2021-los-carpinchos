@@ -13,7 +13,7 @@ import DataTableRow from "./DataTableRow";
 
 export type ColumnDef = {
 	title: string;
-	propName: string;
+	propName: Function;
 	align?: "left" | "right" | "inherit" | "center" | "justify";
 };
 
@@ -22,14 +22,15 @@ type Props = {
 	columnsDef: ColumnDef[];
 	onEditRow?: Function;
 	onDeleteRow?: Function;
+	variant?: "outlined" | "elevation";
 };
 
-const DataTable = ({ columnsDef, data, onEditRow, onDeleteRow }: Props) => {
+const DataTable = ({ columnsDef, data, onEditRow, onDeleteRow, variant }: Props) => {
 	const classes = styles();
 
 	return (
-		<TableContainer component={Paper}>
-			<Table className={classes.table} aria-label="simple table">
+		<TableContainer component={Paper} variant={variant}>
+			<Table className={classes.table}>
 				<TableHead>
 					<TableRow>
 						{columnsDef.map((def: ColumnDef, key: number) => (

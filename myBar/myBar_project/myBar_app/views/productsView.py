@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from ..models.user import Mb_user
 from ..models.product import Product
+from ..models.category import Category
 
 
 productName = openapi.Schema(title='productName', type=openapi.TYPE_STRING)
@@ -20,7 +21,8 @@ accountId = openapi.Schema(title='price', type=openapi.TYPE_INTEGER)
 def get_all_products(request, accountid):
     product = Product.products.filter(account_id=accountid)
 
-    return Response(product.values(), status=status.HTTP_200_OK)
+    return Response(product.values('product_id', 'name', 'price', 'account_id',  'category__category_id',
+                                   'category__category_name', 'category__static'), status=status.HTTP_200_OK)
 
 
 @swagger_auto_schema(method='post',
@@ -39,8 +41,11 @@ def register_product(request):
         account = Mb_user.getAllUsers().filter(
             account_id=request.data.get('accountId')).first()
 
+        category = Category.getAllCategories().filter(
+            category_id=request.data.get('categoryId')).first()
+
         product = Product(**{'name': request.data.get('name'),
-                          'price': request.data.get('price'), 'account': account})
+                          'price': request.data.get('price'), 'account': account, 'category': category})
 
         product.save()
         return Response(status=status.HTTP_201_CREATED)
@@ -49,6 +54,8 @@ def register_product(request):
             return Response(status=status.HTTP_409_CONFLICT)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['PUT'])
 def update_product_details(request, id):
     product = Product.products.filter(product_id=id)
@@ -56,14 +63,18 @@ def update_product_details(request, id):
     if product_found:
         try:
             product_found = product_found.modifyProduct(**(request.data))
+            if request.data.get('categoryId'):
+                category = Category.getAllCategories().filter(category_id=request.data.get('categoryId')).first()
+                product_found.setCategory(category)
             product_found.full_clean()
             product_found.save()
-            return Response({'name': product_found.name, 'price': product_found.price , 'product_id': product_found.product_id},
+            return Response({'name': product_found.name, 'price': product_found.price, 'id': product_found.product_id},
                             status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['DELETE'])
 def delete_product(request, id):

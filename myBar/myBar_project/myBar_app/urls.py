@@ -2,7 +2,7 @@ from django.urls import path
 from .views import userView
 from .views import productsView
 from .views import categoryView
-from .views import saleView
+#from .views import saleView
 
 
 urlpatterns = [
@@ -14,8 +14,7 @@ urlpatterns = [
     path('accountDetails/<int:id>',  userView.get_user_details, name='get_user_details'),
     path('deleteAccount/<int:id>', userView.delete_user, name='delete_user'),
     # reset password
-    path('requestPasswordReestablishment', userView.allow_password_reestablishment,
-         name='allow_password_reestablishment'),
+    path('requestPasswordReestablishment', userView.allow_password_reestablishment, name='allow_password_reestablishment'),
     path('validateCode', userView.validate_code, name='reestablish_password'),
     path('resetPassword', userView.reestablish_password, name='reestablish_password'),
     # product
@@ -25,7 +24,7 @@ urlpatterns = [
     path('deleteProduct/<int:id>', productsView.delete_product, name='delete_product'),
     # Category
     path('createCategory/<int:accountid>', categoryView.category_creation, name='category_creation'),
-    path('getAllStaticCategories/<int:accountid>', categoryView.get_all_static_categories, name='get_all_static_categories'),
+    path('getAllStaticCategories', categoryView.get_all_static_categories, name='get_all_static_categories'),
     path('getAllNonStaticCategories/<int:accountid>', categoryView.get_all_non_static_categories, name='get_all_non_static_categories'),
     path('updateCategoryData/<int:id>', categoryView.update_category_details, name='update_category_details'),
     path('deleteCategory/<int:id>', categoryView.delete_category, name='delete_category'),
@@ -34,7 +33,4 @@ urlpatterns = [
     path('getAllSales/<int:accountid>', saleView.get_all_sales, name='get_all_sales'),
     path('updateSaleData/<int:sale_id>', saleView.update_sale_details, name='update_sale_details'),
     path('deleteSale/<int:sale_id>', saleView.delete_sale, name='delete_sale'),
-
-
-
 ]
