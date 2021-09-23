@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 
-import DataTable, { ColumnDef } from "../../common/DataTable/DataTable";
+import DataTable from "../../common/DataTable";
 import { Button, Container, Grid, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
@@ -10,6 +10,8 @@ import ProductDialog from "./ProductDialog";
 import DeleteProductDialog from "./DeleteProductDialog";
 import AddIcon from "@material-ui/icons/Add";
 import { Category } from "../../common/CategoryCombo/CategoryCombo";
+
+import { GridColDef } from "@mui/x-data-grid";
 
 export type Product = {
 	id: string;
@@ -29,21 +31,10 @@ const ProductsScreen = ({ actions, products = [] }: Props) => {
 	const [open, setOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
-	const columnsDef: ColumnDef[] = [
-		{
-			title: "Nombre",
-			propName: (row: Product) => row.name,
-		},
-		{
-			title: "Precio ($)",
-			propName: (row: Product) => row.price,
-			align: "right",
-		},
-		{
-			title: "Categoría",
-			propName: (row: Product) => row.category.name,
-			align: "right",
-		},
+	const columns: GridColDef[] = [
+		{ field: "name", headerName: "Nombre", flex: 1 },
+		{ field: "price", headerName: "Precio", flex: 1 },
+		{ field: "category", headerName: "Categoría", flex: 1 },
 	];
 
 	const handleOpenDialog = useCallback(() => setOpen(true), [setOpen]);
@@ -90,8 +81,14 @@ const ProductsScreen = ({ actions, products = [] }: Props) => {
 				</Grid>
 				<Grid item>
 					<DataTable
-						columnsDef={columnsDef}
-						data={products}
+						columns={columns}
+						rows={products.map(p => ({
+							id: p.id,
+							name: p.name,
+							price: p.price,
+							category: p.category.name,
+							actions: p,
+						}))}
 						onEditRow={handleEditRow}
 						onDeleteRow={handleDeleteRow}
 					/>

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 
 import { Button, Container, Grid, Typography } from "@material-ui/core";
-import DataTable, { ColumnDef } from "../../../common/DataTable/DataTable";
+import DataTable from "../../../common/DataTable";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -11,6 +11,7 @@ import AddIcon from "@material-ui/icons/Add";
 import { Category } from "../../../common/CategoryCombo/CategoryCombo";
 import DeleteCategoryDialog from "./DeleteCategoryDialog/DeleteCategoryDialog";
 import CategoryDialog from "./CategoryDialog";
+import { GridColDef } from "@mui/x-data-grid";
 
 type Props = {
 	actions: {
@@ -25,12 +26,7 @@ const CategoriesScreen = ({ actions, accountId, userCategories }: Props) => {
 	const [open, setOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
-	const columnsDef: ColumnDef[] = [
-		{
-			title: "Nombre",
-			propName: (row: Category) => row.name,
-		},
-	];
+	const columns: GridColDef[] = [{ field: "name", headerName: "Nombre", flex: 1 }];
 
 	useEffect(() => {
 		accountId && actions.getUserCategories(accountId);
@@ -80,11 +76,14 @@ const CategoriesScreen = ({ actions, accountId, userCategories }: Props) => {
 				</Grid>
 				<Grid item>
 					<DataTable
-						columnsDef={columnsDef}
-						data={userCategories}
+						columns={columns}
+						rows={userCategories.map(c => ({
+							id: c.id,
+							name: c.name,
+							actions: c,
+						}))}
 						onEditRow={handleEditRow}
 						onDeleteRow={handleDeleteRow}
-						variant="outlined"
 					/>
 				</Grid>
 			</Grid>

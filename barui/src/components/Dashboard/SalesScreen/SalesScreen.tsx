@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 
-import DataTable, { ColumnDef } from "../../common/DataTable/DataTable";
+import DataTable from "../../common/DataTable";
 import { Button, Container, Grid, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
@@ -10,6 +10,7 @@ import { getSales } from "../../../ducks/salesReducer";
 // import ProductDialog from "./ProductDialog";
 // import DeleteProductDialog from "./DeleteProductDialog";
 import AddIcon from "@material-ui/icons/Add";
+import { GridColDef } from "@mui/x-data-grid";
 
 export type Sale = {
 	id: string;
@@ -27,12 +28,7 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 	const [open, setOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
-	const columnsDef: ColumnDef[] = [
-		{
-			title: "Venta Nro",
-			propName: (row: Sale) => `Venta #${row.id}`,
-		},
-	];
+	const columns: GridColDef[] = [{ field: "name", headerName: "Nombre", flex: 1 }];
 
 	useEffect(() => {
 		accountId && actions.getSales(accountId);
@@ -82,8 +78,12 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 				</Grid>
 				<Grid item>
 					<DataTable
-						columnsDef={columnsDef}
-						data={sales}
+						columns={columns}
+						rows={sales.map(s => ({
+							id: s.id,
+							name: `Venta #${s.id}`,
+							actions: s,
+						}))}
 						onEditRow={handleEditRow}
 						onDeleteRow={handleDeleteRow}
 					/>
