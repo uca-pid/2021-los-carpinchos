@@ -29,7 +29,7 @@ const DeleteCategoryDialog = ({ actions, accountId, open, setOpen, selectedCateg
 			actions
 				.deleteCategory(selectedCategory.id)
 				.then(() => actions.getUserCategories(accountId).then(() => setOpen(false)));
-	}, [actions, selectedCategory, setOpen]);
+	}, [actions, selectedCategory, setOpen, accountId]);
 
 	const handleOnDialogClose = useCallback(
 		() => selectedCategory && actions.deselectCategory(),

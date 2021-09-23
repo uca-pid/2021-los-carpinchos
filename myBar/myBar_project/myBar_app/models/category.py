@@ -16,17 +16,9 @@ class Category(models.Model):
     def getCategoryname(self):
         return self.category_name
 
-    # setter method
-    def setCategoryName(self, x):
-        self.category_name = x
-
     # getter method
     def getStatic(self):
         return self.static
-
-    # setter method
-    def setStatic(self, x):
-        self.static = x
 
     @classmethod
     def getAllCategories(cls):

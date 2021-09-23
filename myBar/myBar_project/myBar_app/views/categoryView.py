@@ -1,19 +1,12 @@
-from django.core.mail import send_mail
-from django.shortcuts import render
 
 # Create your views here.
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import HttpResponse
-
-from ..models.securityCode import SecurityCode
 from ..models.user import Mb_user
 from ..models.category import Category
-# from ...myBar_project.settings import
-import json
 
 import myBar_project
 

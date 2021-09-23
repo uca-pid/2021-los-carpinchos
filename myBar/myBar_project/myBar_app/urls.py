@@ -2,7 +2,7 @@ from django.urls import path
 from .views import userView
 from .views import productsView
 from .views import categoryView
-#from .views import saleView
+from .views import saleView
 
 
 urlpatterns = [
@@ -31,7 +31,8 @@ urlpatterns = [
     path('updateCategoryData/<int:id>', categoryView.update_category_details, name='update_category_details'),
     path('deleteCategory/<int:id>', categoryView.delete_category, name='delete_category'),
     # Sale
-    #path('createSale', saleView.create_sale, name='sale_creation'),
-
-
+    path('createSale/<int:accountId>', saleView.create_sale, name='sale_creation'),
+    path('getAllSales/<int:accountid>', saleView.get_all_sales, name='get_all_sales'),
+    path('updateSaleData/<int:sale_id>', saleView.update_sale_details, name='update_sale_details'),
+    path('deleteSale/<int:sale_id>', saleView.delete_sale, name='delete_sale'),
 ]

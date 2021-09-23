@@ -14,29 +14,16 @@ class Sale(models.Model):
     def getSaleId(self):
         return self.sale_id
 
-    # setter method
-    def setSaleId(self, x):
-        self.sale_id = x
-
     # getter method
     def getCreationDate(self):
         return self.creation_date
 
-    # setter method
-    def setCreationDate(self, x):
-        self.creation_date = x
-
-    # getter method
-    def getSaleProductArray(self):
-        return self.sale_product_array
-
-    # setter method
-    def setSaleProductArray(self, x):
-        self.sale_product_array = x
-
+    @classmethod
+    def getAllSales(cls):
+        return cls.sales.filter()
     @classmethod
     def delete(cls, id):
-        sale = cls.sales_products.filter(sale_id=id)
+        sale = cls.sales.filter(sale_id=id)
         if len(sale) == 0:
             raise Exception("..")
         else:
