@@ -5,7 +5,7 @@ import { ValidationSetting } from "../../SignUp/validationSettings";
 import TextField from "@material-ui/core/TextField";
 
 export type TextFieldWithValidationProps = {
-	className: string;
+	className?: string;
 	label: string;
 	placeholder: string;
 	value: string;

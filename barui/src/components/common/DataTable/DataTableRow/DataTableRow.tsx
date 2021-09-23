@@ -24,7 +24,7 @@ const DataTableRow = ({ columnsDef, row, onEditRow, onDeleteRow }: Props) => {
 		<TableRow>
 			{columnsDef.map((def: ColumnDef, key: number) => (
 				<TableCell align={def.align} key={`cell-${key}}`}>
-					{row[def.propName]}
+					{def.propName(row)}
 				</TableCell>
 			))}
 			<TableCell align="right">

@@ -18,19 +18,29 @@ export const getAllProducts = accountId => async dispatch =>
 		.then(response =>
 			dispatch({
 				type: GET_ALL_PRODUCTS_SUCCESS,
-				products: response,
+				products: response.map(prod => ({
+					id: prod.product_id,
+					name: prod.name,
+					price: prod.price,
+					category: {
+						id: prod.category__category_id,
+						name: prod.category__category_name,
+						static: prod.category__static,
+					},
+				})),
 			})
 		)
 		.catch(() => {
 			dispatch(showErrorMessage("No se pudieron obtener los productos. Intente de nuevo."));
 		});
 
-export const addNewProduct = (name, price, accountId) => async dispatch =>
+export const addNewProduct = (name, price, categoryId, accountId) => async dispatch =>
 	await fetcher
 		.post("addNewProduct", {
 			name,
 			price,
 			accountId,
+			categoryId,
 		})
 		.then(() => {
 			dispatch({ type: SAVE_PRODUCT_SUCCESS });

@@ -25,7 +25,7 @@ const DeleteProductDialog = ({ actions, accountId, open, setOpen, selectedProduc
 		() =>
 			selectedProduct &&
 			actions
-				.deleteProduct(selectedProduct.product_id)
+				.deleteProduct(selectedProduct.id)
 				.then(() => actions.getAllProducts(accountId).then(() => setOpen(false))),
 		[actions, selectedProduct, accountId, setOpen]
 	);
