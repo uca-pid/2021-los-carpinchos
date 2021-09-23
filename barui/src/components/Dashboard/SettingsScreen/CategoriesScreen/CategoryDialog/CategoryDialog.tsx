@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
 
-import { Grid, InputAdornment } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import AppDialog from "../../../../common/AppDialog";
 
 import TextFieldWithValidation from "../../../../common/TextFieldWithValidation";
 
-// import styles from "./styles";
-import { numericSetting, settings } from "../../../../SignUp/validationSettings";
+import styles from "./styles";
+import { settings } from "../../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -36,7 +36,7 @@ const CategoryDialog = ({ actions, accountId, open, setOpen, selectedCategory }:
 		name: { invalid: true, value: "" },
 	});
 
-	// const classes = styles();
+	const classes = styles();
 
 	useEffect(() => {
 		setInput({
@@ -44,43 +44,37 @@ const CategoryDialog = ({ actions, accountId, open, setOpen, selectedCategory }:
 		});
 	}, [open, accountId, setInput]);
 
+	useEffect(() => {
+		if (selectedCategory) {
+			setInput({
+				name: { invalid: false, value: selectedCategory.name },
+			});
+		}
+	}, [selectedCategory, setInput]);
+
 	const handleChangeName = useCallback(
 		(value, invalid) => setInput(prev => ({ ...prev, name: { value, invalid } })),
 		[setInput]
 	);
 
 	const addProduct = useCallback(() => {
-		// selectedCategory &&
-		// 	actions
-		// 		.addNewProduct(
-		// 			input.name.value,
-		// 			parseFloat(input.price.value),
-		// 			selectedCategory.category_id,
-		// 			accountId
-		// 		)
-		// 		.then(() => {
-		// 			actions.getAllProducts(accountId).then(() => {
-		// 				setOpen(false);
-		// 			});
-		// 		});
-	}, []);
+		actions.addNewCategory(input.name.value, accountId).then(() => {
+			actions.getUserCategories(accountId).then(() => {
+				setOpen(false);
+			});
+		});
+	}, [selectedCategory, actions, accountId, setOpen, input]);
 
 	const updateProduct = useCallback(() => {
-		// if (selectedProduct) {
-		// 	const data = {
-		// 		name: input.name.value !== selectedProduct.name ? input.name.value : undefined,
-		// 		price: parseFloat(input.price.value) !== selectedProduct.price ? input.price.value : undefined,
-		// 		category:
-		// 			selectedCategory?.category_id != selectedProduct.category_id
-		// 				? selectedCategory?.category_id
-		// 				: undefined,
-		// 	};
-		// 	console.log(selectedProduct);
-		// 	actions
-		// 		.updateProduct(selectedProduct.product_id, data)
-		// 		.then(() => actions.getAllProducts(accountId).then(() => setOpen(false)));
-		// }
-	}, []);
+		if (selectedCategory) {
+			const data = {
+				category_name: input.name.value !== selectedCategory.name ? input.name.value : undefined,
+			};
+			actions
+				.updateCategory(selectedCategory.id, data)
+				.then(() => actions.getUserCategories(accountId).then(() => setOpen(false)));
+		}
+	}, [selectedCategory, actions, setOpen, input]);
 
 	const handleOnDialogClose = useCallback(
 		() => selectedCategory && actions.deselectCategory(),
@@ -97,12 +91,12 @@ const CategoryDialog = ({ actions, accountId, open, setOpen, selectedCategory }:
 				input.name.invalid || Boolean(selectedCategory && selectedCategory.name === input.name.value)
 			}
 			submitButtonLabel={selectedCategory ? "Actualizar" : "Crear"}
-			title="Cat Nuevo"
+			title={selectedCategory ? "Categoría" : "Categoría Nueva"}
 		>
 			<Grid container direction="column" spacing={2}>
 				<Grid item xs>
 					<TextFieldWithValidation
-						// className={classes.textField}
+						className={classes.textField}
 						label="Nombre de la categoía"
 						placeholder="Ingresar nombre del categoría"
 						value={input.name.value}

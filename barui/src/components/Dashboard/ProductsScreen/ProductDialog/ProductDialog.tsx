@@ -118,7 +118,7 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 				selectedCategory === null
 			}
 			submitButtonLabel={selectedProduct ? "Actualizar" : "Crear"}
-			title="Producto Nuevo"
+			title={selectedProduct ? "Producto" : "Producto Nuevo"}
 		>
 			<Grid container direction="column" spacing={2}>
 				<Grid item xs>

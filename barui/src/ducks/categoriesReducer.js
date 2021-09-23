@@ -111,7 +111,7 @@ const categoriesReducer = (state = initialState, action) => {
 		case SELECT_CATEGORY:
 			return {
 				...state,
-				selectedCategory: action.product,
+				selectedCategory: action.category,
 			};
 		case DESELECT_CATEGORY:
 		case SAVE_CATEGORY_SUCCESS:

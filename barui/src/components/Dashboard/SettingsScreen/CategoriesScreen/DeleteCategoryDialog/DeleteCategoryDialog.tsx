@@ -6,25 +6,34 @@ import { Typography } from "@material-ui/core";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { Category } from "../../../../common/CategoryCombo/CategoryCombo";
+import {
+	deleteCategory,
+	getUserCategories,
+	deselectCategory,
+} from "../../../../../ducks/categoriesReducer";
 
 type Props = {
+	actions: {
+		deleteCategory: Function;
+		getUserCategories: Function;
+		deselectCategory: Function;
+	};
 	accountId: number;
 	open: boolean;
 	setOpen: Function;
-	selectedCategoy?: Category;
+	selectedCategory?: Category;
 };
-const DeleteCategoryDialog = ({ accountId, open, setOpen, selectedCategoy }: Props) => {
-	const deleteCategory = useCallback(
-		() => selectedCategoy && console.log("selectedCategoy delete"),
-		// actions
-		// 	.deleteProduct(selectedProduct.product_id)
-		// 	.then(() => actions.getAllProducts(accountId).then(() => setOpen(false))),
-		[selectedCategoy, accountId, setOpen]
-	);
+const DeleteCategoryDialog = ({ actions, accountId, open, setOpen, selectedCategory }: Props) => {
+	const deleteCategory = useCallback(() => {
+		selectedCategory &&
+			actions
+				.deleteCategory(selectedCategory.id)
+				.then(() => actions.getUserCategories(accountId).then(() => setOpen(false)));
+	}, [actions, selectedCategory, setOpen]);
 
 	const handleOnDialogClose = useCallback(
-		() => {}, //selectedCategoy && actions.deselectProduct(),
-		[]
+		() => selectedCategory && actions.deselectCategory(),
+		[selectedCategory, actions]
 	);
 
 	return (
@@ -48,17 +57,17 @@ type State = {
 		};
 	};
 	categories: {
-		selectedCategoy?: Category;
+		selectedCategory?: Category;
 	};
 };
 
 const mapStateToProps = (state: State) => ({
 	accountId: state?.session?.accountData?.id,
-	selectedCategoy: state?.categories?.selectedCategoy,
+	selectedCategory: state?.categories?.selectedCategory,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({}, dispatch),
+	actions: bindActionCreators({ deleteCategory, getUserCategories, deselectCategory }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeleteCategoryDialog);
