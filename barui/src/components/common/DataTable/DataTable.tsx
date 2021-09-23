@@ -13,7 +13,7 @@ import DataTableRow from "./DataTableRow";
 
 export type ColumnDef = {
 	title: string;
-	propName: string;
+	propName: Function;
 	align?: "left" | "right" | "inherit" | "center" | "justify";
 };
 

@@ -1,92 +1,161 @@
 /* eslint-disable no-use-before-define */
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 
-type FilmOptionType = {
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
+import {
+	getStaticCategories,
+	getUserCategories,
+	addNewCategory,
+} from "../../../ducks/categoriesReducer";
+
+export type Category = {
 	inputValue?: string;
-	title: string;
-	year?: number;
+	id?: number;
+	name: string;
+	static: boolean;
 };
 
-const filter = createFilterOptions<FilmOptionType>();
+type Props = {
+	actions: {
+		getStaticCategories: Function;
+		getUserCategories: Function;
+		addNewCategory: Function;
+	};
+	accountId: number;
+	staticCategories: any[];
+	selectedValue: Category | null;
+	setSelectedValue: Function;
+	userCategories: any[];
+};
 
-const CategoryCombo = () => {
-	const [value, setValue] = useState<FilmOptionType | null>(null);
+const filter = createFilterOptions<Category>();
+
+const CategoryCombo = ({
+	actions,
+	accountId,
+	staticCategories,
+	selectedValue,
+	setSelectedValue,
+	userCategories,
+}: Props) => {
+	const [allCategories, setAllCategories] = useState<Category[]>([]);
+
+	useEffect(() => {
+		actions.getStaticCategories();
+		actions.getUserCategories(accountId);
+	}, [actions, accountId]);
+
+	useEffect(() => {
+		staticCategories && userCategories && setAllCategories([...staticCategories, ...userCategories]);
+	}, [staticCategories, userCategories, setAllCategories]);
+
+	const handleChange = useCallback(
+		(event, newValue) => {
+			if (newValue && newValue.inputValue) {
+				// Create a new value from the user input
+				actions.addNewCategory(newValue.inputValue, accountId).then((response: any) => {
+					setSelectedValue({
+						id: response.category_id,
+						name: response.category_name,
+						static: response.static,
+					});
+					actions.getUserCategories(accountId);
+				});
+			} else {
+				setSelectedValue(newValue);
+			}
+		},
+		[actions, accountId, setSelectedValue]
+	);
+
+	const handleFilter = useCallback((options, params) => {
+		const filtered = filter(options, params);
+
+		// Suggest the creation of a new value
+		if (params.inputValue !== "") {
+			filtered.push({
+				inputValue: params.inputValue,
+				name: `Crear categoría "${params.inputValue}"`,
+				static: false,
+			});
+		}
+
+		return filtered;
+	}, []);
+
+	const getOptionLabel = useCallback((option: Category): string => {
+		// Value selected with enter, right from the input
+		if (typeof option === "string") {
+			return option;
+		}
+		// Add "xxx" option created dynamically
+		if (option.inputValue) {
+			return option.inputValue;
+		}
+		// Regular option
+		return option.name;
+	}, []);
+
+	const renderOption = useCallback(
+		(option: Category) => `${option.name} ${option.static ? "*" : ""}`,
+		[]
+	);
+
+	const renderInput = useCallback(
+		params => (
+			<TextField
+				{...params}
+				label="Categoría"
+				placeholder="Seleccioné o ingrese una categoría"
+				InputLabelProps={{
+					shrink: true,
+					style: { fontSize: 20 },
+				}}
+			/>
+		),
+		[]
+	);
 
 	return (
 		<Autocomplete
-			value={value}
-			onChange={(event, newValue) => {
-				if (typeof newValue === "string") {
-					setValue({
-						title: newValue,
-					});
-				} else if (newValue && newValue.inputValue) {
-					// Create a new value from the user input
-					setValue({
-						title: newValue.inputValue,
-					});
-				} else {
-					setValue(newValue);
-				}
-			}}
-			filterOptions={(options, params) => {
-				const filtered = filter(options, params);
-
-				// Suggest the creation of a new value
-				if (params.inputValue !== "") {
-					filtered.push({
-						inputValue: params.inputValue,
-						title: `Crear categoría "${params.inputValue}"`,
-					});
-				}
-
-				return filtered;
-			}}
+			value={selectedValue}
+			onChange={handleChange}
+			filterOptions={handleFilter}
 			selectOnFocus
 			clearOnBlur
 			handleHomeEndKeys
-			options={top100Films}
-			getOptionLabel={option => {
-				// Value selected with enter, right from the input
-				if (typeof option === "string") {
-					return option;
-				}
-				// Add "xxx" option created dynamically
-				if (option.inputValue) {
-					return option.inputValue;
-				}
-				// Regular option
-				return option.title;
-			}}
-			renderOption={option => option.title}
+			options={allCategories}
+			getOptionLabel={getOptionLabel}
+			renderOption={renderOption}
 			freeSolo
-			renderInput={params => (
-				<TextField
-					{...params}
-					label="Categoría"
-					placeholder="Seleccioné o ingrese una categoría"
-					InputLabelProps={{
-						shrink: true,
-						style: { fontSize: 20 },
-					}}
-				/>
-			)}
+			renderInput={renderInput}
 		/>
 	);
 };
 
-const top100Films: FilmOptionType[] = [
-	{ title: "To Kill a Mockingbird", year: 1962 },
-	{ title: "Toy Story 3", year: 2010 },
-	{ title: "Logan", year: 2017 },
-	{ title: "Full Metal Jacket", year: 1987 },
-	{ title: "Dangal", year: 2016 },
-	{ title: "The Sting", year: 1973 },
-	{ title: "2001: A Space Odyssey", year: 1968 },
-	{ title: "Singin' in the Rain", year: 1952 },
-	{ title: "Toy Story", year: 1995 },
-];
+type State = {
+	session: {
+		accountData: {
+			id: number;
+		};
+	};
+	categories: {
+		staticCategories: any[];
+		userCategories: any[];
+	};
+};
 
-export default CategoryCombo;
+const mapStateToProps = (state: State) => ({
+	accountId: state?.session?.accountData?.id,
+	staticCategories: state?.categories?.staticCategories,
+	userCategories: state?.categories?.userCategories,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+	actions: bindActionCreators({ getStaticCategories, getUserCategories, addNewCategory }, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(CategoryCombo);

@@ -11,7 +11,7 @@ class Product(models.Model):
     account = models.ForeignKey(
         Mb_user, on_delete=models.CASCADE, default=None)
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, default=None)
+        Category, on_delete=models.CASCADE, default=None, blank=True, null=True)
 
     products = models.Manager()
 
@@ -27,9 +27,16 @@ class Product(models.Model):
     def getPrice(self):
         return self.price
 
+    def getCategory(self):
+        return self.category
+
     # setter method
     def setPrice(self, x):
         self.price = x
+
+    # setter method
+    def setCategory(self, x):
+        self.category = x
 
     @classmethod
     def getAllProducts(cls):

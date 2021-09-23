@@ -10,15 +10,21 @@ import { numericSetting, settings } from "../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { getAllProducts, addNewProduct, updateProduct } from "../../../../ducks/productsReducer";
+import {
+	getAllProducts,
+	addNewProduct,
+	updateProduct,
+	deselectProduct,
+} from "../../../../ducks/productsReducer";
 import { Product } from "../ProductsScreen";
-import CategoryCombo from "../../../common/CategoryCombo";
+import CategoryCombo, { Category } from "../../../common/CategoryCombo/CategoryCombo";
 
 type Props = {
 	actions: {
 		getAllProducts: Function;
 		addNewProduct: Function;
 		updateProduct: Function;
+		deselectProduct: Function;
 	};
 	open: boolean;
 	setOpen: Function;
@@ -31,6 +37,8 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 		name: { invalid: true, value: "" },
 		price: { invalid: true, value: "" },
 	});
+	const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+
 	const classes = styles();
 
 	useEffect(() => {
@@ -38,15 +46,18 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 			name: { invalid: true, value: "" },
 			price: { invalid: true, value: "" },
 		});
+		setSelectedCategory(null);
 	}, [open, accountId, setInput]);
 
 	useEffect(() => {
-		selectedProduct &&
+		if (selectedProduct) {
 			setInput({
 				name: { invalid: false, value: selectedProduct.name },
 				price: { invalid: false, value: String(selectedProduct.price) },
 			});
-	}, [selectedProduct]);
+			setSelectedCategory(selectedProduct.category);
+		}
+	}, [selectedProduct, setInput, setSelectedCategory]);
 
 	const handleChangeName = useCallback(
 		(value, invalid) => setInput(prev => ({ ...prev, name: { value, invalid } })),
@@ -59,32 +70,41 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 	);
 
 	const addProduct = useCallback(() => {
-		actions.addNewProduct(input.name.value, parseFloat(input.price.value), accountId).then(() => {
-			actions.getAllProducts(accountId).then(() => {
-				setOpen(false);
-			});
-		});
-	}, [actions, setOpen, input, accountId]);
+		selectedCategory &&
+			actions
+				.addNewProduct(input.name.value, parseFloat(input.price.value), selectedCategory.id, accountId)
+				.then(() => {
+					actions.getAllProducts(accountId).then(() => {
+						setOpen(false);
+					});
+				});
+	}, [actions, setOpen, input, accountId, selectedCategory]);
 
 	const updateProduct = useCallback(() => {
 		if (selectedProduct) {
 			const data = {
 				name: input.name.value !== selectedProduct.name ? input.name.value : undefined,
 				price: parseFloat(input.price.value) !== selectedProduct.price ? input.price.value : undefined,
+				categoryId:
+					selectedCategory?.id != selectedProduct.category.id ? selectedCategory?.id : undefined,
 			};
-			actions.updateProduct(selectedProduct.id, data);
+			console.log(selectedProduct);
+			actions
+				.updateProduct(selectedProduct.id, data)
+				.then(() => actions.getAllProducts(accountId).then(() => setOpen(false)));
 		}
-	}, [actions, selectedProduct, input]);
+	}, [actions, selectedProduct, input, accountId, setOpen, selectedCategory]);
 
-	const handleEnterPress = useCallback(
-		() => !input.price.invalid && !input.name.invalid && addProduct(),
-		[addProduct, input]
+	const handleOnDialogClose = useCallback(
+		() => selectedProduct && actions.deselectProduct(),
+		[actions, selectedProduct]
 	);
 
 	return (
 		<AppDialog
 			open={open}
 			onSubmit={selectedProduct ? updateProduct : addProduct}
+			onDialogClose={handleOnDialogClose}
 			setOpen={setOpen}
 			submitButtonDisabled={
 				input.price.invalid ||
@@ -92,10 +112,12 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 				Boolean(
 					selectedProduct &&
 						selectedProduct.name === input.name.value &&
-						String(selectedProduct.price) === input.price.value
-				)
+						String(selectedProduct.price) === input.price.value &&
+						selectedProduct.category.id === selectedCategory?.id
+				) ||
+				selectedCategory === null
 			}
-			submitButtonLabel="Agregar"
+			submitButtonLabel={selectedProduct ? "Actualizar" : "Crear"}
 			title="Producto Nuevo"
 		>
 			<Grid container direction="column" spacing={2}>
@@ -111,7 +133,7 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 					/>
 				</Grid>
 				<Grid item xs>
-					<CategoryCombo />
+					<CategoryCombo selectedValue={selectedCategory} setSelectedValue={setSelectedCategory} />
 				</Grid>
 				<Grid item xs>
 					<TextFieldWithValidation
@@ -120,7 +142,6 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 						placeholder="Ingresar precio del producto"
 						value={input.price.value}
 						onChange={handleChangePrice}
-						onEnterPress={handleEnterPress}
 						required
 						InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
 						settings={[...settings, numericSetting]}
@@ -149,7 +170,10 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({ addNewProduct, getAllProducts, updateProduct }, dispatch),
+	actions: bindActionCreators(
+		{ addNewProduct, getAllProducts, updateProduct, deselectProduct },
+		dispatch
+	),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductDialog);

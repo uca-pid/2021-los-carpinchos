@@ -1,56 +1,48 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
-import DataTable, { ColumnDef } from "../../common/DataTable/DataTable";
 import { Button, Container, Grid, Typography } from "@material-ui/core";
+import DataTable, { ColumnDef } from "../../../common/DataTable/DataTable";
+
+import { useHistory } from "react-router-dom";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { selectProduct } from "../../../ducks/productsReducer";
-import ProductDialog from "./ProductDialog";
-import DeleteProductDialog from "./DeleteProductDialog";
-import AddIcon from "@material-ui/icons/Add";
-import { Category } from "../../common/CategoryCombo/CategoryCombo";
+import { selectCategory, getUserCategories } from "../../../../ducks/categoriesReducer";
 
-export type Product = {
-	id: string;
-	name: string;
-	price: number;
-	category: Category;
-};
+import AddIcon from "@material-ui/icons/Add";
+import { Category } from "../../../common/CategoryCombo/CategoryCombo";
+import DeleteCategoryDialog from "./DeleteCategoryDialog/DeleteCategoryDialog";
+import CategoryDialog from "./CategoryDialog";
 
 type Props = {
 	actions: {
-		selectProduct: Function;
+		selectCategory: Function;
+		getUserCategories: Function;
 	};
-	products: Product[];
+	accountId: number;
+	userCategories: Category[];
 };
 
-const ProductsScreen = ({ actions, products }: Props) => {
+const CategoriesScreen = ({ actions, accountId, userCategories }: Props) => {
 	const [open, setOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
 	const columnsDef: ColumnDef[] = [
 		{
 			title: "Nombre",
-			propName: (row: Product) => row.name,
-		},
-		{
-			title: "Precio ($)",
-			propName: (row: Product) => row.price,
-			align: "right",
-		},
-		{
-			title: "Categoría",
-			propName: (row: Product) => row.category.name,
-			align: "right",
+			propName: (row: Category) => row.name,
 		},
 	];
+
+	useEffect(() => {
+		actions.getUserCategories(accountId);
+	}, [accountId]);
 
 	const handleOpenDialog = useCallback(() => setOpen(true), [setOpen]);
 
 	const handleEditRow = useCallback(
 		product => {
-			actions.selectProduct(product);
+			actions.selectCategory(product);
 			setOpen(true);
 		},
 		[actions, setOpen]
@@ -58,7 +50,7 @@ const ProductsScreen = ({ actions, products }: Props) => {
 
 	const handleDeleteRow = useCallback(
 		product => {
-			actions.selectProduct(product);
+			actions.selectCategory(product);
 			setDeleteOpen(true);
 		},
 		[actions]
@@ -66,15 +58,15 @@ const ProductsScreen = ({ actions, products }: Props) => {
 
 	return (
 		<Container maxWidth="md">
-			<ProductDialog open={open} setOpen={setOpen} />
+			<CategoryDialog open={open} setOpen={setOpen} />
 
-			<DeleteProductDialog open={deleteOpen} setOpen={setDeleteOpen} />
+			<DeleteCategoryDialog open={deleteOpen} setOpen={setDeleteOpen} />
 
 			<Grid container direction="column" spacing={3}>
 				<Grid alignItems="center" container item>
 					<Grid item xs>
 						<Typography variant="h5" color="primary">
-							Productos
+							Categorias
 						</Typography>
 					</Grid>
 					<Grid item>
@@ -91,7 +83,7 @@ const ProductsScreen = ({ actions, products }: Props) => {
 				<Grid item>
 					<DataTable
 						columnsDef={columnsDef}
-						data={products}
+						data={userCategories}
 						onEditRow={handleEditRow}
 						onDeleteRow={handleDeleteRow}
 					/>
@@ -102,17 +94,23 @@ const ProductsScreen = ({ actions, products }: Props) => {
 };
 
 type State = {
-	products: {
-		userProducts: Product[];
+	session: {
+		accountData: {
+			id: number;
+		};
+	};
+	categories: {
+		userCategories: Category[];
 	};
 };
 
 const mapStateToProps = (state: State) => ({
-	products: state?.products?.userProducts,
+	accountId: state.session.accountData.id,
+	userCategories: state.categories.userCategories,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({ selectProduct }, dispatch),
+	actions: bindActionCreators({ selectCategory, getUserCategories }, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProductsScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(CategoriesScreen);
