@@ -14,7 +14,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -28,12 +28,6 @@ jobs:
         pip install -r ./myBar/requirements.txt
         pip install coverage 
         pip install coveralls
-    - name: Run migrations
-      run: |
-        cd myBar
-        cd myBar_project
-        python manage.py makemigrations
-        python manage.py migrate
     - name: Run tests
       run: |
         cd myBar
