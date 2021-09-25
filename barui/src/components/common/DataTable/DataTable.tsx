@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 import { GridColDef, DataGrid, GridRenderCellParams } from "@mui/x-data-grid";
 

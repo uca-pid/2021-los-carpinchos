@@ -45,7 +45,7 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 			// actions.selectProduct(product);
 			setOpen(true);
 		},
-		[actions, setOpen]
+		[setOpen]
 	);
 
 	const handleDeleteRow = useCallback(
@@ -53,7 +53,7 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 			// actions.selectProduct(product);
 			setDeleteOpen(true);
 		},
-		[actions]
+		[setDeleteOpen]
 	);
 
 	return (

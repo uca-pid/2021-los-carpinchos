@@ -70,15 +70,14 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 	);
 
 	const addProduct = useCallback(() => {
-		selectedCategory &&
-			actions
-				.addNewProduct(input.name.value, parseFloat(input.price.value), selectedCategory.id, accountId)
-				.then(() => {
-					actions.getAllProducts(accountId).then(() => {
-						setOpen(false);
-					});
+		actions
+			.addNewProduct(input.name.value, parseFloat(input.price.value), selectedCategory?.id, accountId)
+			.then(() => {
+				actions.getAllProducts(accountId).then(() => {
+					setOpen(false);
 				});
-	}, [actions, setOpen, input, accountId, selectedCategory]);
+			});
+	}, [actions, setOpen, input, accountId]);
 
 	const updateProduct = useCallback(() => {
 		if (selectedProduct) {
@@ -114,8 +113,7 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 						selectedProduct.name === input.name.value &&
 						String(selectedProduct.price) === input.price.value &&
 						selectedProduct.category.id === selectedCategory?.id
-				) ||
-				selectedCategory === null
+				)
 			}
 			submitButtonLabel={selectedProduct ? "Actualizar" : "Crear"}
 			title={selectedProduct ? "Producto" : "Producto Nuevo"}

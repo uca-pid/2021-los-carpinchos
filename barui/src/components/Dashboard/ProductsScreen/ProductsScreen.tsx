@@ -1,11 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 import DataTable from "../../common/DataTable";
 import { Button, Container, Grid, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { selectProduct } from "../../../ducks/productsReducer";
+import { selectProduct, getAllProducts } from "../../../ducks/productsReducer";
 import ProductDialog from "./ProductDialog";
 import DeleteProductDialog from "./DeleteProductDialog";
 import AddIcon from "@material-ui/icons/Add";
@@ -23,13 +23,17 @@ export type Product = {
 type Props = {
 	actions: {
 		selectProduct: Function;
+		getAllProducts: Function;
 	};
 	products: Product[];
+	id: number;
 };
 
-const ProductsScreen = ({ actions, products = [] }: Props) => {
+const ProductsScreen = ({ actions, id, products = [] }: Props) => {
 	const [open, setOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
+
+	useEffect(() => id && actions.getAllProducts(id), [actions, id]);
 
 	const columns: GridColDef[] = [
 		{ field: "name", headerName: "Nombre", flex: 1 },
@@ -85,7 +89,7 @@ const ProductsScreen = ({ actions, products = [] }: Props) => {
 						rows={products.map(p => ({
 							id: p.id,
 							name: p.name,
-							price: p.price,
+							price: `$ ${p.price}`,
 							category: p.category.name,
 							actions: p,
 						}))}
@@ -99,6 +103,11 @@ const ProductsScreen = ({ actions, products = [] }: Props) => {
 };
 
 type State = {
+	session: {
+		accountData: {
+			id: number;
+		};
+	};
 	products: {
 		userProducts: Product[];
 	};
@@ -106,10 +115,11 @@ type State = {
 
 const mapStateToProps = (state: State) => ({
 	products: state?.products?.userProducts,
+	id: state?.session?.accountData?.id,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({ selectProduct }, dispatch),
+	actions: bindActionCreators({ selectProduct, getAllProducts }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductsScreen);

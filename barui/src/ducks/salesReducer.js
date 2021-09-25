@@ -19,11 +19,11 @@ export const getSales = accountId => async dispatch =>
 			console.log(response);
 			dispatch({
 				type: GET_USER_SALES_SUCCES,
-				userSales: response.map(cat => ({
-					// id: cat.category_id,
-					// name: cat.category_name,
-					// static: cat.static,
-				})),
+				// userSales: response.map(cat => ({
+				// 	id: cat.category_id,
+				// 	name: cat.category_name,
+				// 	static: cat.static,
+				// })),
 			});
 		})
 		.catch(() => {
