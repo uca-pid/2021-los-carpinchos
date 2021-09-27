@@ -42,12 +42,13 @@ class TestProducts(APITestCase):
         sale_product1 = sp( product = product , quantity_of_product = 3 , sale = sale1)
         sale_product1.full_clean()
         sale_product1.save()
-        sale_product2 = sp( product=product2, quantity_of_product=3, sale = sale2)
-        sale_product2.full_clean()
-        sale_product2.save()
         sale_product3 = sp( product=product3, quantity_of_product=4 , sale = sale1)
         sale_product3.full_clean()
         sale_product3.save()
+        sale_product2 = sp( product=product2, quantity_of_product=3, sale = sale2)
+        sale_product2.full_clean()
+        sale_product2.save()
+
 
 
     def test_sale_creation(self):
@@ -74,12 +75,13 @@ class TestProducts(APITestCase):
     def test_sale_creation_endPoint(self):
         webClient = self.client
         response = webClient.post(
-            '/createSale/1', {'creation_date': '18/06/21'})
+            '/createSale/1', {'creation_date': '18/06/21','products': [{'productId': 1 , 'amount': 1},{'productId':2, 'amount': 1}]}, format = 'json')
         self.assertEqual(response.status_code, 201)
 
     def test_get_all_sales(self):
         webClient = self.client
         response = webClient.get('/getAllSales/1')
+        #print(response.data)
         self.assertEqual(len(response.data), 2)
 
     def test_modify_sale_details(self):

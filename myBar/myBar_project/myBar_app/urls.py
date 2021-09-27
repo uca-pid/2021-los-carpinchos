@@ -2,7 +2,7 @@ from django.urls import path
 from .views import userView
 from .views import productsView
 from .views import categoryView
-#from .views import saleView
+from .views import saleView
 
 
 urlpatterns = [

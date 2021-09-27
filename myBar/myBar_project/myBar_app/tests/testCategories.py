@@ -44,7 +44,7 @@ class TestProducts(APITestCase):
         user = mb_user.getAllUsers().filter(account_id=1).first()
         webClient = self.client
         response = webClient.post(
-            '/createCategory/1', {'category_name': 'Queso' , 'static': False})
+            '/createCategory/1', {'name': 'Queso' , 'static': False})
 
         self.assertEqual(response.status_code, 201)
 
@@ -75,7 +75,7 @@ class TestProducts(APITestCase):
     def test_get_all_static_categories(self):
         categories = c.getAllCategories()
         webClient = self.client
-        response = webClient.get('/getAllStaticCategories/1')
+        response = webClient.get('/getAllStaticCategories')
         self.assertEqual(len(response.data), 1)
 
     def test_modify_category_details(self):
