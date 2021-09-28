@@ -1,5 +1,6 @@
 from django.db import models
 
+from .product import Product
 from .user import Mb_user
 
 
@@ -31,6 +32,10 @@ class Sale(models.Model):
 
     def modify_Sale(self, **argsToChange):
         keys = argsToChange.keys()
+        if 'productId' in keys:
+            product = Product.getAllProducts().filter(product_id = argsToChange['productId'])
+            productBis = product.first()
+            sale_product_to_change = (self.sale_products.all().filter(product = productBis)).first().modifySaleProduct(argsToChange['amount'])
         for arg in keys:
             setattr(self, arg, argsToChange[arg])
         return self
