@@ -5,7 +5,8 @@ from ..models.user import Mb_user as mb_user
 from ..models.product import Product as p
 from ..models.category import Category as c
 from ..models.sale import Sale as s
-from ..models.sale_product import Sale_Product as sp
+from ..models.sale_product import Sale_Product as sp, Sale_Product
+
 
 class TestProducts(APITestCase):
 
@@ -81,16 +82,19 @@ class TestProducts(APITestCase):
     def test_get_all_sales(self):
         webClient = self.client
         response = webClient.get('/getAllSales/1')
-        #print(response.data)
         self.assertEqual(len(response.data), 2)
 
     def test_modify_sale_details(self):
         webClient = self.client
         response = webClient.put(
-            '/updateSaleData/1', {"creation_date": '08/09/21'}, format="json")
+            '/updateSaleData/1', {"creation_date": '08/09/21', 'amount':3 , 'productId': 1}, format="json")
         self.assertEqual(response.status_code, 200)
         sale = s.getAllSales().filter(sale_id=1).first()
         self.assertEqual(sale.creation_date, '08/09/21')
+        product = p.getAllProducts().filter(product_id = 1)
+        productBis = product.first()
+        sale_product_to_change = Sale_Product.getAllSaleProducts().filter(product = productBis).first()
+        self.assertEqual(sale_product_to_change.quantity_of_product,3)
 
     def test_delete_sale(self):
         webClient = self.client
