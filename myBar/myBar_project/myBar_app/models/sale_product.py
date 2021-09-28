@@ -15,3 +15,10 @@ class Sale_Product(models.Model):
     sales_products = models.Manager()
 
 
+    def modifySaleProduct(self, quantity):
+        setattr(self, 'quantity_of_product', quantity)
+        return self
+
+    @classmethod
+    def getAllSaleProducts(cls):
+        return cls.sales_products.filter()
