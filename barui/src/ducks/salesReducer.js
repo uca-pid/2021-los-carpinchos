@@ -43,10 +43,10 @@ export const addNewSale = (name, accountId) => async dispatch =>
 			dispatch(showErrorMessage("No se pudo crear la nueva venta. Intente de nuevo."));
 		});
 
-export const selectSale = category => dispatch =>
+export const selectSale = sale => dispatch =>
 	dispatch({
 		type: SELECT_SALE,
-		category,
+		sale,
 	});
 
 export const deselectSale = () => dispatch => dispatch({ type: DESELECT_SALE });
@@ -86,7 +86,7 @@ const categoriesReducer = (state = initialState, action) => {
 		case SELECT_SALE:
 			return {
 				...state,
-				selectedCategory: action.category,
+				selectedSale: action.sale,
 			};
 		case DESELECT_SALE:
 		case SAVE_SALE_SUCCESS:
@@ -94,7 +94,7 @@ const categoriesReducer = (state = initialState, action) => {
 		case UPDATE_SALE_SUCCESS:
 			return {
 				...state,
-				selectedCategory: null,
+				selectedSale: null,
 			};
 		default:
 			return state;

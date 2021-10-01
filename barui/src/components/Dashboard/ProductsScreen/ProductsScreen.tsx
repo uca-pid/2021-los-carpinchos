@@ -14,7 +14,7 @@ import { Category } from "../../common/CategoryCombo/CategoryCombo";
 import { GridColDef } from "@mui/x-data-grid";
 
 export type Product = {
-	id: string;
+	id: number;
 	name: string;
 	price: number;
 	category: Category;
@@ -90,7 +90,7 @@ const ProductsScreen = ({ actions, id, products = [] }: Props) => {
 							id: p.id,
 							name: p.name,
 							price: `$ ${p.price}`,
-							category: p.category.name,
+							category: p.category.name ?? "S/C",
 							actions: p,
 						}))}
 						onEditRow={handleEditRow}

@@ -5,21 +5,35 @@ import { Button, Container, Grid, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { getSales } from "../../../ducks/salesReducer";
+import { getSales, selectSale } from "../../../ducks/salesReducer";
 
 // import ProductDialog from "./ProductDialog";
 // import DeleteProductDialog from "./DeleteProductDialog";
 import AddIcon from "@material-ui/icons/Add";
 import { GridColDef } from "@mui/x-data-grid";
+import { Product } from "../ProductsScreen/ProductsScreen";
+import { mockedSales } from "./mockedSales";
+
+import moment from "moment";
+import "moment/locale/es";
+import SaleDialog from "./SaleDialog";
+
+export type ProductSale = {
+	product: Product;
+	amount: number;
+};
 
 export type Sale = {
-	id: string;
-	date: Date;
+	id: number;
+	creationDate: Date;
+	modificationDate: Date;
+	productSale: ProductSale[];
 };
 
 type Props = {
 	actions: {
 		getSales: Function;
+		selectSale: Function;
 	};
 	accountId: number;
 	sales: Sale[];
@@ -30,8 +44,8 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
 	const columns: GridColDef[] = [
-		{ field: "name", headerName: "Nombre", flex: 1 },
-		{ field: "date", headerName: "Fecha", flex: 1 },
+		{ field: "number", headerName: "Numero", flex: 1 },
+		{ field: "date", headerName: "Fecha de emisión", flex: 1 },
 	];
 
 	useEffect(() => {
@@ -42,7 +56,7 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 
 	const handleEditRow = useCallback(
 		sale => {
-			// actions.selectProduct(product);
+			actions.selectSale(sale);
 			setOpen(true);
 		},
 		[setOpen]
@@ -50,7 +64,7 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 
 	const handleDeleteRow = useCallback(
 		sale => {
-			// actions.selectProduct(product);
+			actions.selectSale(sale);
 			setDeleteOpen(true);
 		},
 		[setDeleteOpen]
@@ -58,9 +72,9 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 
 	return (
 		<Container maxWidth="md">
-			{/* <ProductDialog open={open} setOpen={setOpen} />
+			<SaleDialog open={open} setOpen={setOpen} />
 
-			<DeleteProductDialog open={deleteOpen} setOpen={setDeleteOpen} /> */}
+			{/* <DeleteProductDialog open={deleteOpen} setOpen={setDeleteOpen} /> */}
 
 			<Grid container direction="column" spacing={3}>
 				<Grid alignItems="center" container item>
@@ -83,10 +97,10 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 				<Grid item>
 					<DataTable
 						columns={columns}
-						rows={sales.map(s => ({
+						rows={mockedSales.map(s => ({
 							id: s.id,
-							name: `Venta #${s.id}`,
-							date: s.date,
+							number: `Venta #${s.id}`,
+							date: moment(s.creationDate).format("DD [de] MMMM [de] YYYY - hh:mm[hs]"),
 							actions: s,
 						}))}
 						onEditRow={handleEditRow}
@@ -115,7 +129,7 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({ getSales }, dispatch),
+	actions: bindActionCreators({ getSales, selectSale }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductsScreen);

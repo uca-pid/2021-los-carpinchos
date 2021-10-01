@@ -14,7 +14,7 @@ type Props = {
 	title: string;
 	open: boolean;
 	onDialogClose?: Function;
-	onSubmit: Function;
+	onSubmit?: Function;
 	setOpen: Function;
 	submitButtonDisabled?: boolean;
 	submitButtonLabel: string;
@@ -37,7 +37,7 @@ const AppDialog = ({
 		onDialogClose && onDialogClose();
 	}, [setOpen, onDialogClose]);
 
-	const handleSubmit = useCallback(() => onSubmit(), [onSubmit]);
+	const handleSubmit = useCallback(() => onSubmit && onSubmit(), [onSubmit]);
 
 	return (
 		<Dialog open={open} onClose={handleClose}>
