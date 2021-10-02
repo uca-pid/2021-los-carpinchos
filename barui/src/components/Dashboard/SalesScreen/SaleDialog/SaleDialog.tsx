@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 
 import { Grid } from "@material-ui/core";
 import AppDialog from "../../../common/AppDialog";
@@ -6,7 +6,7 @@ import AppDialog from "../../../common/AppDialog";
 import { deselectSale } from "../../../../ducks/salesReducer";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { Sale } from "../SalesScreen";
+import { ProductSale, Sale } from "../SalesScreen";
 import ProductSaleTable from "./ProductSaleTable";
 
 type Props = {
@@ -20,6 +20,8 @@ type Props = {
 };
 
 const SaleDialog = ({ actions, accountId, open, setOpen, selectedSale }: Props) => {
+	const [productsSale, setproductsSale] = useState<ProductSale[]>([]);
+
 	// useEffect(() => {
 	// 	if (selectedProduct) {
 	// 		setInput({
@@ -40,21 +42,6 @@ const SaleDialog = ({ actions, accountId, open, setOpen, selectedSale }: Props) 
 	// 		});
 	// }, [actions, setOpen, input, accountId]);
 
-	// const updateProduct = useCallback(() => {
-	// 	if (selectedProduct) {
-	// 		const data = {
-	// 			name: input.name.value !== selectedProduct.name ? input.name.value : undefined,
-	// 			price: parseFloat(input.price.value) !== selectedProduct.price ? input.price.value : undefined,
-	// 			categoryId:
-	// 				selectedCategory?.id != selectedProduct.category.id ? selectedCategory?.id : undefined,
-	// 		};
-	// 		console.log(selectedProduct);
-	// 		actions
-	// 			.updateProduct(selectedProduct.id, data)
-	// 			.then(() => actions.getAllProducts(accountId).then(() => setOpen(false)));
-	// 	}
-	// }, [actions, selectedProduct, input, accountId, setOpen, selectedCategory]);
-
 	const handleOnDialogClose = useCallback(
 		() => selectedSale && actions.deselectSale(),
 		[actions, selectedSale]
@@ -63,7 +50,7 @@ const SaleDialog = ({ actions, accountId, open, setOpen, selectedSale }: Props) 
 	return (
 		<AppDialog
 			open={open}
-			// onSubmit={selectedSale ? updateProduct : addProduct}
+			// onSubmit={createSale}
 			onDialogClose={handleOnDialogClose}
 			setOpen={setOpen}
 			// submitButtonDisabled={
@@ -76,11 +63,12 @@ const SaleDialog = ({ actions, accountId, open, setOpen, selectedSale }: Props) 
 			// 			selectedProduct.category.id === selectedCategory?.id
 			// 	)
 			// }
-			submitButtonLabel={selectedSale ? "Actualizar" : "Crear"}
+			submitButtonLabel={"Crear"}
 			title={selectedSale ? "Venta" : "Venta Nuevo"}
+			hideActions={Boolean(selectedSale)}
 		>
 			<Grid container direction="column" spacing={2}>
-				<ProductSaleTable />
+				<ProductSaleTable rows={selectedSale ? selectedSale.productsSale : productsSale} />
 			</Grid>
 		</AppDialog>
 	);

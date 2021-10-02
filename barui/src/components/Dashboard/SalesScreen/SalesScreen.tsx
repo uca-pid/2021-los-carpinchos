@@ -19,7 +19,8 @@ import "moment/locale/es";
 import SaleDialog from "./SaleDialog";
 
 export type ProductSale = {
-	product: Product;
+	productId?: number;
+	product?: Product;
 	amount: number;
 };
 
@@ -27,7 +28,7 @@ export type Sale = {
 	id: number;
 	creationDate: Date;
 	modificationDate: Date;
-	productSale: ProductSale[];
+	productsSale: ProductSale[];
 };
 
 type Props = {

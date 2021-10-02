@@ -7,26 +7,20 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import { ProductSale } from "../../SalesScreen";
+import ProductSaleTableRow from "./ProductSaleTableRow";
 
 const useStyles = makeStyles({
 	table: {
-		minWidth: 460,
+		minWidth: 540,
 	},
 });
 
-function createData(name: string, calories: number, fat: number, carbs: number, protein: number) {
-	return { name, calories, fat, carbs, protein };
-}
+type Props = {
+	rows?: ProductSale[];
+};
 
-const rows = [
-	createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-	createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-	createData("Eclair", 262, 16.0, 24, 6.0),
-	createData("Cupcake", 305, 3.7, 67, 4.3),
-	createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
-
-const ProductSaleTable = () => {
+const ProductSaleTable = ({ rows: rows }: Props) => {
 	const classes = useStyles();
 
 	return (
@@ -36,17 +30,15 @@ const ProductSaleTable = () => {
 					<TableRow>
 						<TableCell>Producto</TableCell>
 						<TableCell>Cantidad</TableCell>
-						<TableCell>Acciones</TableCell>
+						<TableCell align="right">Acciones</TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
-					{rows.map(row => (
-						<TableRow key={row.name}>
-							<TableCell>{row.name}</TableCell>
-							<TableCell>{row.calories}</TableCell>
-							<TableCell>{row.fat}</TableCell>
-						</TableRow>
-					))}
+					{rows &&
+						rows.map((row: ProductSale) => {
+							return <ProductSaleTableRow key={row.productId} row={row} />;
+						})}
+					<ProductSaleTableRow />
 				</TableBody>
 			</Table>
 		</TableContainer>
