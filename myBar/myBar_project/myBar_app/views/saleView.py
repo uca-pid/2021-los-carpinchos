@@ -28,7 +28,8 @@ def create_sale(request, accountId):
             product_bis = Product.getAllProducts().filter(
                 product_id=productId).first()
             amount = product['amount']
-            sale_product = Sale_Product(**{'product': product_bis, 'sale': sale, 'quantity_of_product': amount})
+            sale_product = Sale_Product(
+                **{'product': product_bis, 'sale': sale, 'quantity_of_product': amount})
             sale_product.full_clean()
             sale_product.save()
 
@@ -43,8 +44,8 @@ def create_sale(request, accountId):
 @api_view(['GET'])
 def get_all_sales(request, accountid):
     sale = Sale.sales.filter(account_id=accountid).values()
-    #print(sale)
-    sale_ids = Sale.sales.filter(account_id=accountid).values()
+    # print(sale)
+    sale_ids = Sale.sales.filter(account_id=accountid).values("sale_id", "creation_date")
     sale_product_id = Sale.sales.filter(account_id=accountid).values("sale_id", "sale_products__id_sale_product",
                                                                      "sale_products__quantity_of_product",
                                                                      "sale_products__product__product_id",
@@ -52,22 +53,21 @@ def get_all_sales(request, accountid):
                                                                      "sale_products__product__price",
                                                                      "sale_products__product__category__category_id",
                                                                      "sale_products__product__category__category_name",
-                                                                    "sale_products__product__category__static")
+                                                                     "sale_products__product__category__static")
     json_enorme = []
-    for id in sale_ids:
-        json_list=[]
-        id = id['sale_id']
-        products_by_sale_id = sale_product_id.filter(sale_id= id).values("sale_id", "sale_products__id_sale_product",
-                                                                         "sale_products__quantity_of_product",
-                                                                         "sale_products__product__product_id",
-                                                                         "sale_products__product__name",
-                                                                         "sale_products__product__price",
-                                                                         "sale_products__product__category__category_id",
-                                                                         "sale_products__product__category__category_name",
-                                                                         "sale_products__product__category__static")
-        #print(products_by_sale_id)
+    for sale in sale_ids:
+        json_list = []
+        products_by_sale_id = sale_product_id.filter(sale_id=sale["sale_id"]).values("sale_id",  "sale_products__id_sale_product",
+                                                                                     "sale_products__quantity_of_product",
+                                                                                     "sale_products__product__product_id",
+                                                                                     "sale_products__product__name",
+                                                                                     "sale_products__product__price",
+                                                                                     "sale_products__product__category__category_id",
+                                                                                     "sale_products__product__category__category_name",
+                                                                                     "sale_products__product__category__static")
+        # print(products_by_sale_id)
         for product in products_by_sale_id:
-            #print(product)
+            # print(product)
             data = {
                 "sale_products": product["sale_products__id_sale_product"],
                 "quantity_of_product": product["sale_products__quantity_of_product"],
@@ -81,12 +81,13 @@ def get_all_sales(request, accountid):
                                 "category_id": product["sale_products__product__category__category_id"],
                                 "category_name": product["sale_products__product__category__category_name"],
                                 "category_static": product["sale_products__product__category__static"]
-                            }
-                    }
+                        }
+                }
             }
             json_list.append(data)
-        data2 = {"sale_id": id,
-                 "sale_product":json_list
+        data2 = {"sale_id": sale["sale_id"],
+                 "creation_date": sale["creation_date"],
+                 "sale_product": json_list
                  }
         json_enorme .append(data2)
 

@@ -6,7 +6,7 @@ from .user import Mb_user
 
 class Sale(models.Model):
     sale_id = models.AutoField(primary_key=True)
-    creation_date = models.CharField(max_length=20)
+    creation_date = models.CharField(max_length=60)
     account = models.ForeignKey(
         Mb_user, on_delete=models.CASCADE, default=None)
 
@@ -22,6 +22,7 @@ class Sale(models.Model):
     @classmethod
     def getAllSales(cls):
         return cls.sales.filter()
+
     @classmethod
     def delete(cls, id):
         sale = cls.sales.filter(sale_id=id)
@@ -33,9 +34,10 @@ class Sale(models.Model):
     def modify_Sale(self, **argsToChange):
         keys = argsToChange.keys()
         if 'productId' in keys:
-            product = Product.getAllProducts().filter(product_id = argsToChange['productId'])
+            product = Product.getAllProducts().filter(product_id=argsToChange['productId'])
             productBis = product.first()
-            sale_product_to_change = (self.sale_products.all().filter(product = productBis)).first().modifySaleProduct(argsToChange['amount'])
+            sale_product_to_change = (self.sale_products.all().filter(
+                product=productBis)).first().modifySaleProduct(argsToChange['amount'])
         for arg in keys:
             setattr(self, arg, argsToChange[arg])
         return self
