@@ -66,10 +66,13 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 	);
 
 	const handleUpdateExistingRowFromNewSale = useCallback((productSale: ProductSale) => {
-		setProductsSale(prev => {
-			let index = prev.findIndex(p => p.product.id === productSale.product.id);
-			return [...prev.slice(0, index), productSale, ...prev.slice(-index)];
-		});
+		setProductsSale(prev =>
+			prev.map(p => (p.product.id === productSale.product.id ? productSale : p))
+		);
+	}, []);
+
+	const handleDeleteExistingRowFromNewSale = useCallback((product: Product) => {
+		setProductsSale(prev => prev.filter(p => p.product.id !== product.id));
 	}, []);
 
 	return (
@@ -107,6 +110,7 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 									row={row}
 									products={products}
 									onSave={handleUpdateExistingRowFromNewSale}
+									onDelete={handleDeleteExistingRowFromNewSale}
 								/>
 							);
 						})}

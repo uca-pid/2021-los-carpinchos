@@ -23,17 +23,19 @@ type Props = {
 	row?: ProductSale;
 	products: Product[];
 	onSave?: Function;
+	onDelete?: Function;
 };
 
-const ProductSaleTableRow = ({ products, row, onSave }: Props) => {
+const ProductSaleTableRow = ({ products, row, onSave, onDelete }: Props) => {
 	const [product, setProduct] = useState<Product | null>(null);
 	const [amount, setAmount] = useState(0);
 	const [editMode, setEditMode] = useState(false);
 
 	const classes = styles();
 
-	const saveNewRow = !row && product !== null && amount > 0;
-	const saveExistingRow = row && amount != row.amount && amount > 0;
+	const canSaveNewRow = !editMode && product !== null && amount > 0;
+	const canSaveExistingRow = editMode && row && amount != row.amount && amount > 0;
+	const canDelete = !editMode && row;
 
 	useEffect(() => {
 		if (row) {
@@ -56,16 +58,18 @@ const ProductSaleTableRow = ({ products, row, onSave }: Props) => {
 		setEditMode(false);
 	}, [setEditMode, row]);
 
-	const handleSaveRow = useCallback(() => {
-		if (saveNewRow) {
-			setProduct(null);
-			setAmount(0);
+	const handleClick = useCallback(() => {
+		if (canDelete) {
+			product && onDelete && onDelete(product);
+		} else if (canSaveNewRow || canSaveExistingRow) {
+			if (canSaveNewRow) {
+				setProduct(null);
+				setAmount(0);
+			}
+			setEditMode(false);
+			product && onSave && onSave({ amount, product });
 		}
-		setEditMode(false);
-		product && onSave && onSave({ amount, product });
-	}, [onSave, product, amount, saveNewRow]);
-
-	const handleDeleteRow = useCallback(() => console.log("DELETE ROW"), []);
+	}, [onSave, product, amount, canSaveNewRow, onDelete]);
 
 	return (
 		<TableRow className={row ? "" : classes.newRow}>
@@ -119,13 +123,13 @@ const ProductSaleTableRow = ({ products, row, onSave }: Props) => {
 				)}
 
 				<IconButton
-					onClick={saveNewRow || saveExistingRow ? handleSaveRow : handleDeleteRow}
-					disabled={!(saveNewRow || saveExistingRow)}
+					onClick={handleClick}
+					disabled={!(canSaveNewRow || canSaveExistingRow || canDelete)}
 					size="small"
 				>
 					{editMode || !row ? (
 						<SaveIcon
-							className={saveNewRow || saveExistingRow ? classes.saveIcon : classes.disabledSaveIcon}
+							className={canSaveNewRow || canSaveExistingRow ? classes.saveIcon : classes.disabledSaveIcon}
 						/>
 					) : (
 						<DeleteIcon className={classes.deleteIcon} />
