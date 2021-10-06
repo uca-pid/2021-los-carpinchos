@@ -6,6 +6,7 @@ from ..models.product import Product as p
 from ..models.category import Category as c
 from ..models.sale import Sale as s
 from ..models.sale_product import Sale_Product as sp, Sale_Product
+import datetime
 
 
 class TestProducts(APITestCase):
@@ -34,10 +35,12 @@ class TestProducts(APITestCase):
         product3 = p(name='coca', price=9, account=user2 , category = category2)
         product3.full_clean()
         product3.save()
-        sale1 = s(creation_date='12/12/12', account=user)
+        date =datetime.datetime(2018, 12, 1)
+        date = date.strftime("%B")
+        sale1 = s(creation_date=date, account=user)
         sale1.full_clean()
         sale1.save()
-        sale2 = s(creation_date='12/12/12', account=user)
+        sale2 = s(creation_date=date, account=user)
         sale2.full_clean()
         sale2.save()
         sale_product1 = sp( product = product , quantity_of_product = 3 , sale = sale1)
@@ -49,7 +52,6 @@ class TestProducts(APITestCase):
         sale_product2 = sp( product=product2, quantity_of_product=3, sale = sale2)
         sale_product2.full_clean()
         sale_product2.save()
-
 
 
     def test_sale_creation(self):

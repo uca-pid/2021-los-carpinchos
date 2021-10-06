@@ -6,11 +6,20 @@ from .user import Mb_user
 
 class Sale(models.Model):
     sale_id = models.AutoField(primary_key=True)
-    creation_date = models.CharField(max_length=20)
+    creation_date = DateField(input_formats=settings.DATE_INPUT_FORMATS)
     account = models.ForeignKey(
         Mb_user, on_delete=models.CASCADE, default=None)
 
     sales = models.Manager()
+
+    def get_day(self):
+        return self.creation_date.day
+
+    def get_month(self):
+        return self.creation_date.month
+
+    def get_year(self):
+        return self.creation_date.year
 
     def getSaleId(self):
         return self.sale_id
