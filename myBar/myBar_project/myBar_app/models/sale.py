@@ -48,6 +48,8 @@ class Sale(models.Model):
             product = Product.getAllProducts().filter(product_id = argsToChange['productId'])
             productBis = product.first()
             sale_product_to_change = (self.sale_products.all().filter(product = productBis)).first().modifySaleProduct(argsToChange['amount'])
+            sale_product_to_change.full_clean()
+            sale_product_to_change.save()
         for arg in keys:
             setattr(self, arg, argsToChange[arg])
         return self
