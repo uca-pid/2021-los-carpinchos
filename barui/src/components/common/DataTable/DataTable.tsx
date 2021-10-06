@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 
 import { GridColDef, DataGrid, GridRenderCellParams } from "@mui/x-data-grid";
 
@@ -39,13 +39,19 @@ const DataTable = ({ columns = [], rows = [], onEditRow, onDeleteRow }: Props) =
 		},
 	};
 
+	const [pageSize, setPageSize] = useState(5);
+
+	const handlePageSizeChange = useCallback(event => setPageSize(event), [setPageSize]);
+
 	return (
 		<div style={{ height: 400, width: "100%" }}>
 			<DataGrid
 				rows={rows}
 				columns={[...columns, actionsColumn]}
-				pageSize={5}
+				pageSize={pageSize}
 				disableSelectionOnClick
+				rowsPerPageOptions={[5, 10, 15]}
+				onPageSizeChange={handlePageSizeChange}
 			/>
 		</div>
 	);

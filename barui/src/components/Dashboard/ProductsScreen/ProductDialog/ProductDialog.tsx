@@ -77,7 +77,7 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 					setOpen(false);
 				});
 			});
-	}, [actions, setOpen, input, accountId]);
+	}, [actions, setOpen, input, accountId, selectedCategory]);
 
 	const updateProduct = useCallback(() => {
 		if (selectedProduct) {
