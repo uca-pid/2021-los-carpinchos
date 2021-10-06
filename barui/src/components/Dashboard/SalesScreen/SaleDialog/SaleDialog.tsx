@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 
 import AppDialog from "../../../common/AppDialog";
 
-import { deselectSale, addNewSale, getSales } from "../../../../ducks/salesReducer";
+import { deselectSale, addNewSale, getSales, updateSale } from "../../../../ducks/salesReducer";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { ProductSale, Sale } from "../SalesScreen";
@@ -24,6 +24,7 @@ type Props = {
 		deselectSale: Function;
 		addNewSale: Function;
 		getSales: Function;
+		updateSale: Function;
 	};
 	open: boolean;
 	setOpen: Function;
@@ -36,6 +37,11 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 	const [productsSale, setProductsSale] = useState<ProductSale[]>([]);
 
 	const classes = styles();
+
+	const handleOnDialogClose = useCallback(() => {
+		setProductsSale([]);
+		selectedSale && actions.deselectSale();
+	}, [actions, selectedSale]);
 
 	const createSale = useCallback(() => {
 		actions
@@ -50,30 +56,52 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 			});
 	}, [actions, setOpen, accountId, productsSale]);
 
-	const handleOnDialogClose = useCallback(() => {
-		setProductsSale([]);
-		selectedSale && actions.deselectSale();
-	}, [actions, selectedSale]);
+	const total = useCallback(() => {
+		let ps = selectedSale ? selectedSale.productsSale : productsSale;
 
+		let sum = 0;
+		ps.forEach(element => {
+			sum += element.product.price * element.amount;
+		});
+		return sum;
+	}, [selectedSale, productsSale]);
+
+	// NEW SALE
 	const addProductToNewSale = useCallback(
 		(productSale: ProductSale) => setProductsSale(prev => [...prev, productSale]),
 		[setProductsSale]
 	);
 
-	const addProductToExistingSale = useCallback(
-		(productSale: ProductSale) => console.log(`addProductToExistingSale: ${productSale}`),
-		[]
-	);
-
-	const handleUpdateExistingRowFromNewSale = useCallback((productSale: ProductSale) => {
+	const handleUpdateRowFromNewSale = useCallback((productSale: ProductSale) => {
 		setProductsSale(prev =>
 			prev.map(p => (p.product.id === productSale.product.id ? productSale : p))
 		);
 	}, []);
 
-	const handleDeleteExistingRowFromNewSale = useCallback((product: Product) => {
+	const handleDeleteRowFromNewSale = useCallback((product: Product) => {
 		setProductsSale(prev => prev.filter(p => p.product.id !== product.id));
 	}, []);
+
+	// EXISTING SALE
+	const addProductToExistingSale = useCallback(
+		(productSale: ProductSale) => console.log(`addProductToExistingSale: ${productSale}`),
+		[]
+	);
+
+	const handleUpdateRowFromExistingSale = useCallback(
+		(productSale: ProductSale) =>
+			actions.updateSale(selectedSale?.id, {
+				creation_date: new Date().toString(),
+				amount: productSale.amount,
+				productId: productSale.product.id,
+			}),
+		[actions, selectedSale]
+	);
+
+	const handleDeleteRowFromExistingSale = useCallback(
+		(productSale: ProductSale) => console.log(`handleDeleteRowFromExistingSale: ${productSale}`),
+		[]
+	);
 
 	return (
 		<AppDialog
@@ -109,11 +137,16 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 									key={row.product.id}
 									row={row}
 									products={products}
-									onSave={handleUpdateExistingRowFromNewSale}
-									onDelete={handleDeleteExistingRowFromNewSale}
+									onSave={selectedSale ? handleUpdateRowFromExistingSale : handleUpdateRowFromNewSale}
+									onDelete={selectedSale ? handleDeleteRowFromExistingSale : handleDeleteRowFromNewSale}
 								/>
 							);
 						})}
+						<TableRow>
+							<TableCell>TOTAL</TableCell>
+							<TableCell></TableCell>
+							<TableCell align="center">{`$ ${total()}`}</TableCell>
+						</TableRow>
 					</TableBody>
 				</Table>
 			</TableContainer>
@@ -142,7 +175,7 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({ deselectSale, addNewSale, getSales }, dispatch),
+	actions: bindActionCreators({ deselectSale, addNewSale, getSales, updateSale }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SaleDialog);
