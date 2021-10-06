@@ -35,8 +35,7 @@ class TestProducts(APITestCase):
         product3 = p(name='coca', price=9, account=user2 , category = category2)
         product3.full_clean()
         product3.save()
-        date =datetime.datetime(2018, 12, 1)
-        date = date.strftime("%B")
+        date =datetime.date(2018, 12, 1)
         sale1 = s(creation_date=date, account=user)
         sale1.full_clean()
         sale1.save()
@@ -56,8 +55,9 @@ class TestProducts(APITestCase):
 
     def test_sale_creation(self):
         sale = s.sales.first()
+        date = datetime.date(2021, 10, 6)
         self.assertEqual(sale.getSaleId(),1)
-        self.assertEqual(sale.getCreationDate(),'12/12/12')
+        self.assertEqual(sale.getCreationDate(),date)
 
     def test_sale_already_exists(self):
         user = mb_user(name='Sofia', email='sofia@gmail.com',
@@ -77,8 +77,9 @@ class TestProducts(APITestCase):
 
     def test_sale_creation_endPoint(self):
         webClient = self.client
+        date =datetime.date(2018, 12, 1)
         response = webClient.post(
-            '/createSale/1', {'creation_date': '18/06/21','products': [{'productId': 1 , 'amount': 1},{'productId':2, 'amount': 1}]}, format = 'json')
+            '/createSale/1', {'creation_date': date ,'products': [{'productId': 1 , 'amount': 1},{'productId':2, 'amount': 1}]}, format = 'json')
         self.assertEqual(response.status_code, 201)
 
     def test_get_all_sales(self):
@@ -88,11 +89,13 @@ class TestProducts(APITestCase):
 
     def test_modify_sale_details(self):
         webClient = self.client
+        date =datetime.date(2021, 9, 8)
         response = webClient.put(
-            '/updateSaleData/1', {"creation_date": '08/09/21', 'amount':3 , 'productId': 1}, format="json")
+            '/updateSaleData/1', {"creation_date": date, 'amount':3 , 'productId': 1}, format="json")
         self.assertEqual(response.status_code, 200)
         sale = s.getAllSales().filter(sale_id=1).first()
-        self.assertEqual(sale.creation_date, '08/09/21')
+        #print(sale.creation_date)
+        self.assertEqual(sale.creation_date, date)
         product = p.getAllProducts().filter(product_id = 1)
         productBis = product.first()
         sale_product_to_change = Sale_Product.getAllSaleProducts().filter(product = productBis).first()
