@@ -34,6 +34,8 @@ EMAIL_HOST_PASSWORD = 'zmjhxeiffiodadcl'  # past the key or password app here
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'default from email'
+DATE_INPUT_FORMATS = ['%d-%m-%Y']
+
 
 
 ALLOWED_HOSTS = []
