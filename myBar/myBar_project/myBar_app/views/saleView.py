@@ -12,13 +12,15 @@ from rest_framework.renderers import JSONRenderer
 
 from ..serializers.saleSerializer import SaleSerializer
 
+from datetime import datetime
+
 
 @api_view(['POST'])
 def create_sale(request, accountId):
     try:
         account = Mb_user.getAllUsers().filter(
             account_id=accountId).first()
-        sale = Sale(**{'creation_date': request.data.get('creation_date'),
+        sale = Sale(**{'creation_date': datetime.strptime(request.data.get('creation_date'), '%d/%m/%y %H:%M:%S'),
                        'account': account})
         sale.full_clean()
         sale.save()
