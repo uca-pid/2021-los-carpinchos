@@ -2,7 +2,13 @@ import React, { useCallback, useState } from "react";
 
 import AppDialog from "../../../common/AppDialog";
 
-import { deselectSale, addNewSale, getSales, updateSale } from "../../../../ducks/salesReducer";
+import {
+	deselectSale,
+	addNewSale,
+	getSales,
+	updateSale,
+	deleteSaleProduct,
+} from "../../../../ducks/salesReducer";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { ProductSale, Sale } from "../SalesScreen";
@@ -26,6 +32,7 @@ type Props = {
 		addNewSale: Function;
 		getSales: Function;
 		updateSale: Function;
+		deleteSaleProduct: Function;
 	};
 	open: boolean;
 	setOpen: Function;
@@ -80,8 +87,8 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 		);
 	}, []);
 
-	const handleDeleteRowFromNewSale = useCallback((product: Product) => {
-		setProductsSale(prev => prev.filter(p => p.product.id !== product.id));
+	const handleDeleteRowFromNewSale = useCallback((productSale: ProductSale) => {
+		setProductsSale(prev => prev.filter(p => p.product.id !== productSale.product.id));
 	}, []);
 
 	// EXISTING SALE
@@ -91,18 +98,27 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 	);
 
 	const handleUpdateRowFromExistingSale = useCallback(
-		(productSale: ProductSale) =>
-			actions.updateSale(selectedSale?.id, {
-				creation_date: moment().format("DD/MM/YY HH:mm:ss"),
-				amount: productSale.amount,
-				productId: productSale.product.id,
-			}),
-		[actions, selectedSale]
+		(productSale: ProductSale) => {
+			console.log("handleUpdateRowFromExistingSale");
+
+			actions
+				.updateSale(selectedSale?.id, {
+					creation_date: moment().format("DD/MM/YY HH:mm:ss"),
+					amount: productSale.amount,
+					productId: productSale.product.id,
+				})
+				.then(() => actions.getSales(accountId));
+		},
+		[actions, selectedSale, accountId]
 	);
 
 	const handleDeleteRowFromExistingSale = useCallback(
-		(productSale: ProductSale) => console.log(`handleDeleteRowFromExistingSale: ${productSale}`),
-		[]
+		(productSale: ProductSale) => {
+			actions.deleteSaleProduct(productSale.id).then(() => {
+				actions.getSales(accountId);
+			});
+		},
+		[actions, accountId]
 	);
 
 	return (
@@ -136,7 +152,7 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 						{(selectedSale ? selectedSale.productsSale : productsSale).map((row: ProductSale) => {
 							return (
 								<ProductSaleTableRow
-									key={row.product.id}
+									key={row.id}
 									row={row}
 									products={products}
 									onSave={selectedSale ? handleUpdateRowFromExistingSale : handleUpdateRowFromNewSale}
@@ -177,7 +193,10 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({ deselectSale, addNewSale, getSales, updateSale }, dispatch),
+	actions: bindActionCreators(
+		{ deselectSale, addNewSale, getSales, updateSale, deleteSaleProduct },
+		dispatch
+	),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SaleDialog);

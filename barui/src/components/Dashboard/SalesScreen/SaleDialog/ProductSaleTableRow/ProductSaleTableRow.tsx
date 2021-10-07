@@ -60,12 +60,14 @@ const ProductSaleTableRow = ({ products, row, onSave, onDelete }: Props) => {
 
 	const handleClick = useCallback(() => {
 		if (canDelete) {
-			product && onDelete && onDelete(product);
+			row && onDelete && onDelete(row);
 		} else if (canSaveNewRow || canSaveExistingRow) {
 			if (canSaveNewRow) {
 				setProduct(null);
 				setAmount(0);
+				console.log("canSaveNewRow");
 			}
+			console.log("canSaveExistingRow");
 			setEditMode(false);
 			product && onSave && onSave({ amount, product });
 		}

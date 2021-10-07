@@ -35,27 +35,27 @@ class TestProducts(APITestCase):
         product3 = p(name='coca', price=9, account=user2, category=category2)
         product3.full_clean()
         product3.save()
-        date =datetime.date(2021, 10, 6)
-        date2 =datetime.date(2021, 8, 6)
+        date = datetime.date(2021, 10, 6)
+        date2 = datetime.date(2021, 8, 6)
         sale1 = s(creation_date=date, account=user)
         sale1.full_clean()
         sale1.save()
         sale2 = s(creation_date=date, account=user)
         sale2.full_clean()
         sale2.save()
-        sale3 = s(creation_date = date2 , account=user)
+        sale3 = s(creation_date=date2, account=user)
         sale3.full_clean()
         sale3.save()
-        sale_product1 = sp( product = product , quantity_of_product = 3 , sale = sale1)
+        sale_product1 = sp(product=product, quantity_of_product=3, sale=sale1)
         sale_product1.full_clean()
         sale_product1.save()
         sale_product3 = sp(product=product3, quantity_of_product=4, sale=sale1)
         sale_product3.full_clean()
         sale_product3.save()
-        sale_product2 = sp( product=product2, quantity_of_product=3, sale = sale3)
+        sale_product2 = sp(product=product2, quantity_of_product=3, sale=sale3)
         sale_product2.full_clean()
         sale_product2.save()
-        sale_product2 = sp( product=product2, quantity_of_product=3, sale = sale2)
+        sale_product2 = sp(product=product2, quantity_of_product=3, sale=sale2)
         sale_product2.full_clean()
         sale_product2.save()
 
@@ -115,11 +115,12 @@ class TestProducts(APITestCase):
         self.assertEqual(response.status_code, 200)
         sale = s.getAllSales().filter(sale_id=1).first()
         self.assertEqual(sale, None)
-        
+
     def test_get_sales_by_date(self):
         webClient = self.client
-        response = webClient.post('/getAllSalesByDate/1' , { 'fromDay': 10, 'fromMonth':3 , 'fromYear': 2021 , 'toDay': 10, 'toMonth':10  , 'toYear':2021 }, format="json")
-        #print(response.data)
+        response = webClient.post('/getAllSalesByDate/1', {'fromDay': 10, 'fromMonth': 3,
+                                  'fromYear': 2021, 'toDay': 10, 'toMonth': 10, 'toYear': 2021}, format="json")
+        # print(response.data)
         self.assertEqual(len(response.data), 8)
 
     def test_delete_sale_product(self):

@@ -9,9 +9,8 @@ const DESELECT_SALE = "DESELECT_SALE";
 
 const SAVE_SALE_SUCCESS = "SAVE_SALE_SUCCESS";
 
-const UPDATE_SALE_SUCCESS = "UPDATE_SALE_SUCCESS";
-
 const DELETE_SALE_SUCCESS = "DELETE_SALE_SUCCESS";
+const DELETE_SALE_PRODUCT_SUCCESS = "DELETE_SALE_PRODUCT_SUCCESS";
 
 export const getSales = accountId => async dispatch =>
 	await fetcher
@@ -23,6 +22,7 @@ export const getSales = accountId => async dispatch =>
 					id: sale.sale_id,
 					creationDate: new Date(sale.creation_date),
 					productsSale: sale.sale_product.map(p => ({
+						id: p.sale_products,
 						amount: p.quantity_of_product,
 						product: {
 							id: p.product.product_id,
@@ -70,7 +70,6 @@ export const updateSale = (saleId, data) => async dispatch =>
 	await fetcher
 		.put(`updateSaleData/${saleId}`, data)
 		.then(() => {
-			dispatch({ type: UPDATE_SALE_SUCCESS });
 			dispatch(showSuccessMessage("La venta se ha actualizado éxitosamente."));
 		})
 		.catch(() => dispatch(showErrorMessage("No fue posible actualizar la venta. Intente de nuevo.")));
@@ -83,6 +82,14 @@ export const deleteSale = saleId => async dispatch =>
 			dispatch(showSuccessMessage("La venta se ha borrada éxitosamente."));
 		})
 		.catch(() => dispatch(showErrorMessage("Algo salió mal borrar la venta. Intente de nuevo.")));
+
+export const deleteSaleProduct = saleProductId => async dispatch =>
+	await fetcher
+		.delete(`deleteSaleProduct/${saleProductId}`)
+		.then(() => {
+			dispatch({ type: DELETE_SALE_PRODUCT_SUCCESS, productSaleId: saleProductId });
+		})
+		.catch(() => null);
 
 // State
 const initialState = {
@@ -106,10 +113,17 @@ const categoriesReducer = (state = initialState, action) => {
 		case DESELECT_SALE:
 		case SAVE_SALE_SUCCESS:
 		case DELETE_SALE_SUCCESS:
-		case UPDATE_SALE_SUCCESS:
 			return {
 				...state,
 				selectedSale: null,
+			};
+		case DELETE_SALE_PRODUCT_SUCCESS:
+			return {
+				...state,
+				selectedSale: {
+					...state.selectedSale,
+					productsSale: state.selectedSale.productsSale.filter(p => p.id !== action.productSaleId),
+				},
 			};
 		default:
 			return state;

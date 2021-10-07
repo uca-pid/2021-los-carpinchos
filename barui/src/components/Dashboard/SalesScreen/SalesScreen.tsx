@@ -19,6 +19,7 @@ import SaleDialog from "./SaleDialog";
 import DeleteSaleDialog from "./DeleteSaleDialog";
 
 export type ProductSale = {
+	id?: number;
 	product: Product;
 	amount: number;
 };

@@ -60,7 +60,7 @@ const Login = ({ actions, email }: Props) => {
 
 	const handleLogin = useCallback(() => {
 		actions.login(input.email.value, input.password.value).then(() => {
-			history.push("/dashboard/products");
+			history.push("/dashboard");
 		});
 	}, [input, actions, history]);
 

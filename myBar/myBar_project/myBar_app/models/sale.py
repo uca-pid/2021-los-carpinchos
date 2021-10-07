@@ -53,6 +53,7 @@ class Sale(models.Model):
                 product=productBis)).first().modifySaleProduct(argsToChange['amount'])
             sale_product_to_change.full_clean()
             sale_product_to_change.save()
+        print("Holaaaa")
         for arg in keys:
             setattr(self, arg, argsToChange[arg])
         return self
