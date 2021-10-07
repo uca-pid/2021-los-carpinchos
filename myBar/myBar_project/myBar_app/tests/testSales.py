@@ -120,3 +120,10 @@ class TestProducts(APITestCase):
         response = webClient.post('/getAllSalesByDate/1' , { 'fromDay': 10, 'fromMonth':3 , 'fromYear': 2021 , 'toDay': 10, 'toMonth':10  , 'toYear':2021 }, format="json")
         #print(response.data)
         self.assertEqual(len(response.data), 8)
+
+    def test_delete_sale_product(self):
+        webClient = self.client
+        response = webClient.delete('/deleteSaleProduct/1')
+        self.assertEqual(response.status_code, 200)
+        sale_product = sp.getAllSaleProducts().filter(id_sale_product=1).first()
+        self.assertEqual(sale_product, None)

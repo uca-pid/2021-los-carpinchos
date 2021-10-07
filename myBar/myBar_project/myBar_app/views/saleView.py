@@ -158,7 +158,7 @@ def get_all_sales_by_date(request, accountid):
             json_enorme.append(data2)
 
             income = 0
-        print(json_enorme)
+
         return Response(json_enorme, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -167,6 +167,14 @@ def get_all_sales_by_date(request, accountid):
 def delete_sale(request, sale_id):
     try:
         Sale.delete(sale_id)
+        return Response(status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+def delete_sale_product(request, sale_product_id):
+    try:
+        Sale_Product.delete(sale_product_id)
         return Response(status=status.HTTP_200_OK)
     except Exception as e:
         return Response(status=status.HTTP_404_NOT_FOUND)
