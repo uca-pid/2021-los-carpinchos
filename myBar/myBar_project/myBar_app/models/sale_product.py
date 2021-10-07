@@ -15,10 +15,18 @@ class Sale_Product(models.Model):
     sales_products = models.Manager()
 
 
-    def modifySaleProduct(self, **quantity):
+    def modifySaleProduct(self, quantity):
         setattr(self, 'quantity_of_product', quantity)
         return self
 
     @classmethod
     def getAllSaleProducts(cls):
         return cls.sales_products.filter()
+
+    @classmethod
+    def delete(cls, id):
+        sale_product = cls.sales_products.filter(id_sale_product=id)
+        if len(sale_product) == 0:
+            raise Exception("..")
+        else:
+            sale_product.delete()
