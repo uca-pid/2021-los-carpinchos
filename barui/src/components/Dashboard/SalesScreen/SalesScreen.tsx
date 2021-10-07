@@ -12,22 +12,20 @@ import { getSales, selectSale } from "../../../ducks/salesReducer";
 import AddIcon from "@material-ui/icons/Add";
 import { GridColDef } from "@mui/x-data-grid";
 import { Product } from "../ProductsScreen/ProductsScreen";
-import { mockedSales } from "./mockedSales";
 
 import moment from "moment";
 import "moment/locale/es";
 import SaleDialog from "./SaleDialog";
+import DeleteSaleDialog from "./DeleteSaleDialog";
 
 export type ProductSale = {
-	productId?: number;
-	product?: Product;
+	product: Product;
 	amount: number;
 };
 
 export type Sale = {
 	id: number;
 	creationDate: Date;
-	modificationDate: Date;
 	productsSale: ProductSale[];
 };
 
@@ -60,7 +58,7 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 			actions.selectSale(sale);
 			setOpen(true);
 		},
-		[setOpen]
+		[setOpen, actions]
 	);
 
 	const handleDeleteRow = useCallback(
@@ -68,14 +66,14 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 			actions.selectSale(sale);
 			setDeleteOpen(true);
 		},
-		[setDeleteOpen]
+		[setDeleteOpen, actions]
 	);
 
 	return (
 		<Container maxWidth="md">
 			<SaleDialog open={open} setOpen={setOpen} />
 
-			{/* <DeleteProductDialog open={deleteOpen} setOpen={setDeleteOpen} /> */}
+			<DeleteSaleDialog open={deleteOpen} setOpen={setDeleteOpen} />
 
 			<Grid container direction="column" spacing={3}>
 				<Grid alignItems="center" container item>
@@ -98,7 +96,7 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 				<Grid item>
 					<DataTable
 						columns={columns}
-						rows={mockedSales.map(s => ({
+						rows={sales.map(s => ({
 							id: s.id,
 							number: `Venta #${s.id}`,
 							date: moment(s.creationDate).format("DD [de] MMMM [de] YYYY - hh:mm[hs]"),

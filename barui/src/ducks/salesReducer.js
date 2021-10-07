@@ -16,23 +16,34 @@ export const getSales = accountId => async dispatch =>
 	await fetcher
 		.get(`getAllSales/${accountId}`)
 		.then(response => {
-			console.log(response);
 			dispatch({
 				type: GET_USER_SALES_SUCCES,
-				// userSales: response.map(cat => ({
-				// 	id: cat.category_id,
-				// 	name: cat.category_name,
-				// 	static: cat.static,
-				// })),
+				userSales: response.map(sale => ({
+					id: sale.sale_id,
+					creationDate: new Date(sale.creation_date),
+					productsSale: sale.sale_product.map(p => ({
+						amount: p.quantity_of_product,
+						product: {
+							id: p.product.product_id,
+							name: p.product.name,
+							price: p.product.price,
+							category: {
+								id: p.product.category.category_id,
+								name: p.product.category.category_name,
+								static: p.product.category.category_static,
+							},
+						},
+					})),
+				})),
 			});
 		})
 		.catch(() => {
 			dispatch(showErrorMessage("No se pudieron obtener las ventas. Recargue la página."));
 		});
 
-export const addNewSale = (name, accountId) => async dispatch =>
+export const addNewSale = (accountId, productsSale) => async dispatch =>
 	await fetcher
-		.post(`createSale/${accountId}`, { name })
+		.post(`createSale/${accountId}`, { creation_date: new Date().toString(), products: productsSale })
 		.then(response => {
 			dispatch({ type: SAVE_SALE_SUCCESS });
 			dispatch(showSuccessMessage("Una nueva venta ha sido creada."));
