@@ -118,5 +118,5 @@ class TestProducts(APITestCase):
     def test_get_sales_by_date(self):
         webClient = self.client
         response = webClient.post('/getAllSalesByDate/1' , { 'fromDay': 10, 'fromMonth':3 , 'fromYear': 2021 , 'toDay': 10, 'toMonth':10  , 'toYear':2021 }, format="json")
-        print(response.data)
+        #print(response.data)
         self.assertEqual(len(response.data), 8)
