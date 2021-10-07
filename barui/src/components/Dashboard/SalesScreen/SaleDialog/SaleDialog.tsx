@@ -18,6 +18,7 @@ import ProductSaleTableRow from "./ProductSaleTableRow";
 
 import styles from "./styles";
 import { Product } from "../../ProductsScreen/ProductsScreen";
+import moment from "moment";
 
 type Props = {
 	actions: {
@@ -52,6 +53,7 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 			.then(() => {
 				actions.getSales(accountId).then(() => {
 					setOpen(false);
+					setProductsSale([]);
 				});
 			});
 	}, [actions, setOpen, accountId, productsSale]);
@@ -91,7 +93,7 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 	const handleUpdateRowFromExistingSale = useCallback(
 		(productSale: ProductSale) =>
 			actions.updateSale(selectedSale?.id, {
-				creation_date: new Date().toString(),
+				creation_date: moment().format("DD/MM/YY HH:mm:ss"),
 				amount: productSale.amount,
 				productId: productSale.product.id,
 			}),

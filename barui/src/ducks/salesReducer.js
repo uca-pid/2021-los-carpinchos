@@ -1,5 +1,6 @@
 import fetcher from "./fetcher";
 import { showErrorMessage, showSuccessMessage } from "./notificationsReducer";
+import moment from "moment";
 
 const GET_USER_SALES_SUCCES = "GET_USER_SALES_SUCCES";
 
@@ -43,7 +44,10 @@ export const getSales = accountId => async dispatch =>
 
 export const addNewSale = (accountId, productsSale) => async dispatch =>
 	await fetcher
-		.post(`createSale/${accountId}`, { creation_date: new Date().toString(), products: productsSale })
+		.post(`createSale/${accountId}`, {
+			creation_date: moment().format("DD/MM/YY HH:mm:ss"),
+			products: productsSale,
+		})
 		.then(response => {
 			dispatch({ type: SAVE_SALE_SUCCESS });
 			dispatch(showSuccessMessage("Una nueva venta ha sido creada."));
