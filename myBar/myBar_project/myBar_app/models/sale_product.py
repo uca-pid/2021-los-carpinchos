@@ -15,7 +15,7 @@ class Sale_Product(models.Model):
     sales_products = models.Manager()
 
 
-    def modifySaleProduct(self, **quantity):
+    def modifySaleProduct(self, quantity):
         setattr(self, 'quantity_of_product', quantity)
         return self
 

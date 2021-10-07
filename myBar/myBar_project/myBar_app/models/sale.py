@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.conf import settings
 from django.db import models
 from rest_framework.fields import DateField
@@ -9,7 +11,7 @@ from .user import Mb_user
 
 class Sale(models.Model):
     sale_id = models.AutoField(primary_key=True)
-    creation_date = models.DateField(auto_now_add=True)
+    creation_date = models.DateField(default=date.today)
     account = models.ForeignKey(
         Mb_user, on_delete=models.CASCADE, default=None)
 

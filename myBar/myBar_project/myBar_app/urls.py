@@ -35,4 +35,5 @@ urlpatterns = [
     path('getAllSales/<int:accountid>', saleView.get_all_sales, name='get_all_sales'),
     path('updateSaleData/<int:sale_id>', saleView.update_sale_details, name='update_sale_details'),
     path('deleteSale/<int:sale_id>', saleView.delete_sale, name='delete_sale'),
+    path('getAllSalesByDate/<int:accountid>', saleView.get_all_sales_by_date, name='get_all_sales_by_date'),
 ]

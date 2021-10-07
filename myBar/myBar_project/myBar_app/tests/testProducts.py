@@ -71,7 +71,7 @@ class TestProducts(APITestCase):
         products = p.getAllProducts()
         webClient = self.client
         response = webClient.get('/getAllProducts/2')
-        print(JSONRenderer().render(response.data))
+        #print(JSONRenderer().render(response.data))
         self.assertEqual(len(response.data), 2)
 
     def test_modify_product_details(self):

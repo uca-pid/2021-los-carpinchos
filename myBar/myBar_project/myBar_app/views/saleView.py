@@ -1,3 +1,5 @@
+import datetime
+
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework import status
@@ -11,6 +13,7 @@ from ..models.sale import Sale
 from rest_framework.renderers import JSONRenderer
 
 from ..serializers.saleSerializer import SaleSerializer
+from dateutil import rrule
 
 
 @api_view(['POST'])
@@ -43,7 +46,7 @@ def create_sale(request, accountId):
 @api_view(['GET'])
 def get_all_sales(request, accountid):
     sale = Sale.sales.filter(account_id=accountid).values()
-    #print(sale)
+    # print(sale)
     sale_ids = Sale.sales.filter(account_id=accountid).values()
     sale_product_id = Sale.sales.filter(account_id=accountid).values("sale_id", "sale_products__id_sale_product",
                                                                      "sale_products__quantity_of_product",
@@ -52,22 +55,22 @@ def get_all_sales(request, accountid):
                                                                      "sale_products__product__price",
                                                                      "sale_products__product__category__category_id",
                                                                      "sale_products__product__category__category_name",
-                                                                    "sale_products__product__category__static")
+                                                                     "sale_products__product__category__static")
     json_enorme = []
     for id in sale_ids:
-        json_list=[]
+        json_list = []
         id = id['sale_id']
-        products_by_sale_id = sale_product_id.filter(sale_id= id).values("sale_id", "sale_products__id_sale_product",
-                                                                         "sale_products__quantity_of_product",
-                                                                         "sale_products__product__product_id",
-                                                                         "sale_products__product__name",
-                                                                         "sale_products__product__price",
-                                                                         "sale_products__product__category__category_id",
-                                                                         "sale_products__product__category__category_name",
-                                                                         "sale_products__product__category__static")
-        #print(products_by_sale_id)
+        products_by_sale_id = sale_product_id.filter(sale_id=id).values("sale_id", "sale_products__id_sale_product",
+                                                                        "sale_products__quantity_of_product",
+                                                                        "sale_products__product__product_id",
+                                                                        "sale_products__product__name",
+                                                                        "sale_products__product__price",
+                                                                        "sale_products__product__category__category_id",
+                                                                        "sale_products__product__category__category_name",
+                                                                        "sale_products__product__category__static")
+        # print(products_by_sale_id)
         for product in products_by_sale_id:
-            #print(product)
+            # print(product)
             data = {
                 "sale_products": product["sale_products__id_sale_product"],
                 "quantity_of_product": product["sale_products__quantity_of_product"],
@@ -86,11 +89,68 @@ def get_all_sales(request, accountid):
             }
             json_list.append(data)
         data2 = {"sale_id": id,
-                 "sale_product":json_list
+                 "sale_product": json_list
                  }
-        json_enorme .append(data2)
+        json_enorme.append(data2)
 
     return Response(json_enorme, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def get_all_sales_by_date(request, accountid):
+    try:
+        fromDay = request.data.get('fromDay')
+        fromMonth = request.data.get('fromMonth')
+        fromYear = request.data.get('fromYear')
+        toMonth = request.data.get('toMonth')
+        toYear = request.data.get('toYear')
+        toDay = request.data.get('toDay')
+        sales_ids = Sale.sales.filter(account_id=accountid).values()
+        sale_product_id = Sale.sales.filter(account_id=accountid).exclude(
+        creation_date__gt=datetime.date(toYear, toMonth, toDay),
+        creation_date__lte=datetime.date(fromYear, fromMonth, fromDay)).values("sale_id", 'creation_date',
+                                                                               "sale_products__id_sale_product",
+                                                                               "sale_products__quantity_of_product",
+                                                                               "sale_products__product__product_id",
+                                                                               "sale_products__product__name",
+                                                                               "sale_products__product__price")
+
+        json_enorme = []
+        income = 0
+        dates = list(rrule.rrule(rrule.MONTHLY, dtstart=datetime.date(fromYear, fromMonth, fromDay),
+                             until=datetime.date(toYear, toMonth, toDay)))
+        for date in dates:
+
+            for sale in sale_product_id:
+
+                sale_product_id = Sale.sales.filter(account_id=accountid).exclude(
+                creation_date__gt=datetime.date(toYear, toMonth, toDay),
+                creation_date__lte=datetime.date(fromYear, fromMonth, fromDay)).values("sale_id",
+                                                                                       "creation_date",
+                                                                                       "sale_products__id_sale_product",
+                                                                                       "sale_products__quantity_of_product",
+                                                                                       "sale_products__product__product_id",
+                                                                                       "sale_products__product__name",
+                                                                                       "sale_products__product__price", )
+
+                creation_date = sale['creation_date']
+
+                if date.year == creation_date.year and date.month == creation_date.month:
+                    income = income + (sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
+
+            data2 = {"month": date.month,
+                 "year": date.year,
+                 "income": income
+                 }
+            json_enorme.append(data2)
+
+            income = 0
+
+        return Response(json_enorme, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 @api_view(['PUT'])
@@ -100,6 +160,7 @@ def update_sale_details(request, sale_id):
     if sale_found:
         try:
             sale_found = sale_found.modify_Sale(**(request.data))
+            print(sale_found)
             sale_found.full_clean()
             sale_found.save()
             return Response(status=status.HTTP_200_OK)
