@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Paper from "@material-ui/core/Paper";
+
 import {
 	Chart,
 	BarSeries,
@@ -13,11 +13,11 @@ import Card from "@material-ui/core/Card";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { getSalesBarsChart } from "../../../ducks/chartReducer";
-import { Button, Container, Grid, Typography } from "@material-ui/core";
+import { Container } from "@material-ui/core";
 
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { DatePicker } from "@material-ui/pickers";
 import moment from "moment";
-import MomentUtils from "@date-io/moment";
+
 import "moment/locale/es";
 import styles from "./styles";
 
@@ -49,16 +49,14 @@ const ChartsScreen = ({ actions, accountId, salesChartData }: Props) => {
 	return (
 		<Container maxWidth="md">
 			<Card className={classes.card}>
-				<MuiPickersUtilsProvider utils={MomentUtils}>
-					<DatePicker
-						variant="dialog"
-						openTo="year"
-						views={["year"]}
-						label="Año"
-						value={year}
-						onChange={handleDateChange}
-					/>
-				</MuiPickersUtilsProvider>
+				<DatePicker
+					variant="dialog"
+					openTo="year"
+					views={["year"]}
+					label="Año"
+					value={year}
+					onChange={handleDateChange}
+				/>
 				{salesChartData && (
 					<Chart data={salesChartData}>
 						<ArgumentAxis />

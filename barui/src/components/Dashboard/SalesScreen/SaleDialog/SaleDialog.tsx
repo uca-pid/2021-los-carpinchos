@@ -1,6 +1,21 @@
 import React, { useCallback, useState } from "react";
 
+import { ProductSale, Sale } from "../SalesScreen";
+import { Product } from "../../ProductsScreen/ProductsScreen";
+
+import { Grid, Typography } from "@material-ui/core";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import { DatePicker } from "@material-ui/pickers";
+
 import AppDialog from "../../../common/AppDialog";
+import ProductSaleTableRow from "./ProductSaleTableRow";
+import SaleInputForm from "./SaleInputForm";
 
 import {
 	deselectSale,
@@ -11,19 +26,9 @@ import {
 } from "../../../../ducks/salesReducer";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { ProductSale, Sale } from "../SalesScreen";
-
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
-import ProductSaleTableRow from "./ProductSaleTableRow";
 
 import styles from "./styles";
-import { Product } from "../../ProductsScreen/ProductsScreen";
+
 import moment from "moment";
 
 type Props = {
@@ -43,8 +48,11 @@ type Props = {
 
 const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products }: Props) => {
 	const [productsSale, setProductsSale] = useState<ProductSale[]>([]);
+	const [date, setDate] = useState(new Date());
 
 	const classes = styles();
+
+	const handleDateChange = useCallback(date => setDate(date), []);
 
 	const handleOnDialogClose = useCallback(() => {
 		setProductsSale([]);
@@ -55,7 +63,8 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 		actions
 			.addNewSale(
 				accountId,
-				productsSale.map(p => ({ productId: p.product.id, amount: p.amount }))
+				productsSale.map(p => ({ productId: p.product.id, amount: p.amount })),
+				date
 			)
 			.then(() => {
 				actions.getSales(accountId).then(() => {
@@ -63,9 +72,9 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 					setProductsSale([]);
 				});
 			});
-	}, [actions, setOpen, accountId, productsSale]);
+	}, [actions, setOpen, accountId, productsSale, date]);
 
-	const total = useCallback(() => {
+	const calculateTotalSum = useCallback(() => {
 		let ps = selectedSale ? selectedSale.productsSale : productsSale;
 
 		let sum = 0;
@@ -98,17 +107,14 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 	);
 
 	const handleUpdateRowFromExistingSale = useCallback(
-		(productSale: ProductSale) => {
-			console.log("handleUpdateRowFromExistingSale");
-
+		(productSale: ProductSale) =>
 			actions
 				.updateSale(selectedSale?.id, {
 					creation_date: moment().format("DD/MM/YY HH:mm:ss"),
 					amount: productSale.amount,
 					productId: productSale.product.id,
 				})
-				.then(() => actions.getSales(accountId));
-		},
+				.then(() => actions.getSales(accountId)),
 		[actions, selectedSale, accountId]
 	);
 
@@ -132,42 +138,67 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 			title={selectedSale ? `Venta #${selectedSale.id}` : "Venta Nuevo"}
 			hideActions={Boolean(selectedSale)}
 		>
-			<TableContainer component={Paper} variant="outlined" className={classes.table}>
-				<Table stickyHeader>
-					<TableHead>
-						<TableRow>
-							<TableCell>Producto</TableCell>
-							<TableCell>Cantidad</TableCell>
-							<TableCell align="center">Subtotal</TableCell>
-							<TableCell align="right">Acciones</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						<ProductSaleTableRow
-							onSave={selectedSale ? addProductToExistingSale : addProductToNewSale}
-							products={products.filter(
-								item => productsSale.findIndex(x => x.product.id === item.id) === -1
-							)}
-						/>
-						{(selectedSale ? selectedSale.productsSale : productsSale).map((row: ProductSale) => {
-							return (
-								<ProductSaleTableRow
-									key={row.id}
-									row={row}
-									products={products}
-									onSave={selectedSale ? handleUpdateRowFromExistingSale : handleUpdateRowFromNewSale}
-									onDelete={selectedSale ? handleDeleteRowFromExistingSale : handleDeleteRowFromNewSale}
-								/>
-							);
-						})}
-						<TableRow>
-							<TableCell>TOTAL</TableCell>
-							<TableCell></TableCell>
-							<TableCell align="center">{`$ ${total()}`}</TableCell>
-						</TableRow>
-					</TableBody>
-				</Table>
-			</TableContainer>
+			<Grid container direction="column" spacing={2}>
+				<Grid item xs>
+					<DatePicker
+						variant="dialog"
+						label="Fecha"
+						format="D [de] MMMM [de] yyyy"
+						value={selectedSale ? selectedSale.creationDate : date}
+						onChange={handleDateChange}
+					/>
+				</Grid>
+				<Grid item xs>
+					<SaleInputForm
+						products={products.filter(
+							item =>
+								(selectedSale ? selectedSale.productsSale : productsSale).findIndex(
+									x => x.product.id === item.id
+								) === -1
+						)}
+						onAdd={selectedSale ? addProductToExistingSale : addProductToNewSale}
+					/>
+				</Grid>
+				{(selectedSale ? selectedSale.productsSale : productsSale).length > 0 && (
+					<Grid item xs>
+						<TableContainer component={Paper} variant="outlined" className={classes.table}>
+							<Table stickyHeader size="small">
+								<TableHead>
+									<TableRow>
+										<TableCell>Producto</TableCell>
+										<TableCell>Cantidad</TableCell>
+										<TableCell align="center">Subtotal</TableCell>
+										<TableCell align="right">Acciones</TableCell>
+									</TableRow>
+								</TableHead>
+								<TableBody>
+									{(selectedSale ? selectedSale.productsSale : productsSale).map((row: ProductSale) => {
+										return (
+											<ProductSaleTableRow
+												key={row.id}
+												row={row}
+												products={products}
+												onSave={selectedSale ? handleUpdateRowFromExistingSale : handleUpdateRowFromNewSale}
+												onDelete={selectedSale ? handleDeleteRowFromExistingSale : handleDeleteRowFromNewSale}
+											/>
+										);
+									})}
+									<TableRow>
+										<TableCell>
+											<Typography variant="h6">TOTAL</Typography>
+										</TableCell>
+										<TableCell></TableCell>
+										<TableCell align="center">
+											<Typography variant="h6">{`$ ${calculateTotalSum()}`}</Typography>
+										</TableCell>
+										<TableCell></TableCell>
+									</TableRow>
+								</TableBody>
+							</Table>
+						</TableContainer>
+					</Grid>
+				)}
+			</Grid>
 		</AppDialog>
 	);
 };

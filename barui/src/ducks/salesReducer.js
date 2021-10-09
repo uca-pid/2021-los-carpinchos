@@ -42,10 +42,10 @@ export const getSales = accountId => async dispatch =>
 			dispatch(showErrorMessage("No se pudieron obtener las ventas. Recargue la página."));
 		});
 
-export const addNewSale = (accountId, productsSale) => async dispatch =>
+export const addNewSale = (accountId, productsSale, date) => async dispatch =>
 	await fetcher
 		.post(`createSale/${accountId}`, {
-			creation_date: moment().format("DD/MM/YY HH:mm:ss"),
+			creation_date: moment(date).format("DD/MM/YY HH:mm:ss"),
 			products: productsSale,
 		})
 		.then(response => {

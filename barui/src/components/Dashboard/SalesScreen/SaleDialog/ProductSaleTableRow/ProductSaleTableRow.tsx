@@ -1,32 +1,30 @@
 import React, { useCallback, useEffect, useState } from "react";
+
+import { ProductSale } from "../../SalesScreen";
+import { Product } from "../../../ProductsScreen/ProductsScreen";
+
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 
-import { Grid, Typography } from "@material-ui/core";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import IconButton from "@material-ui/core/IconButton";
+import AmountInput from "../AmountInput";
+import ProductsSelect from "../ProductsSelect";
 
+import IconButton from "@material-ui/core/IconButton";
 import ClearRoundedIcon from "@material-ui/icons/ClearRounded";
-import RemoveRoundedIcon from "@material-ui/icons/RemoveRounded";
-import AddRoundedIcon from "@material-ui/icons/AddRounded";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import SaveIcon from "@material-ui/icons/Save";
 import styles from "./styles";
-
-import { ProductSale } from "../../SalesScreen";
-import { Product } from "../../../ProductsScreen/ProductsScreen";
 
 type Props = {
 	row?: ProductSale;
 	products: Product[];
 	onSave?: Function;
 	onDelete?: Function;
+	className?: string;
 };
 
-const ProductSaleTableRow = ({ products, row, onSave, onDelete }: Props) => {
+const ProductSaleTableRow = ({ products, row, onSave, onDelete, className }: Props) => {
 	const [product, setProduct] = useState<Product | null>(null);
 	const [amount, setAmount] = useState(0);
 	const [editMode, setEditMode] = useState(false);
@@ -74,45 +72,22 @@ const ProductSaleTableRow = ({ products, row, onSave, onDelete }: Props) => {
 	}, [onSave, product, amount, canSaveNewRow, onDelete]);
 
 	return (
-		<TableRow className={row ? "" : classes.newRow}>
+		<TableRow className={`${row ? "" : classes.newRow} ${className}`}>
 			<TableCell>
-				<FormControl className={classes.productsSelect}>
-					<Select value={(product && product.id) ?? 0} onChange={handleChange} disabled={Boolean(row)}>
-						<MenuItem value={0} disabled>
-							Seleccionar
-						</MenuItem>
-						{products.map((product: Product) => (
-							<MenuItem key={`${product.name}-${product.id}`} value={product.id}>
-								{product.name}
-							</MenuItem>
-						))}
-					</Select>
-				</FormControl>
+				<ProductsSelect
+					value={(product && product.id) ?? 0}
+					onChange={handleChange}
+					disabled={Boolean(row)}
+					products={products}
+				/>
 			</TableCell>
 			<TableCell align="center">
-				<Grid alignItems="center" container direction="row" spacing={2}>
-					<Grid item>
-						<Typography>{amount}</Typography>
-					</Grid>
-					{(editMode || !row) && (
-						<Grid item>
-							<div>
-								<Grid container direction="column">
-									<Grid item>
-										<IconButton color="primary" size="small" onClick={handleAdd}>
-											<AddRoundedIcon />
-										</IconButton>
-									</Grid>
-									<Grid item>
-										<IconButton color="primary" size="small" onClick={handleRemove} disabled={amount === 0}>
-											<RemoveRoundedIcon />
-										</IconButton>
-									</Grid>
-								</Grid>
-							</div>
-						</Grid>
-					)}
-				</Grid>
+				<AmountInput
+					amount={amount}
+					disabled={!(editMode || !row)}
+					onAdd={handleAdd}
+					onRemove={handleRemove}
+				/>
 			</TableCell>
 			<TableCell align="center">
 				{amount !== 0 && `$ ${product ? product.price * amount : "0"}`}
@@ -142,25 +117,4 @@ const ProductSaleTableRow = ({ products, row, onSave, onDelete }: Props) => {
 	);
 };
 
-// type State = {
-// 	// session: {
-// 	// 	accountData: {
-// 	// 		id: number;
-// 	// 	};
-// 	// };
-// 	// products: {
-// 	// 	userProducts: Product[];
-// 	// };
-// };
-
-// const mapStateToProps = (state: State) => ({
-// 	//products: state?.products?.userProducts,
-// 	//id: state?.session?.accountData?.id,
-// });
-
-// const mapDispatchToProps = (dispatch: Dispatch) => ({
-// 	actions: bindActionCreators({ selectProduct, getAllProducts }, dispatch),
-// });
-
-// export default connect(mapStateToProps)(ProductSaleTableRow);
 export default ProductSaleTableRow;

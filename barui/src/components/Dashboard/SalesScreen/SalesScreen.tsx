@@ -1,22 +1,22 @@
 import React, { useState, useCallback, useEffect } from "react";
 
-import DataTable from "../../common/DataTable";
+import { GridColDef } from "@mui/x-data-grid";
+import { Product } from "../ProductsScreen/ProductsScreen";
+
 import { Button, Container, Grid, Typography } from "@material-ui/core";
+
+import DataTable from "../../common/DataTable";
+import SaleDialog from "./SaleDialog";
+import DeleteSaleDialog from "./DeleteSaleDialog";
+
+import AddIcon from "@material-ui/icons/Add";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { getSales, selectSale } from "../../../ducks/salesReducer";
 
-// import ProductDialog from "./ProductDialog";
-// import DeleteProductDialog from "./DeleteProductDialog";
-import AddIcon from "@material-ui/icons/Add";
-import { GridColDef } from "@mui/x-data-grid";
-import { Product } from "../ProductsScreen/ProductsScreen";
-
 import moment from "moment";
 import "moment/locale/es";
-import SaleDialog from "./SaleDialog";
-import DeleteSaleDialog from "./DeleteSaleDialog";
 
 export type ProductSale = {
 	id?: number;
