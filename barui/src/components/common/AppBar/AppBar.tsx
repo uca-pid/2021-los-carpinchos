@@ -15,6 +15,7 @@ import SettingsMenu from "./SettingsMenu";
 
 import ProductsMenuIcon from "@material-ui/icons/MenuBook";
 import ReceiptIcon from "@material-ui/icons/Receipt";
+import HomeIcon from "@material-ui/icons/House";
 
 import { connect } from "react-redux";
 
@@ -36,6 +37,8 @@ const AppBar = ({ accountName, width }: Props) => {
 
 	const handleProductsButton = useCallback(() => history.push("/dashboard/products"), [history]);
 
+	const handleHomeButton = useCallback(() => history.push("/dashboard"), [history]);
+
 	const handleSalesButton = useCallback(() => history.push("/dashboard/sales"), [history]);
 
 	return (
@@ -53,6 +56,19 @@ const AppBar = ({ accountName, width }: Props) => {
 						</Grid>
 						{location.pathname.startsWith("/dashboard") && width !== "xs" ? (
 							<Grid container className={classes.navigationContainer} item xs spacing={2}>
+								<Grid item>
+									<Button
+										variant="text"
+										color="inherit"
+										className={`${classes.navigationButtons} ${
+											location.pathname === "/dashboard" && classes.currentLocation
+										}`}
+										onClick={handleHomeButton}
+										startIcon={<HomeIcon fontSize="small" />}
+									>
+										Inicio
+									</Button>
+								</Grid>
 								<Grid item>
 									<Button
 										variant="text"

@@ -48,7 +48,7 @@ const CategoryFilterSelect = () => {
 				</React.Fragment>
 			)}
 			renderInput={params => (
-				<TextField {...params} label="Categorías mostradas" placeholder="Categoría" />
+				<TextField {...params} label="Categorías seleccionadas" placeholder="Categoría" />
 			)}
 		/>
 	);
