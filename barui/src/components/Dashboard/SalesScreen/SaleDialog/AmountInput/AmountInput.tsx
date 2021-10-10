@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 
 import { Grid, Typography } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";

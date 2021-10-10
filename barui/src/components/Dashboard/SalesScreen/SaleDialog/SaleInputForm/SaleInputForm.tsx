@@ -14,10 +14,9 @@ import styles from "./styles";
 type Props = {
 	products: Product[];
 	onAdd: Function;
-	className?: string;
 };
 
-const SaleInputForm = ({ className, products, onAdd }: Props) => {
+const SaleInputForm = ({ products, onAdd }: Props) => {
 	const [amount, setAmount] = useState(0);
 	const [product, setProduct] = useState<Product | null>(null);
 

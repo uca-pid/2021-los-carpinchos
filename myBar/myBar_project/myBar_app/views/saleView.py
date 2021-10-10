@@ -106,8 +106,15 @@ def update_sale_details(request, sale_id):
     sale_found = sale.first()
     if sale_found:
         try:
-            sale_found = sale_found.modify_Sale(**{'creation_date': datetime.strptime(request.data.get(
-                'creation_date'), '%d/%m/%y %H:%M:%S'), 'amount': request.data.get("amount"), 'productId': request.data.get("productId")})
+            date = request.data.get('creation_date')
+            amount = request.data.get("amount")
+            productId = request.data.get("productId")
+            if date:
+                sale_found.modify_Sale(**{'creation_date': datetime.strptime(date, '%d/%m/%y %H:%M:%S')})
+
+            if amount and productId:
+                sale_found.modify_Sale(**{'amount': amount, 'productId': productId})
+
             sale_found.full_clean()
             sale_found.save()
             return Response(status=status.HTTP_200_OK)
@@ -117,7 +124,7 @@ def update_sale_details(request, sale_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['POST'])
+@ api_view(['POST'])
 def get_all_sales_by_date(request, accountid):
     try:
         fromDay = datetime.strptime(request.data.get('from'), '%d/%m/%y')
@@ -173,7 +180,7 @@ def get_all_sales_by_date(request, accountid):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['DELETE'])
+@ api_view(['DELETE'])
 def delete_sale(request, sale_id):
     try:
         Sale.delete(sale_id)
@@ -182,7 +189,7 @@ def delete_sale(request, sale_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['DELETE'])
+@ api_view(['DELETE'])
 def delete_sale_product(request, sale_product_id):
     try:
         Sale_Product.delete(sale_product_id)

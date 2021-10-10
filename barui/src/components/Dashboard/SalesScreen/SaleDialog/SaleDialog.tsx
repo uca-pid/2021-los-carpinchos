@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 
 import { ProductSale, Sale } from "../SalesScreen";
 import { Product } from "../../ProductsScreen/ProductsScreen";
@@ -52,7 +52,9 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 
 	const classes = styles();
 
-	const handleDateChange = useCallback(date => setDate(date), []);
+	useEffect(() => {
+		selectedSale && setDate(selectedSale.creationDate);
+	}, [selectedSale]);
 
 	const handleOnDialogClose = useCallback(() => {
 		setProductsSale([]);
@@ -110,12 +112,38 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 		(productSale: ProductSale) =>
 			actions
 				.updateSale(selectedSale?.id, {
-					creation_date: moment().format("DD/MM/YY HH:mm:ss"),
 					amount: productSale.amount,
 					productId: productSale.product.id,
 				})
 				.then(() => actions.getSales(accountId)),
 		[actions, selectedSale, accountId]
+	);
+
+	const handleUpdateDate = useCallback(
+		newDate => {
+			console.log(moment(newDate).startOf("day").toString());
+			console.log(moment(selectedSale?.creationDate).startOf("day").toString());
+			console.log(
+				moment(newDate).startOf("day").diff(moment(selectedSale?.creationDate).startOf("day"), "days")
+			);
+			moment(newDate)
+				.startOf("day")
+				.diff(moment(selectedSale?.creationDate).startOf("day"), "days") !== 0 &&
+				actions
+					.updateSale(selectedSale?.id, {
+						creation_date: moment(newDate).format("DD/MM/YY HH:mm:ss"),
+					})
+					.then(() => actions.getSales(accountId));
+		},
+		[actions, selectedSale, accountId]
+	);
+
+	const handleDateChange = useCallback(
+		date => {
+			setDate(date);
+			handleUpdateDate(date);
+		},
+		[handleUpdateDate]
 	);
 
 	const handleDeleteRowFromExistingSale = useCallback(
@@ -144,7 +172,7 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 						variant="dialog"
 						label="Fecha"
 						format="D [de] MMMM [de] yyyy"
-						value={selectedSale ? selectedSale.creationDate : date}
+						value={date}
 						onChange={handleDateChange}
 					/>
 				</Grid>

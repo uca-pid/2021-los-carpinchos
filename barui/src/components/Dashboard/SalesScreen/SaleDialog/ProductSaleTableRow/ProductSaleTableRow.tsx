@@ -69,7 +69,7 @@ const ProductSaleTableRow = ({ products, row, onSave, onDelete, className }: Pro
 			setEditMode(false);
 			product && onSave && onSave({ amount, product });
 		}
-	}, [onSave, product, amount, canSaveNewRow, onDelete]);
+	}, [onSave, product, amount, canSaveNewRow, onDelete, canDelete, canSaveExistingRow, row]);
 
 	return (
 		<TableRow className={`${row ? "" : classes.newRow} ${className}`}>
