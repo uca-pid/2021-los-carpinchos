@@ -60,7 +60,7 @@ const CategoriesScreen = ({ actions, accountId, userCategories }: Props) => {
 				<Grid alignItems="center" container item>
 					<Grid item xs>
 						<Typography variant="h5" color="primary">
-							Categorias
+							Categorias Personalizadas
 						</Typography>
 					</Grid>
 					<Grid item>

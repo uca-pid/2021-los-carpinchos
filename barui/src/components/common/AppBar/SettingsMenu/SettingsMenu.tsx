@@ -15,6 +15,7 @@ import ProductsMenuIcon from "@material-ui/icons/MenuBook";
 import ReceiptIcon from "@material-ui/icons/Receipt";
 import ProfileIcon from "@material-ui/icons/AccountCircle";
 import LogOutIcon from "@material-ui/icons/ExitToApp";
+import HomeIcon from "@material-ui/icons/House";
 
 type Props = {
 	width: Breakpoint;
@@ -31,6 +32,11 @@ const SettingsMenu = ({ width }: Props) => {
 	const handleClose = useCallback(() => {
 		setAnchorEl(null);
 	}, [setAnchorEl]);
+
+	const goToHome = useCallback(() => {
+		history.push("/dashboard");
+		handleClose();
+	}, [history, handleClose]);
 
 	const goToProducts = useCallback(() => {
 		history.push("/dashboard/products");
@@ -70,6 +76,14 @@ const SettingsMenu = ({ width }: Props) => {
 				open={Boolean(anchorEl)}
 				onClose={handleClose}
 			>
+				{width === "xs" && (
+					<MenuItem onClick={goToHome}>
+						<ListItemIcon>
+							<HomeIcon fontSize="small" />
+						</ListItemIcon>
+						<ListItemText primary="Inicio" />
+					</MenuItem>
+				)}
 				{width === "xs" && (
 					<MenuItem onClick={goToProducts}>
 						<ListItemIcon>

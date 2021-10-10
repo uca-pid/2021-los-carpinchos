@@ -4,6 +4,7 @@ import { Switch, Route, useRouteMatch } from "react-router-dom";
 import ProductsScreen from "./ProductsScreen";
 import SettingsScreen from "./SettingsScreen";
 import SalesScreen from "./SalesScreen";
+import ChartsScreen from "./ChartsScreen";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -28,6 +29,9 @@ const Dashboard = ({ actions }: Props) => {
 
 	return (
 		<Switch>
+			<Route exact path={path}>
+				<ChartsScreen />
+			</Route>
 			<Route path={`${path}/settings`}>
 				<SettingsScreen />
 			</Route>
