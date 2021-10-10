@@ -12,7 +12,10 @@ export const getSalesBarsChart = (accountId, from, to) => async dispatch =>
 		.then(response => {
 			dispatch({
 				type: GET_BARS_CHART_SUCCESS,
-				yearIncomes: response.map(r => ({ ...r, month: moment(r.month, "M").format("MMMM") })),
+				yearIncomes: response.map(r => ({
+					...r,
+					month: moment(r.month, "M").format("MMMM").substr(0, 3),
+				})),
 			});
 			return response;
 		})
