@@ -66,3 +66,10 @@ class Goal(models.Model):
 
             setattr(self, arg, argsToChange[arg])
         return self
+    @classmethod
+    def delete(cls, id):
+        goal = cls.goals.filter(goal_id=id)
+        if len(goal) == 0:
+            raise Exception("..")
+        else:
+            goal.delete()
