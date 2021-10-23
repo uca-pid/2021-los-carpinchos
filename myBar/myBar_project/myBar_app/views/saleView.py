@@ -16,6 +16,7 @@ from rest_framework.renderers import JSONRenderer
 from ..serializers.saleSerializer import SaleSerializer
 from dateutil import rrule
 
+from django.db.models import Q
 
 from datetime import datetime
 
@@ -128,41 +129,31 @@ def update_sale_details(request, sale_id):
 @api_view(['POST'])
 def get_income_by_category(request, accountid):
     try:
-        month = request.data.get('month')
-        # print(month)
-        year = request.data.get('year')
-        categories = Category.categories.filter(account_id=accountid).values()
-        # print(categories)
-        sale = Sale.sales.filter(account_id=accountid).values()
-        # print(sale)
-        sale_ids = Sale.sales.filter(account_id=accountid).values()
-        if month == 1 or month == 3 or month == 6 or month == 7 or month == 8 or month == 10 or month == 12:
-            day = 31
-        else:
-            day = 30
+        fromDay = datetime.strptime(request.data.get('from'), '%d/%m/%y')
+        toDay = datetime.strptime(request.data.get('to'), '%d/%m/%y')
 
-        sale_product_id = Sale.sales.filter(account_id=accountid).exclude(
-            creation_date__gt=datetime.date(year, month, day),
-            creation_date__lte=datetime.date(year, month, 1)).values("sale_id", "sale_products__id_sale_product",
-                                                                     "sale_products__quantity_of_product",
-                                                                     "sale_products__product__product_id",
-                                                                     "sale_products__product__name",
-                                                                     "sale_products__product__price",
-                                                                     "sale_products__product__category__category_id",
-                                                                     "sale_products__product__category__category_name",
-                                                                     "sale_products__product__category__static")
+        categories = Category.categories.filter(Q(account_id=accountid) | Q(static=True)).values()
+        print(categories)
+        sale = Sale.sales.filter(account_id=accountid).values()
+
+        sale_product_id = Sale.sales.filter(account_id=accountid, creation_date__range=[fromDay, toDay]).values("sale_id",  "sale_products__id_sale_product",
+                                                                                                                "sale_products__quantity_of_product",
+                                                                                                                "sale_products__product__product_id",
+                                                                                                                "sale_products__product__name",
+                                                                                                                "sale_products__product__price",
+                                                                                                                "sale_products__product__category__category_id",
+                                                                                                                "sale_products__product__category__category_name",
+                                                                                                                "sale_products__product__category__static")
         json_enorme = []
         income = 0
-        # categories = list(categories)
         for category in categories:
-            # print(category['category_name'])
             for sale in sale_product_id:
                 if category['category_name'] == sale["sale_products__product__category__category_name"]:
                     income = income + (sale["sale_products__quantity_of_product"]
                                        * sale["sale_products__product__price"])
 
             data2 = {"category": category['category_name'],
-                     "income": income
+                     "income": income, "categoryId": category["category_id"]
                      }
             json_enorme.append(data2)
 
@@ -179,18 +170,12 @@ def get_all_sales_by_date(request, accountid):
         fromDay = datetime.strptime(request.data.get('from'), '%d/%m/%y')
         toDay = datetime.strptime(request.data.get('to'), '%d/%m/%y')
 
-        sales_ids = Sale.sales.filter(account_id=accountid).values()
-
-        print("prev")
-        sale_product_id = Sale.sales.filter(account_id=accountid).exclude(
-            creation_date__gt=toDay,
-            creation_date__lte=fromDay).values("sale_id", 'creation_date',
-                                               "sale_products__id_sale_product",
-                                               "sale_products__quantity_of_product",
-                                               "sale_products__product__product_id",
-                                               "sale_products__product__name",
-                                               "sale_products__product__price")
-        print("hola")
+        sale_product_id = Sale.sales.filter(account_id=accountid, creation_date__range=[fromDay, toDay]).values("sale_id", 'creation_date',
+                                                                                                                "sale_products__id_sale_product",
+                                                                                                                "sale_products__quantity_of_product",
+                                                                                                                "sale_products__product__product_id",
+                                                                                                                "sale_products__product__name",
+                                                                                                                "sale_products__product__price")
         json_enorme = []
         income = 0
 
