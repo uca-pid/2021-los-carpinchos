@@ -44,5 +44,8 @@ urlpatterns = [
     path('getCurrentGoal/<int:accountid>', goalView.get_current_goal, name='get_current_goal'),
     path('getAllGoals/<int:accountid>', goalView.get_all_goals, name='get_all_goals'),
     path('updateGoalData/<int:goal_id>', goalView.update_goal_details, name='update_goal_details'),
+    path('deleteGoalCategory/<int:goal_category_id>', goalView.delete_goal_category, name='delete_goal_category'),
+    path('deleteGoal/<int:goal_id>', goalView.delete_goal, name='delete_goal'),
+
 
 ]

@@ -25,3 +25,11 @@ class Goal_Category(models.Model):
         print('ento en goal category', categoryIncomeGoal)
         setattr(self, 'categoryIncomeGoal', categoryIncomeGoal)
         return self
+
+    @classmethod
+    def delete(cls, id):
+        goal_category = cls.goal_categories.filter(id_goal_category =id)
+        if len(goal_category) == 0:
+            raise Exception("..")
+        else:
+            goal_category.delete()

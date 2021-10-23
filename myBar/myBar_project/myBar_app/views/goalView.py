@@ -192,3 +192,19 @@ def update_goal_details(request, goal_id):
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+def delete_goal(request, goal_id):
+    try:
+        Goal.delete(goal_id)
+        return Response(status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+def delete_goal_category(request, goal_category_id):
+    try:
+        Goal_Category.delete(goal_category_id)
+        return Response(status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(status=status.HTTP_404_NOT_FOUND)
