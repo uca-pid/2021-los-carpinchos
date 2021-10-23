@@ -68,7 +68,7 @@ const AnnualIncomeChart = ({ actions, accountId, salesChartData, cardClassName }
 				onChange={handleDateChange}
 			/>
 			{salesChartData && (
-				<Chart data={salesChartData}>
+				<Chart height={450} data={salesChartData}>
 					<ArgumentAxis />
 					<ValueAxis labelComponent={renderIncomeLabel} />
 
