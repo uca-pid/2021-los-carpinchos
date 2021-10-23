@@ -44,7 +44,7 @@ const CategoriesIncomeChart = ({ cardClassName }: Props) => {
 				</Grid>
 
 				<Grid item xs>
-					<Chart data={mockedPieChartData}>
+					<Chart height={350} data={mockedPieChartData}>
 						<PieSeries valueField="income" argumentField="categoryName" innerRadius={0.6} />
 						<Title text="Ingresos por Categorías" />
 						<Animation />

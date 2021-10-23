@@ -36,10 +36,11 @@ urlpatterns = [
     path('getAllSales/<int:accountid>', saleView.get_all_sales, name='get_all_sales'),
     path('updateSaleData/<int:sale_id>', saleView.update_sale_details, name='update_sale_details'),
     path('deleteSale/<int:sale_id>', saleView.delete_sale, name='delete_sale'),
-    path('getAllSalesByDate/<int:accountid>', saleView.get_all_sales_by_date, name='get_all_sales_by_date'),
     path('deleteSaleProduct/<int:sale_product_id>', saleView.delete_sale_product, name='delete_sale_product'),
-    path('getIncomeByCategory/<int:accountid>', saleView.get_income_by_category , name = 'get_income_by_category'),
-    #Goal
+    # Sales charts
+    path('getAllSalesByDate/<int:accountid>', saleView.get_all_sales_by_date, name='get_all_sales_by_date'),
+    path('getIncomeByCategory/<int:accountid>', saleView.get_income_by_category, name='get_income_by_category'),
+    # Goal
     path('createGoal/<int:accountId>', goalView.create_goal, name='goal_creation'),
     path('getCurrentGoal/<int:accountid>', goalView.get_current_goal, name='get_current_goal'),
     path('getAllGoals/<int:accountid>', goalView.get_all_goals, name='get_all_goals'),
