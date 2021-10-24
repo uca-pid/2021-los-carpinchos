@@ -16,6 +16,7 @@ import ReceiptIcon from "@material-ui/icons/Receipt";
 import ProfileIcon from "@material-ui/icons/AccountCircle";
 import LogOutIcon from "@material-ui/icons/ExitToApp";
 import HomeIcon from "@material-ui/icons/House";
+import GoalsIcon from "@material-ui/icons/FilterHdrRounded";
 
 type Props = {
 	width: Breakpoint;
@@ -45,6 +46,11 @@ const SettingsMenu = ({ width }: Props) => {
 
 	const goToSales = useCallback(() => {
 		history.push("/dashboard/sales");
+		handleClose();
+	}, [history, handleClose]);
+
+	const goToGoals = useCallback(() => {
+		history.push("/dashboard/goals");
 		handleClose();
 	}, [history, handleClose]);
 
@@ -98,6 +104,14 @@ const SettingsMenu = ({ width }: Props) => {
 							<ReceiptIcon fontSize="small" />
 						</ListItemIcon>
 						<ListItemText primary="Ventas" />
+					</MenuItem>
+				)}
+				{width === "xs" && (
+					<MenuItem onClick={goToGoals}>
+						<ListItemIcon>
+							<GoalsIcon fontSize="small" />
+						</ListItemIcon>
+						<ListItemText primary="Metas" />
 					</MenuItem>
 				)}
 				<MenuItem onClick={goToSettings}>

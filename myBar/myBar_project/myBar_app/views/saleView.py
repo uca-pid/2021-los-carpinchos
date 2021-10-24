@@ -133,7 +133,6 @@ def get_income_by_category(request, accountid):
         toDay = datetime.strptime(request.data.get('to'), '%d/%m/%y')
 
         categories = Category.categories.filter(Q(account_id=accountid) | Q(static=True)).values()
-        print(categories)
         sale = Sale.sales.filter(account_id=accountid).values()
 
         sale_product_id = Sale.sales.filter(account_id=accountid, creation_date__range=[fromDay, toDay]).values("sale_id",  "sale_products__id_sale_product",

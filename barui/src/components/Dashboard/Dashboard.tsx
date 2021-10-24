@@ -5,6 +5,7 @@ import ProductsScreen from "./ProductsScreen";
 import SettingsScreen from "./SettingsScreen";
 import SalesScreen from "./SalesScreen";
 import ChartsScreen from "./ChartsScreen";
+import GoalsScreen from "./GoalsScreen";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -40,6 +41,9 @@ const Dashboard = ({ actions }: Props) => {
 			</Route>
 			<Route path={`${path}/sales`}>
 				<SalesScreen />
+			</Route>
+			<Route path={`${path}/goals`}>
+				<GoalsScreen />
 			</Route>
 			<Route path="*">Page not found</Route>
 		</Switch>
