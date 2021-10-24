@@ -6,6 +6,7 @@ import products from "../productsReducer";
 import categories from "../categoriesReducer";
 import sales from "../salesReducer";
 import chart from "../chartReducer";
+import goals from "../goalsReducer";
 
 const rootReducer = () =>
 	combineReducers({
@@ -15,6 +16,7 @@ const rootReducer = () =>
 		categories,
 		sales,
 		chart,
+		goals,
 	});
 
 export default rootReducer;
