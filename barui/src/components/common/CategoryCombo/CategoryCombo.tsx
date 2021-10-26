@@ -11,7 +11,7 @@ import {
 	addNewCategory,
 } from "../../../ducks/categoriesReducer";
 
-import { Grid, Typography } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import CategoryIcon from "@material-ui/icons/Category";
 

@@ -2,54 +2,58 @@ import fetcher from "./fetcher";
 import { showErrorMessage, showSuccessMessage } from "./notificationsReducer";
 import moment from "moment";
 
+const GET_GOALS_SUCCES = "GET_GOALS_SUCCES";
+const SAVE_GOAL_SUCCESS = "SAVE_GOAL_SUCCESS";
+const DELETE_GOAL_SUCCESS = "DELETE_GOAL_SUCCESS";
+
 const SELECT_GOAL = "SELECT_GOAL";
 const DESELECT_GOAL = "DESELECT_GOAL";
 
-export const getGoals = accountId => async dispatch => {};
-// await fetcher
-// 	.get(`getAllSales/${accountId}`)
-// 	.then(response => {
-// 		dispatch({
-// 			type: GET_USER_SALES_SUCCES,
-// 			userSales: response.map(sale => ({
-// 				id: sale.sale_id,
-// 				creationDate: new Date(sale.creation_date),
-// 				productsSale: sale.sale_product.map(p => ({
-// 					id: p.sale_products,
-// 					amount: p.quantity_of_product,
-// 					product: {
-// 						id: p.product.product_id,
-// 						name: p.product.name,
-// 						price: p.product.price,
-// 						category: {
-// 							id: p.product.category.category_id,
-// 							name: p.product.category.category_name,
-// 							static: p.product.category.category_static,
-// 						},
-// 					},
-// 				})),
-// 			})),
-// 		});
-// 	})
-// 	.catch(() => {
-// 		dispatch(showErrorMessage("No se pudieron obtener las ventas. Recargue la página."));
-// 	});
+export const getGoals = accountId => async dispatch =>
+	await fetcher
+		.get(`getAllGoals/${accountId}`)
+		.then(response => {
+			dispatch({
+				type: GET_GOALS_SUCCES,
+				allGoals: response.map(goal => ({
+					id: goal.id,
+					incomeGoal: goal.incomeGoal,
+					month: goal.month,
+					year: goal.year,
+					incomesByCategory: goal.incomeByCategory.map(cat => ({
+						category: {
+							id: cat.categoryId,
+							name: cat.categoryName,
+							static: false,
+						},
+						categoryIncomeGoal: cat.categoryIncomeGoal,
+						totalCategoryIncome: cat.totalCategoryIncome,
+					})),
+				})),
+			});
+		})
+		.catch(e => {
+			dispatch(showErrorMessage("No se pudieron obtener las metas. Recargue la página."));
+			throw new Error(e);
+		});
 
-export const addNewGoal = (accountId, categoriesGoal, date) => async dispatch => {};
-// await fetcher
-// 	.post(`createSale/${accountId}`, {
-// 		creation_date: moment(date).format("DD/MM/YY HH:mm:ss"),
-// 		products: productsSale,
-// 	})
-// 	.then(response => {
-// 		dispatch({ type: SAVE_SALE_SUCCESS });
-// 		dispatch(showSuccessMessage("Una nueva venta ha sido creada."));
+export const addNewGoal = (accountId, incomeGoal, incomesByCategory, date) => async dispatch =>
+	await fetcher
+		.post(`createGoal/${accountId}`, {
+			incomeGoal: incomeGoal,
+			month: parseInt(moment(date).format("MM")),
+			year: parseInt(moment(date).format("YYYY")),
+			categories: incomesByCategory,
+		})
+		.then(response => {
+			dispatch({ type: SAVE_GOAL_SUCCESS });
+			dispatch(showSuccessMessage("Una nueva meta ha sido creada."));
 
-// 		return response;
-// 	})
-// 	.catch(() => {
-// 		dispatch(showErrorMessage("No se pudo crear la nueva venta. Intente de nuevo."));
-// 	});
+			return response;
+		})
+		.catch(() => {
+			dispatch(showErrorMessage("No se pudo crear la nueva meta. Intente de nuevo."));
+		});
 
 export const selectGoal = goal => dispatch =>
 	dispatch({
@@ -67,14 +71,14 @@ export const updateGoal = (goalId, data) => async dispatch => {};
 // 	})
 // 	.catch(() => dispatch(showErrorMessage("No fue posible actualizar la venta. Intente de nuevo.")));
 
-export const deleteGoal = goalId => async dispatch => {};
-// await fetcher
-// 	.delete(`deleteSale/${saleId}`)
-// 	.then(() => {
-// 		dispatch({ type: DELETE_SALE_SUCCESS });
-// 		dispatch(showSuccessMessage("La venta se ha borrada éxitosamente."));
-// 	})
-// 	.catch(() => dispatch(showErrorMessage("Algo salió mal borrar la venta. Intente de nuevo.")));
+export const deleteGoal = goalId => async dispatch =>
+	await fetcher
+		.delete(`deleteGoal/${goalId}`)
+		.then(() => {
+			dispatch({ type: DELETE_GOAL_SUCCESS });
+			dispatch(showSuccessMessage("La meta se ha borrada éxitosamente."));
+		})
+		.catch(() => dispatch(showErrorMessage("Algo salió mal borrar la meta. Intente de nuevo.")));
 
 export const deleteGoalCategory = goalCategoryId => async dispatch => {};
 // await fetcher
@@ -95,11 +99,17 @@ const initialState = {
 // Reducer
 const goalsReducer = (state = initialState, action) => {
 	switch (action.type) {
+		case GET_GOALS_SUCCES:
+			return {
+				...state,
+				futureGoals: action.allGoals,
+			};
 		case SELECT_GOAL:
 			return {
 				...state,
 				selectedGoal: action.goal,
 			};
+		case SAVE_GOAL_SUCCESS:
 		case DESELECT_GOAL:
 			return {
 				...state,

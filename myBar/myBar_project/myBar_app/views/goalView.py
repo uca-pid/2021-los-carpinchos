@@ -78,9 +78,9 @@ def get_current_goal(request, accountid):
         for category in categories:
             for sale in sale_product_id:
                 if category["goals_categories__category__category_name"] == sale[
-                    "sale_products__product__category__category_name"]:
+                        "sale_products__product__category__category_name"]:
                     income = income + (
-                            sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
+                        sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
             data1 = {"categoryName": category["goals_categories__category__category_name"],
                      "categoryId": category['goals_categories__category__category_id'],
                      "categoryIncomeGoal": category["goals_categories__categoryIncomeGoal"],
@@ -109,7 +109,8 @@ def get_all_goals(request, accountid):
             day = 31
         else:
             day = 30
-        goals = Goal.goals.filter(account_id=accountid).exclude(goal_date__gt=datetime.date(year, month, 1)).values()
+        goals = Goal.goals.filter(account_id=accountid).exclude(
+            goal_date__gt=datetime.date(year, month, 1)).values()
 
         sale_product_id = Sale.sales.filter(account_id=accountid).filter(
             creation_date__lt=datetime.date(year, month, 1)).values("sale_id", "creation_date",
@@ -153,7 +154,7 @@ def get_all_goals(request, accountid):
                     # print('vuelta', sale)
                     if category['category__category_name'] == sale["sale_products__product__category__category_name"]:
                         income = income + (
-                                sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
+                            sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
 
                 data1 = {"categoryName": category['category__category_name'],
                          "categoryId": category['category_id'],
@@ -164,6 +165,7 @@ def get_all_goals(request, accountid):
                 income = 0
                 #print('una vuelta de category')
             data2 = {
+                "id": goal['goal_id'],
                 "incomeGoal": goal['incomeGoal'],
                 "month": goal['goal_date'].month,
                 "year": goal['goal_date'].year,
@@ -174,6 +176,7 @@ def get_all_goals(request, accountid):
         return Response(json_enorme, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['PUT'])
 def update_goal_details(request, goal_id):
@@ -193,6 +196,7 @@ def update_goal_details(request, goal_id):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['DELETE'])
 def delete_goal(request, goal_id):
     try:
@@ -200,6 +204,7 @@ def delete_goal(request, goal_id):
         return Response(status=status.HTTP_200_OK)
     except Exception as e:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['DELETE'])
 def delete_goal_category(request, goal_category_id):

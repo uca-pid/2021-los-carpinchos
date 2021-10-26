@@ -5,10 +5,15 @@ import { Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
+import { deleteGoal, getGoals } from "../../../../ducks/goalsReducer";
+
 import { Goal } from "../GoalsScreen";
 
 type Props = {
-	actions: {};
+	actions: {
+		deleteGoal: Function;
+		getGoals: Function;
+	};
 	accountId: number;
 
 	open: boolean;
@@ -16,12 +21,14 @@ type Props = {
 	selectedGoal?: Goal;
 };
 const DeleteFutureGoalDialog = ({ actions, accountId, open, setOpen, selectedGoal }: Props) => {
-	const deleteProduct = useCallback(() =>
-		// selectedProduct &&
-		// actions
-		// 	.deleteProduct(selectedProduct.id)
-		// 	.then(() => actions.getAllProducts(accountId).then(() => setOpen(false))),
-		{}, [actions, selectedGoal, accountId, setOpen]);
+	const deleteProduct = useCallback(
+		() =>
+			selectedGoal &&
+			actions
+				.deleteGoal(selectedGoal.id)
+				.then(() => actions.getGoals(accountId).then(() => setOpen(false))),
+		[actions, selectedGoal, accountId, setOpen]
+	);
 
 	const handleOnDialogClose = useCallback(
 		() => {}, // selectedProduct && actions.deselectProduct(),
@@ -37,7 +44,7 @@ const DeleteFutureGoalDialog = ({ actions, accountId, open, setOpen, selectedGoa
 			onDialogClose={handleOnDialogClose}
 			submitButtonLabel="Borrar"
 		>
-			<Typography variant="body1">¿Queres borrar este producto?</Typography>
+			<Typography variant="body1">¿Queres borrar este meta?</Typography>
 		</AppDialog>
 	);
 };
@@ -59,7 +66,7 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({}, dispatch),
+	actions: bindActionCreators({ deleteGoal, getGoals }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeleteFutureGoalDialog);
