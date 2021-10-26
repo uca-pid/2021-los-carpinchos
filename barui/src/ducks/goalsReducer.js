@@ -35,7 +35,7 @@ export const getGoals = accountId => async dispatch => {};
 // 		dispatch(showErrorMessage("No se pudieron obtener las ventas. Recargue la página."));
 // 	});
 
-export const addNewGoal = (accountId, productsSale, date) => async dispatch => {};
+export const addNewGoal = (accountId, categoriesGoal, date) => async dispatch => {};
 // await fetcher
 // 	.post(`createSale/${accountId}`, {
 // 		creation_date: moment(date).format("DD/MM/YY HH:mm:ss"),
@@ -76,7 +76,7 @@ export const deleteGoal = goalId => async dispatch => {};
 // 	})
 // 	.catch(() => dispatch(showErrorMessage("Algo salió mal borrar la venta. Intente de nuevo.")));
 
-export const deleteGoalProduct = goalCategoryId => async dispatch => {};
+export const deleteGoalCategory = goalCategoryId => async dispatch => {};
 // await fetcher
 // 	.delete(`deleteSaleProduct/${saleProductId}`)
 // 	.then(() => {
