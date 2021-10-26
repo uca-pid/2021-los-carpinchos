@@ -5,7 +5,7 @@ import { Button, Container, Grid, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { selectGoal } from "../../../ducks/goalsReducer";
+import { selectGoal, getGoals } from "../../../ducks/goalsReducer";
 import { getStaticCategories, getUserCategories } from "../../../ducks/categoriesReducer";
 
 import GoalDialog from "./GoalDialog";
@@ -14,6 +14,7 @@ import AddIcon from "@material-ui/icons/Add";
 
 import { GridColDef } from "@mui/x-data-grid";
 import { Category } from "../../common/CategoryCombo/CategoryCombo";
+import moment from "moment";
 
 export type CategoryGoal = {
 	category: Category;
@@ -32,6 +33,7 @@ export type Goal = {
 type Props = {
 	actions: {
 		selectGoal: Function;
+		getGoals: Function;
 		getStaticCategories: Function;
 		getUserCategories: Function;
 	};
@@ -45,7 +47,7 @@ const GoalsScreen = ({ actions, futureGoals, id }: Props) => {
 
 	const columns: GridColDef[] = [{ field: "name", headerName: "Nombre meta", flex: 1 }];
 
-	// useEffect(() => id && actions.getAllProducts(id), [actions, id]);
+	useEffect(() => id && actions.getGoals(id), [actions, id]);
 
 	useEffect(() => {
 		actions.getStaticCategories();
@@ -99,7 +101,7 @@ const GoalsScreen = ({ actions, futureGoals, id }: Props) => {
 						columns={columns}
 						rows={futureGoals.map(p => ({
 							id: p.id,
-							name: `${p.month} - ${p.year}`,
+							name: `Meta ${moment(p.month, "M").format("MMMM")} ${p.year}`,
 							actions: p,
 						}))}
 						onEditRow={handleEditRow}
@@ -128,7 +130,10 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({ selectGoal, getStaticCategories, getUserCategories }, dispatch),
+	actions: bindActionCreators(
+		{ selectGoal, getGoals, getStaticCategories, getUserCategories },
+		dispatch
+	),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GoalsScreen);

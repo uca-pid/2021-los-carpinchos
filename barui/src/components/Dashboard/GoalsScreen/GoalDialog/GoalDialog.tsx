@@ -69,6 +69,7 @@ const GoalDialog = ({ accountId, actions, open, setOpen, selectedGoal, categorie
 		actions
 			.addNewGoal(
 				accountId,
+				globalGoal,
 				categoriesGoal.map(p => ({
 					categoryId: p.category.id,
 					categoryIncomeGoal: p.categoryIncomeGoal,
