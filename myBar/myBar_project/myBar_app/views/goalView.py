@@ -113,14 +113,14 @@ def get_all_goals(request, accountid):
 
         sale_product_id = Sale.sales.filter(account_id=accountid).filter(
             creation_date__lt=datetime.date(year, month, 1)).values("sale_id", "creation_date",
-                                                                     "sale_products__id_sale_product",
-                                                                     "sale_products__quantity_of_product",
-                                                                     "sale_products__product__product_id",
-                                                                     "sale_products__product__name",
-                                                                     "sale_products__product__price",
-                                                                     "sale_products__product__category__category_id",
-                                                                     "sale_products__product__category__category_name",
-                                                                     "sale_products__product__category__static")
+                                                                    "sale_products__id_sale_product",
+                                                                    "sale_products__quantity_of_product",
+                                                                    "sale_products__product__product_id",
+                                                                    "sale_products__product__name",
+                                                                    "sale_products__product__price",
+                                                                    "sale_products__product__category__category_id",
+                                                                    "sale_products__product__category__category_name",
+                                                                    "sale_products__product__category__static")
 
         json_enorme = []
 
@@ -132,7 +132,7 @@ def get_all_goals(request, accountid):
                 "categoryIncomeGoal",
                 "category_id",
                 "category__category_name",
-
+                "id_goal_category"
             )
             # print(categories)
             mini_json = []
@@ -157,6 +157,7 @@ def get_all_goals(request, accountid):
 
                 data1 = {"categoryName": category['category__category_name'],
                          "categoryId": category['category_id'],
+                         "idGoalCategory": category['id_goal_category'],
                          "categoryIncomeGoal": category["categoryIncomeGoal"],
                          "totalCategoryIncome": income}
                 mini_json.append(data1)
@@ -205,6 +206,7 @@ def get_past_goals(request, accountid):
         for goal in goals:
 
             categories = Goal_Category.goal_categories.filter(goal_id=goal['goal_id']).values(
+                "id_goal_category",
                 "categoryIncomeGoal",
                 "category_id",
                 "category__category_name",
@@ -233,6 +235,7 @@ def get_past_goals(request, accountid):
 
                 data1 = {"categoryName": category['category__category_name'],
                          "categoryId": category['category_id'],
+                         "idGoalCategory": category['id_goal_category'],
                          "categoryIncomeGoal": category["categoryIncomeGoal"],
                          "totalCategoryIncome": income}
                 mini_json.append(data1)
