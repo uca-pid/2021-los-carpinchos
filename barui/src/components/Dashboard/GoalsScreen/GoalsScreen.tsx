@@ -17,6 +17,7 @@ import { Category } from "../../common/CategoryCombo/CategoryCombo";
 import moment from "moment";
 
 export type CategoryGoal = {
+	idGoalCategory: number;
 	category: Category;
 	categoryIncomeGoal: number;
 	totalCategoryIncome: number;
@@ -129,7 +130,7 @@ const GoalsScreen = ({ actions, futureGoals, pastGoals, id }: Props) => {
 							actions: p,
 						}))}
 						onEditRow={handleEditRow}
-						onDeleteRow={handleDeleteRow}
+						watchMode={true}
 					/>
 				</Grid>
 			</Grid>

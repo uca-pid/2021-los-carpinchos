@@ -64,7 +64,10 @@ const GoalDialog = ({
 	const classes = styles();
 
 	useEffect(() => {
-		selectedGoal && setDate(moment(`1/${selectedGoal.month}/${selectedGoal.year}`).toDate());
+		if (selectedGoal) {
+			setDate(moment(`1/${selectedGoal.month}/${selectedGoal.year}`, "D/M/YYYY").toDate());
+			setGlobalGoal(selectedGoal.incomeGoal.toString());
+		}
 	}, [selectedGoal]);
 
 	const handleDateChange = useCallback(date => setDate(date), []);
@@ -72,6 +75,7 @@ const GoalDialog = ({
 	const handleOnDialogClose = useCallback(() => {
 		setCategoriesGoal([]);
 		setDate(null);
+		setGlobalGoal("");
 		selectedGoal && actions.deselectGoal();
 	}, [actions, selectedGoal]);
 
@@ -91,6 +95,7 @@ const GoalDialog = ({
 					setOpen(false);
 					setCategoriesGoal([]);
 					setDate(null);
+					setGlobalGoal("");
 				});
 			});
 	}, [actions, setOpen, accountId, categoriesGoal, date]);
@@ -125,7 +130,7 @@ const GoalDialog = ({
 
 	const handleDeleteRowFromExistingGoal = useCallback(
 		(categoryGoal: CategoryGoal) => {
-			actions.deleteGoalCategory(categoryGoal.category.id).then(() => {
+			actions.deleteGoalCategory(categoryGoal.idGoalCategory).then(() => {
 				actions.getFutureGoals(accountId);
 			});
 		},
@@ -133,8 +138,16 @@ const GoalDialog = ({
 	);
 
 	const handleChangeGlobalGoal = useCallback(
-		(value, invalid) => setGlobalGoal(value),
-		[setGlobalGoal]
+		(value, invalid) => {
+			setGlobalGoal(value);
+			selectedGoal &&
+				actions
+					.updateGoal(selectedGoal?.id, {
+						incomeGoal: value,
+					})
+					.then(() => actions.getFutureGoals(accountId));
+		},
+		[setGlobalGoal, selectedGoal]
 	);
 
 	const goalExists = futureGoals?.some(
@@ -142,15 +155,26 @@ const GoalDialog = ({
 			p.month === parseInt(moment(date).format("M")) &&
 			p.year === parseInt(moment(date).format("YYYY"))
 	);
+
+	const isPastGoal =
+		selectedGoal &&
+		moment(`1/${selectedGoal.month}/${selectedGoal.year}`, "D/M/YYYY").isBefore(moment());
+
 	return (
 		<AppDialog
 			open={open}
 			onSubmit={createGoal}
 			onDialogClose={handleOnDialogClose}
 			setOpen={setOpen}
-			submitButtonDisabled={categoriesGoal.length === 0}
+			submitButtonDisabled={categoriesGoal.length === 0 || goalExists}
 			submitButtonLabel={"Crear"}
-			title={selectedGoal ? `Meta ${selectedGoal.month} - ${selectedGoal.year}` : "Meta Nuevo"}
+			title={
+				selectedGoal
+					? `Meta ${moment(selectedGoal.month, "M").format("MMMM")} - ${selectedGoal.year} (${
+							isPastGoal ? "Terminada" : "Meta futura"
+					  })`
+					: "Meta Nuevo"
+			}
 			hideActions={Boolean(selectedGoal)}
 		>
 			<Grid container direction="column" spacing={2}>
@@ -163,8 +187,16 @@ const GoalDialog = ({
 						value={date}
 						onChange={handleDateChange}
 						minDate={moment().add(1, "month").toDate()}
+						disabled={Boolean(selectedGoal)}
+						minDateMessage=""
+						maxDateMessage=""
 					/>
-					<p>{goalExists && "YA EXISTE"}</p>
+
+					{!selectedGoal && goalExists && (
+						<Typography color="error" variant="subtitle2">
+							Ya existe una meta para este periodo
+						</Typography>
+					)}
 				</Grid>
 				<Grid item xs>
 					<TextFieldWithValidation
@@ -176,18 +208,21 @@ const GoalDialog = ({
 						required
 						InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
 						settings={[...settings, numericSetting]}
+						disabled={isPastGoal}
 					/>
 				</Grid>
 				<Grid item xs>
-					<GoalInputForm
-						categories={categories.filter(
-							item =>
-								(selectedGoal ? selectedGoal.incomesByCategory : categoriesGoal).findIndex(
-									x => x.category.id === item.id
-								) === -1
-						)}
-						onAdd={selectedGoal ? undefined : addCategoryToNewGoal}
-					/>
+					{!isPastGoal && (
+						<GoalInputForm
+							categories={categories.filter(
+								item =>
+									(selectedGoal ? selectedGoal.incomesByCategory : categoriesGoal).findIndex(
+										x => x.category.id === item.id
+									) === -1
+							)}
+							onAdd={selectedGoal ? undefined : addCategoryToNewGoal}
+						/>
+					)}
 				</Grid>
 				{(selectedGoal ? selectedGoal.incomesByCategory : categoriesGoal).length > 0 && (
 					<Grid item xs>
@@ -196,8 +231,8 @@ const GoalDialog = ({
 								<TableHead>
 									<TableRow>
 										<TableCell>Producto</TableCell>
-										<TableCell align="center">Subtotal</TableCell>
-										<TableCell align="right">Acciones</TableCell>
+										<TableCell align="center">Objetivo</TableCell>
+										{!isPastGoal && <TableCell align="right">Acciones</TableCell>}
 									</TableRow>
 								</TableHead>
 								<TableBody>
@@ -210,6 +245,7 @@ const GoalDialog = ({
 													categories={categories}
 													onSave={selectedGoal ? handleUpdateRowFromExistingGoal : handleUpdateRowFromNewGoal}
 													onDelete={selectedGoal ? handleDeleteRowFromExistingGoal : handleDeleteRowFromNewGoal}
+													disableActions={isPastGoal}
 												/>
 											);
 										}

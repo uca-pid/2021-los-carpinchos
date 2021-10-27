@@ -16,6 +16,9 @@ import SaveIcon from "@material-ui/icons/Save";
 import styles from "./styles";
 import { CategoryGoal } from "../../GoalsScreen";
 import { Category } from "../../../../common/CategoryCombo/CategoryCombo";
+import TextFieldWithValidation from "../../../../common/TextFieldWithValidation";
+import { InputAdornment } from "@material-ui/core";
+import { numericSetting, settings } from "../../../../SignUp/validationSettings";
 
 type Props = {
 	row?: CategoryGoal;
@@ -23,21 +26,32 @@ type Props = {
 	onSave?: Function;
 	onDelete?: Function;
 	className?: string;
+	disableActions?: boolean;
 };
 
-const CategoryGoalTableRow = ({ categories, row, onSave, onDelete, className }: Props) => {
+const CategoryGoalTableRow = ({
+	categories,
+	row,
+	onSave,
+	onDelete,
+	className,
+	disableActions,
+}: Props) => {
 	const [category, setCategory] = useState<Category | null>(null);
 	const [editMode, setEditMode] = useState(false);
+	const [categoryIncomeGoal, setCategoryIncomeGoal] = useState("0");
 
 	const classes = styles();
 
 	const canSaveNewRow = !editMode && category !== null;
-	const canSaveExistingRow = editMode && row;
+	const canSaveExistingRow =
+		editMode && row && categoryIncomeGoal != row.categoryIncomeGoal.toString();
 	const canDelete = !editMode && row;
 
 	useEffect(() => {
 		if (row) {
 			setCategory(row.category ?? null);
+			setCategoryIncomeGoal(row.categoryIncomeGoal.toString() ?? "0");
 		}
 	}, [row]);
 
@@ -46,6 +60,10 @@ const CategoryGoalTableRow = ({ categories, row, onSave, onDelete, className }: 
 		[setCategory, categories]
 	);
 
+	const handleCategoryGoal = useCallback(
+		(value, invalid) => setCategoryIncomeGoal(value),
+		[setCategoryIncomeGoal]
+	);
 	const handleEditRow = useCallback(() => setEditMode(true), [setEditMode]);
 
 	const handleCancelEditRow = useCallback(() => {
@@ -62,9 +80,24 @@ const CategoryGoalTableRow = ({ categories, row, onSave, onDelete, className }: 
 			}
 			console.log("canSaveExistingRow");
 			setEditMode(false);
-			category && onSave && onSave({ category, categoryIncomeGoal: 0, totalCategoryIncome: 0 });
+			category &&
+				onSave &&
+				onSave({
+					category,
+					categoryIncomeGoal: categoryIncomeGoal,
+					totalCategoryIncome: row?.totalCategoryIncome,
+				});
 		}
-	}, [onSave, category, canSaveNewRow, onDelete, canDelete, canSaveExistingRow, row]);
+	}, [
+		onSave,
+		category,
+		canSaveNewRow,
+		onDelete,
+		canDelete,
+		canSaveExistingRow,
+		categoryIncomeGoal,
+		row,
+	]);
 
 	return (
 		<TableRow className={`${row ? "" : classes.newRow} ${className}`}>
@@ -76,27 +109,43 @@ const CategoryGoalTableRow = ({ categories, row, onSave, onDelete, className }: 
 					categories={categories}
 				/>
 			</TableCell>
-			<TableCell align="right">
-				{row && (
-					<IconButton onClick={editMode ? handleCancelEditRow : handleEditRow} size="small">
-						{editMode ? <ClearRoundedIcon /> : <EditIcon />}
-					</IconButton>
-				)}
 
-				<IconButton
-					onClick={handleClick}
-					disabled={!(canSaveNewRow || canSaveExistingRow || canDelete)}
-					size="small"
-				>
-					{editMode || !row ? (
-						<SaveIcon
-							className={canSaveNewRow || canSaveExistingRow ? classes.saveIcon : classes.disabledSaveIcon}
-						/>
-					) : (
-						<DeleteIcon className={classes.deleteIcon} />
-					)}
-				</IconButton>
+			<TableCell align="right">
+				<TextFieldWithValidation
+					placeholder="objetivo"
+					value={categoryIncomeGoal}
+					onChange={handleCategoryGoal}
+					required
+					InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
+					settings={[...settings, numericSetting]}
+					disabled={!editMode}
+				/>
 			</TableCell>
+			{!disableActions && (
+				<TableCell align="right">
+					{row && (
+						<IconButton onClick={editMode ? handleCancelEditRow : handleEditRow} size="small">
+							{editMode ? <ClearRoundedIcon /> : <EditIcon />}
+						</IconButton>
+					)}
+
+					<IconButton
+						onClick={handleClick}
+						disabled={!(canSaveNewRow || canSaveExistingRow || canDelete)}
+						size="small"
+					>
+						{editMode || !row ? (
+							<SaveIcon
+								className={
+									canSaveNewRow || canSaveExistingRow ? classes.saveIcon : classes.disabledSaveIcon
+								}
+							/>
+						) : (
+							<DeleteIcon className={classes.deleteIcon} />
+						)}
+					</IconButton>
+				</TableCell>
+			)}
 		</TableRow>
 	);
 };

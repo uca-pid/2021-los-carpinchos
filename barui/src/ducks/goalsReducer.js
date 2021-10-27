@@ -6,6 +6,7 @@ const GET_FUTURE_GOALS_SUCCESS = "GET_FUTURE_GOALS_SUCCESS";
 const GET_PAST_GOALS_SUCCESS = "GET_PAST_GOALS_SUCCESS";
 const SAVE_GOAL_SUCCESS = "SAVE_GOAL_SUCCESS";
 const DELETE_GOAL_SUCCESS = "DELETE_GOAL_SUCCESS";
+const DELETE_CATEGORY_GOAL_SUCCESS = "DELETE_CATEGORY_GOAL_SUCCESS";
 
 const SELECT_GOAL = "SELECT_GOAL";
 const DESELECT_GOAL = "DESELECT_GOAL";
@@ -27,6 +28,7 @@ export const getFutureGoals = accountId => async dispatch =>
 							name: cat.categoryName,
 							static: false,
 						},
+						idGoalCategory: cat.idGoalCategory,
 						categoryIncomeGoal: cat.categoryIncomeGoal,
 						totalCategoryIncome: cat.totalCategoryIncome,
 					})),
@@ -55,6 +57,7 @@ export const getPastGoals = accountId => async dispatch =>
 							name: cat.categoryName,
 							static: false,
 						},
+						idGoalCategory: cat.idGoalCategory,
 						categoryIncomeGoal: cat.categoryIncomeGoal,
 						totalCategoryIncome: cat.totalCategoryIncome,
 					})),
@@ -92,13 +95,13 @@ export const selectGoal = goal => dispatch =>
 
 export const deselectGoal = () => dispatch => dispatch({ type: DESELECT_GOAL });
 
-export const updateGoal = (goalId, data) => async dispatch => {};
-// await fetcher
-// 	.put(`updateSaleData/${saleId}`, data)
-// 	.then(() => {
-// 		dispatch(showSuccessMessage("La venta se ha actualizado éxitosamente."));
-// 	})
-// 	.catch(() => dispatch(showErrorMessage("No fue posible actualizar la venta. Intente de nuevo.")));
+export const updateGoal = (goalId, data) => async dispatch =>
+	await fetcher
+		.put(`updateGoalData/${goalId}`, data)
+		.then(() => {
+			dispatch(showSuccessMessage("La meta se ha actualizado éxitosamente."));
+		})
+		.catch(() => dispatch(showErrorMessage("No fue posible actualizar la meta. Intente de nuevo.")));
 
 export const deleteGoal = goalId => async dispatch =>
 	await fetcher
@@ -109,13 +112,13 @@ export const deleteGoal = goalId => async dispatch =>
 		})
 		.catch(() => dispatch(showErrorMessage("Algo salió mal borrar la meta. Intente de nuevo.")));
 
-export const deleteGoalCategory = goalCategoryId => async dispatch => {};
-// await fetcher
-// 	.delete(`deleteSaleProduct/${saleProductId}`)
-// 	.then(() => {
-// 		dispatch({ type: DELETE_SALE_PRODUCT_SUCCESS, productSaleId: saleProductId });
-// 	})
-// 	.catch(() => null);
+export const deleteGoalCategory = goalCategoryId => async dispatch =>
+	await fetcher
+		.delete(`deleteGoalCategory/${goalCategoryId}`)
+		.then(() => {
+			dispatch({ type: DELETE_CATEGORY_GOAL_SUCCESS, goalCategoryId: goalCategoryId });
+		})
+		.catch(() => null);
 
 // State
 const initialState = {
@@ -148,6 +151,16 @@ const goalsReducer = (state = initialState, action) => {
 			return {
 				...state,
 				selectedGoal: null,
+			};
+		case DELETE_CATEGORY_GOAL_SUCCESS:
+			return {
+				...state,
+				selectedGoal: {
+					...state.selectedGoal,
+					incomesByCategory: state.selectedGoal.incomesByCategory.filter(
+						p => p.idGoalCategory !== action.goalCategoryId
+					),
+				},
 			};
 		default:
 			return state;
