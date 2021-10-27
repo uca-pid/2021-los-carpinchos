@@ -5,7 +5,7 @@ import { Button, Container, Grid, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { selectGoal, getGoals } from "../../../ducks/goalsReducer";
+import { selectGoal, getFutureGoals, getPastGoals } from "../../../ducks/goalsReducer";
 import { getStaticCategories, getUserCategories } from "../../../ducks/categoriesReducer";
 
 import GoalDialog from "./GoalDialog";
@@ -33,21 +33,28 @@ export type Goal = {
 type Props = {
 	actions: {
 		selectGoal: Function;
-		getGoals: Function;
+		getPastGoals: Function;
+		getFutureGoals: Function;
 		getStaticCategories: Function;
 		getUserCategories: Function;
 	};
 	futureGoals: Goal[];
+	pastGoals: Goal[];
 	id: number;
 };
 
-const GoalsScreen = ({ actions, futureGoals, id }: Props) => {
+const GoalsScreen = ({ actions, futureGoals, pastGoals, id }: Props) => {
 	const [open, setOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
 	const columns: GridColDef[] = [{ field: "name", headerName: "Nombre meta", flex: 1 }];
 
-	useEffect(() => id && actions.getGoals(id), [actions, id]);
+	useEffect(() => {
+		if (id) {
+			actions.getFutureGoals(id);
+			actions.getPastGoals(id);
+		}
+	}, [actions, id]);
 
 	useEffect(() => {
 		actions.getStaticCategories();
@@ -108,6 +115,23 @@ const GoalsScreen = ({ actions, futureGoals, id }: Props) => {
 						onDeleteRow={handleDeleteRow}
 					/>
 				</Grid>
+				<Grid item xs>
+					<Typography variant="h5" color="primary">
+						Metas Pasadas
+					</Typography>
+				</Grid>
+				<Grid item>
+					<DataTable
+						columns={columns}
+						rows={pastGoals.map(p => ({
+							id: p.id,
+							name: `Meta ${moment(p.month, "M").format("MMMM")} ${p.year}`,
+							actions: p,
+						}))}
+						onEditRow={handleEditRow}
+						onDeleteRow={handleDeleteRow}
+					/>
+				</Grid>
 			</Grid>
 		</Container>
 	);
@@ -121,17 +145,19 @@ type State = {
 	};
 	goals: {
 		futureGoals: Goal[];
+		pastGoals: Goal[];
 	};
 };
 
 const mapStateToProps = (state: State) => ({
 	futureGoals: state?.goals?.futureGoals,
+	pastGoals: state?.goals?.pastGoals,
 	id: state?.session?.accountData?.id,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	actions: bindActionCreators(
-		{ selectGoal, getGoals, getStaticCategories, getUserCategories },
+		{ selectGoal, getFutureGoals, getPastGoals, getStaticCategories, getUserCategories },
 		dispatch
 	),
 });

@@ -17,7 +17,7 @@ import GoalInputForm from "./GoalInputForm";
 import {
 	deselectGoal,
 	addNewGoal,
-	getGoals,
+	getFutureGoals,
 	updateGoal,
 	deleteGoalCategory,
 } from "../../../../ducks/goalsReducer";
@@ -36,18 +36,27 @@ type Props = {
 	actions: {
 		deselectGoal: Function;
 		addNewGoal: Function;
-		getGoals: Function;
+		getFutureGoals: Function;
 		updateGoal: Function;
 		deleteGoalCategory: Function;
 	};
 	open: boolean;
 	setOpen: Function;
 	selectedGoal?: Goal;
+	futureGoals?: Goal[];
 	categories: Category[];
 	accountId: number;
 };
 
-const GoalDialog = ({ accountId, actions, open, setOpen, selectedGoal, categories }: Props) => {
+const GoalDialog = ({
+	accountId,
+	actions,
+	open,
+	setOpen,
+	selectedGoal,
+	futureGoals,
+	categories,
+}: Props) => {
 	const [categoriesGoal, setCategoriesGoal] = useState<CategoryGoal[]>([]);
 	const [date, setDate] = useState<Date | null>(null);
 	const [globalGoal, setGlobalGoal] = useState("");
@@ -62,6 +71,7 @@ const GoalDialog = ({ accountId, actions, open, setOpen, selectedGoal, categorie
 
 	const handleOnDialogClose = useCallback(() => {
 		setCategoriesGoal([]);
+		setDate(null);
 		selectedGoal && actions.deselectGoal();
 	}, [actions, selectedGoal]);
 
@@ -77,7 +87,7 @@ const GoalDialog = ({ accountId, actions, open, setOpen, selectedGoal, categorie
 				date
 			)
 			.then(() => {
-				actions.getGoals(accountId).then(() => {
+				actions.getFutureGoals(accountId).then(() => {
 					setOpen(false);
 					setCategoriesGoal([]);
 					setDate(null);
@@ -109,14 +119,14 @@ const GoalDialog = ({ accountId, actions, open, setOpen, selectedGoal, categorie
 					categoryId: categoryGoal.category.id,
 					categoryIncomeGoal: categoryGoal.categoryIncomeGoal,
 				})
-				.then(() => actions.getGoals(accountId)),
+				.then(() => actions.getFutureGoals(accountId)),
 		[actions, selectedGoal, accountId]
 	);
 
 	const handleDeleteRowFromExistingGoal = useCallback(
 		(categoryGoal: CategoryGoal) => {
 			actions.deleteGoalCategory(categoryGoal.category.id).then(() => {
-				actions.getGoals(accountId);
+				actions.getFutureGoals(accountId);
 			});
 		},
 		[actions, accountId]
@@ -127,6 +137,11 @@ const GoalDialog = ({ accountId, actions, open, setOpen, selectedGoal, categorie
 		[setGlobalGoal]
 	);
 
+	const goalExists = futureGoals?.some(
+		p =>
+			p.month === parseInt(moment(date).format("M")) &&
+			p.year === parseInt(moment(date).format("YYYY"))
+	);
 	return (
 		<AppDialog
 			open={open}
@@ -147,7 +162,9 @@ const GoalDialog = ({ accountId, actions, open, setOpen, selectedGoal, categorie
 						label="Periodo"
 						value={date}
 						onChange={handleDateChange}
+						minDate={moment().add(1, "month").toDate()}
 					/>
+					<p>{goalExists && "YA EXISTE"}</p>
 				</Grid>
 				<Grid item xs>
 					<TextFieldWithValidation
@@ -215,6 +232,7 @@ type State = {
 	};
 	goals: {
 		selectedGoal?: Goal;
+		futureGoals: Goal[];
 	};
 	categories: {
 		staticCategories: Category[];
@@ -225,12 +243,13 @@ type State = {
 const mapStateToProps = (state: State) => ({
 	accountId: state?.session?.accountData?.id,
 	selectedGoal: state?.goals?.selectedGoal,
+	futureGoals: state?.goals?.futureGoals,
 	categories: [...state?.categories?.staticCategories, ...state?.categories?.userCategories],
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	actions: bindActionCreators(
-		{ deselectGoal, addNewGoal, getGoals, updateGoal, deleteGoalCategory },
+		{ deselectGoal, addNewGoal, getFutureGoals, updateGoal, deleteGoalCategory },
 		dispatch
 	),
 });
