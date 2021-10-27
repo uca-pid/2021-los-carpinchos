@@ -10,6 +10,8 @@ from ..models.goal import Goal
 from ..models.goal_category import Goal_Category
 from ..models.sale import Sale
 
+from django.db.models import Q
+
 
 @api_view(['POST'])
 def create_goal(request, accountId):
@@ -105,12 +107,85 @@ def get_all_goals(request, accountid):
         date = datetime.date.today()
         month = date.month
         year = date.year
-        if month == 1 or month == 3 or month == 6 or month == 7 or month == 8 or month == 10 or month == 12:
-            day = 31
-        else:
-            day = 30
-        goals = Goal.goals.filter(account_id=accountid).exclude(
-            goal_date__gt=datetime.date(year, month, 1)).values()
+
+        goals = Goal.goals.filter(Q(account_id=accountid) & Q(
+            goal_date__gte=datetime.date.today())).values()
+
+        sale_product_id = Sale.sales.filter(account_id=accountid).filter(
+            creation_date__lt=datetime.date(year, month, 1)).values("sale_id", "creation_date",
+                                                                     "sale_products__id_sale_product",
+                                                                     "sale_products__quantity_of_product",
+                                                                     "sale_products__product__product_id",
+                                                                     "sale_products__product__name",
+                                                                     "sale_products__product__price",
+                                                                     "sale_products__product__category__category_id",
+                                                                     "sale_products__product__category__category_name",
+                                                                     "sale_products__product__category__static")
+
+        json_enorme = []
+
+        income = 0
+        # categories = list(categories)
+        for goal in goals:
+
+            categories = Goal_Category.goal_categories.filter(goal_id=goal['goal_id']).values(
+                "categoryIncomeGoal",
+                "category_id",
+                "category__category_name",
+
+            )
+            # print(categories)
+            mini_json = []
+            for category in categories:
+
+                sale_product_id = Sale.sales.filter(account_id=accountid).filter(
+                    creation_date__lt=datetime.date(year, month, 1)).values("sale_id", "creation_date",
+                                                                            "sale_products__id_sale_product",
+                                                                            "sale_products__quantity_of_product",
+                                                                            "sale_products__product__product_id",
+                                                                            "sale_products__product__name",
+                                                                            "sale_products__product__price",
+                                                                            "sale_products__product__category__category_id",
+                                                                            "sale_products__product__category__category_name",
+                                                                            "sale_products__product__category__static")
+
+                for sale in sale_product_id:
+                    # print('vuelta', sale)
+                    if category['category__category_name'] == sale["sale_products__product__category__category_name"]:
+                        income = income + (
+                            sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
+
+                data1 = {"categoryName": category['category__category_name'],
+                         "categoryId": category['category_id'],
+                         "categoryIncomeGoal": category["categoryIncomeGoal"],
+                         "totalCategoryIncome": income}
+                mini_json.append(data1)
+                # print(data1)
+                income = 0
+                #print('una vuelta de category')
+            data2 = {
+                "id": goal['goal_id'],
+                "incomeGoal": goal['incomeGoal'],
+                "month": goal['goal_date'].month,
+                "year": goal['goal_date'].year,
+                "incomeByCategory": mini_json
+            }
+            json_enorme.append(data2)
+            #print("una vuelta de goal\n")
+        return Response(json_enorme, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_past_goals(request, accountid):
+    try:
+        date = datetime.date.today()
+        month = date.month
+        year = date.year
+
+        goals = Goal.goals.filter(Q(account_id=accountid) & Q(
+            goal_date__lt=datetime.date(year, month, 1))).values()
 
         sale_product_id = Sale.sales.filter(account_id=accountid).filter(
             creation_date__lt=datetime.date(year, month, 1)).values("sale_id", "creation_date",

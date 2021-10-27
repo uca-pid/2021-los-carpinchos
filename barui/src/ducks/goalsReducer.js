@@ -2,20 +2,49 @@ import fetcher from "./fetcher";
 import { showErrorMessage, showSuccessMessage } from "./notificationsReducer";
 import moment from "moment";
 
-const GET_GOALS_SUCCES = "GET_GOALS_SUCCES";
+const GET_FUTURE_GOALS_SUCCESS = "GET_FUTURE_GOALS_SUCCESS";
+const GET_PAST_GOALS_SUCCESS = "GET_PAST_GOALS_SUCCESS";
 const SAVE_GOAL_SUCCESS = "SAVE_GOAL_SUCCESS";
 const DELETE_GOAL_SUCCESS = "DELETE_GOAL_SUCCESS";
 
 const SELECT_GOAL = "SELECT_GOAL";
 const DESELECT_GOAL = "DESELECT_GOAL";
 
-export const getGoals = accountId => async dispatch =>
+export const getFutureGoals = accountId => async dispatch =>
 	await fetcher
-		.get(`getAllGoals/${accountId}`)
+		.get(`getFutureGoals/${accountId}`)
 		.then(response => {
 			dispatch({
-				type: GET_GOALS_SUCCES,
-				allGoals: response.map(goal => ({
+				type: GET_FUTURE_GOALS_SUCCESS,
+				futureGoals: response.map(goal => ({
+					id: goal.id,
+					incomeGoal: goal.incomeGoal,
+					month: goal.month,
+					year: goal.year,
+					incomesByCategory: goal.incomeByCategory.map(cat => ({
+						category: {
+							id: cat.categoryId,
+							name: cat.categoryName,
+							static: false,
+						},
+						categoryIncomeGoal: cat.categoryIncomeGoal,
+						totalCategoryIncome: cat.totalCategoryIncome,
+					})),
+				})),
+			});
+		})
+		.catch(e => {
+			dispatch(showErrorMessage("No se pudieron obtener las metas. Recargue la página."));
+			throw new Error(e);
+		});
+
+export const getPastGoals = accountId => async dispatch =>
+	await fetcher
+		.get(`getPastGoals/${accountId}`)
+		.then(response => {
+			dispatch({
+				type: GET_PAST_GOALS_SUCCESS,
+				pastGoals: response.map(goal => ({
 					id: goal.id,
 					incomeGoal: goal.incomeGoal,
 					month: goal.month,
@@ -99,10 +128,15 @@ const initialState = {
 // Reducer
 const goalsReducer = (state = initialState, action) => {
 	switch (action.type) {
-		case GET_GOALS_SUCCES:
+		case GET_FUTURE_GOALS_SUCCESS:
 			return {
 				...state,
-				futureGoals: action.allGoals,
+				futureGoals: action.futureGoals,
+			};
+		case GET_PAST_GOALS_SUCCESS:
+			return {
+				...state,
+				pastGoals: action.pastGoals,
 			};
 		case SELECT_GOAL:
 			return {
