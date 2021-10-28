@@ -5,7 +5,12 @@ import { Button, Container, Grid, Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { selectGoal, getFutureGoals, getPastGoals } from "../../../ducks/goalsReducer";
+import {
+	selectGoal,
+	getFutureGoals,
+	getPastGoals,
+	getCurrentGoal,
+} from "../../../ducks/goalsReducer";
 import { getStaticCategories, getUserCategories } from "../../../ducks/categoriesReducer";
 
 import GoalDialog from "./GoalDialog";
@@ -15,6 +20,7 @@ import AddIcon from "@material-ui/icons/Add";
 import { GridColDef } from "@mui/x-data-grid";
 import { Category } from "../../common/CategoryCombo/CategoryCombo";
 import moment from "moment";
+import CurrentGoalPanel from "../../common/CurrentGoalPanel";
 
 export type CategoryGoal = {
 	idGoalCategory: number;
@@ -38,6 +44,7 @@ type Props = {
 		getFutureGoals: Function;
 		getStaticCategories: Function;
 		getUserCategories: Function;
+		getCurrentGoal: Function;
 	};
 	futureGoals: Goal[];
 	pastGoals: Goal[];
@@ -48,12 +55,16 @@ const GoalsScreen = ({ actions, futureGoals, pastGoals, id }: Props) => {
 	const [open, setOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
-	const columns: GridColDef[] = [{ field: "name", headerName: "Nombre meta", flex: 1 }];
+	const columns: GridColDef[] = [
+		{ field: "name", headerName: "Nombre meta", flex: 1 },
+		{ field: "goalIncome", headerName: "Objetivo", flex: 1 },
+	];
 
 	useEffect(() => {
 		if (id) {
 			actions.getFutureGoals(id);
 			actions.getPastGoals(id);
+			actions.getCurrentGoal(id);
 		}
 	}, [actions, id]);
 
@@ -87,6 +98,9 @@ const GoalsScreen = ({ actions, futureGoals, pastGoals, id }: Props) => {
 			<DeleteFutureGoalDialog open={deleteOpen} setOpen={setDeleteOpen} />
 
 			<Grid container direction="column" spacing={3}>
+				<Grid item xs>
+					<CurrentGoalPanel variant="outlined" transparent />
+				</Grid>
 				<Grid alignItems="center" container item>
 					<Grid item xs>
 						<Typography variant="h5" color="primary">
@@ -110,6 +124,7 @@ const GoalsScreen = ({ actions, futureGoals, pastGoals, id }: Props) => {
 						rows={futureGoals.map(p => ({
 							id: p.id,
 							name: `Meta ${moment(p.month, "M").format("MMMM")} ${p.year}`,
+							goalIncome: `$ ${p.incomeGoal}`,
 							actions: p,
 						}))}
 						onEditRow={handleEditRow}
@@ -127,6 +142,7 @@ const GoalsScreen = ({ actions, futureGoals, pastGoals, id }: Props) => {
 						rows={pastGoals.map(p => ({
 							id: p.id,
 							name: `Meta ${moment(p.month, "M").format("MMMM")} ${p.year}`,
+							goalIncome: `$ ${p.incomeGoal}`,
 							actions: p,
 						}))}
 						onEditRow={handleEditRow}
@@ -158,7 +174,14 @@ const mapStateToProps = (state: State) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	actions: bindActionCreators(
-		{ selectGoal, getFutureGoals, getPastGoals, getStaticCategories, getUserCategories },
+		{
+			selectGoal,
+			getFutureGoals,
+			getPastGoals,
+			getStaticCategories,
+			getUserCategories,
+			getCurrentGoal,
+		},
 		dispatch
 	),
 });

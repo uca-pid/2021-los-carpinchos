@@ -2,6 +2,7 @@ import React from "react";
 
 import { Container, Grid } from "@material-ui/core";
 
+import CurrentGoalPanel from "../../common/CurrentGoalPanel";
 import AnnualIncomeChart from "./AnnualIncomeChart";
 import CategoriesIncomeChart from "./CategoriesIncomeChart";
 
@@ -13,6 +14,9 @@ const ChartsScreen = () => {
 	return (
 		<Container>
 			<Grid container spacing={4}>
+				<Grid item md={12}>
+					<CurrentGoalPanel />
+				</Grid>
 				<Grid item md={4}>
 					<CategoriesIncomeChart cardClassName={classes.card} />
 				</Grid>

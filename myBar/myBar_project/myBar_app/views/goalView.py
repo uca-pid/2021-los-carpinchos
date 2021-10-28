@@ -55,9 +55,7 @@ def get_current_goal(request, accountid):
         else:
             day = 30
         goal = Goal.goals.filter(account_id=accountid).values().first()
-        categories = Goal.goals.filter(account_id=accountid).exclude(
-            goal_date__gt=datetime.date(year, month, day),
-            goal_date__lte=datetime.date(year, month, 1)).values(
+        categories = Goal.goals.filter(account_id=accountid, goal_date__year=year, goal_date__month=month).values(
             "goals_categories__categoryIncomeGoal",
             "goals_categories__category__category_id",
             "goals_categories__category__category_name"

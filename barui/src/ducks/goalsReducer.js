@@ -3,6 +3,7 @@ import { showErrorMessage, showSuccessMessage } from "./notificationsReducer";
 import moment from "moment";
 
 const GET_FUTURE_GOALS_SUCCESS = "GET_FUTURE_GOALS_SUCCESS";
+const GET_CURRENT_GOAL_SUCCESS = "GET_CURRENT_GOAL_SUCCESS";
 const GET_PAST_GOALS_SUCCESS = "GET_PAST_GOALS_SUCCESS";
 const SAVE_GOAL_SUCCESS = "SAVE_GOAL_SUCCESS";
 const DELETE_GOAL_SUCCESS = "DELETE_GOAL_SUCCESS";
@@ -10,6 +11,38 @@ const DELETE_CATEGORY_GOAL_SUCCESS = "DELETE_CATEGORY_GOAL_SUCCESS";
 
 const SELECT_GOAL = "SELECT_GOAL";
 const DESELECT_GOAL = "DESELECT_GOAL";
+
+export const getCurrentGoal = accountId => async dispatch =>
+	await fetcher
+		.get(`getCurrentGoal/${accountId}`)
+		.then(response => {
+			let goal = response[0];
+			dispatch({
+				type: GET_CURRENT_GOAL_SUCCESS,
+				currentGoal: {
+					id: goal.id,
+					incomeGoal: goal.incomeGoal,
+					month: goal.month,
+					year: goal.year,
+					incomesByCategory: goal.incomeByCategory
+						.filter(m => m.categoryIncomeGoal > 0)
+						.map(cat => ({
+							category: {
+								id: cat.categoryId,
+								name: cat.categoryName,
+								static: false,
+							},
+							idGoalCategory: cat.idGoalCategory,
+							categoryIncomeGoal: cat.categoryIncomeGoal,
+							totalCategoryIncome: cat.totalCategoryIncome,
+						})),
+				},
+			});
+		})
+		.catch(e => {
+			dispatch(showErrorMessage("No se pudieron obtener las metas. Recargue la página."));
+			throw new Error(e);
+		});
 
 export const getFutureGoals = accountId => async dispatch =>
 	await fetcher
@@ -131,6 +164,11 @@ const initialState = {
 // Reducer
 const goalsReducer = (state = initialState, action) => {
 	switch (action.type) {
+		case GET_CURRENT_GOAL_SUCCESS:
+			return {
+				...state,
+				currentGoal: action.currentGoal,
+			};
 		case GET_FUTURE_GOALS_SUCCESS:
 			return {
 				...state,
