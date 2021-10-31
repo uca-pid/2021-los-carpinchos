@@ -54,7 +54,7 @@ const AnnualIncomeChart = ({ actions, accountId, salesChartData, cardClassName }
 	);
 
 	const renderTooltip = useCallback(
-		({ data, text, style, ...props }) => <Tooltip.Content text={`$ ${text}`} {...props} />,
+		({ text, ...props }) => <Tooltip.Content text={`$ ${text}`} {...props} />,
 		[]
 	);
 

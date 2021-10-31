@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 
-import Card from "@material-ui/core/Card";
 import BorderLinearProgress from "./BorderLinearProgress";
 
 import { connect } from "react-redux";

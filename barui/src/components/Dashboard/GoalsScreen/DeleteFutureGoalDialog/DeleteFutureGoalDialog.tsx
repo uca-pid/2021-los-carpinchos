@@ -5,7 +5,7 @@ import { Typography } from "@material-ui/core";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { deleteGoal, getFutureGoals } from "../../../../ducks/goalsReducer";
+import { deleteGoal, getFutureGoals, deselectGoal } from "../../../../ducks/goalsReducer";
 
 import { Goal } from "../GoalsScreen";
 
@@ -13,6 +13,7 @@ type Props = {
 	actions: {
 		deleteGoal: Function;
 		getFutureGoals: Function;
+		deselectGoal: Function;
 	};
 	accountId: number;
 
@@ -31,7 +32,7 @@ const DeleteFutureGoalDialog = ({ actions, accountId, open, setOpen, selectedGoa
 	);
 
 	const handleOnDialogClose = useCallback(
-		() => {}, // selectedProduct && actions.deselectProduct(),
+		() => selectedGoal && actions.deselectGoal(),
 		[actions, selectedGoal]
 	);
 
@@ -66,7 +67,7 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators({ deleteGoal, getFutureGoals }, dispatch),
+	actions: bindActionCreators({ deleteGoal, getFutureGoals, deselectGoal }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeleteFutureGoalDialog);
