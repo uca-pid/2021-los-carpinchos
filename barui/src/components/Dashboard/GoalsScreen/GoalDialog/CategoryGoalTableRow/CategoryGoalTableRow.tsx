@@ -1,8 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import { ProductSale } from "../../../SalesScreen/SalesScreen";
-import { Product } from "../../../ProductsScreen/ProductsScreen";
-
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 
@@ -61,7 +58,7 @@ const CategoryGoalTableRow = ({
 	);
 
 	const handleCategoryGoal = useCallback(
-		(value, invalid) => setCategoryIncomeGoal(value),
+		value => setCategoryIncomeGoal(value),
 		[setCategoryIncomeGoal]
 	);
 	const handleEditRow = useCallback(() => setEditMode(true), [setEditMode]);

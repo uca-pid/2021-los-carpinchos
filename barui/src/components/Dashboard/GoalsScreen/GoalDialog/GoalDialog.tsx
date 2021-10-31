@@ -98,7 +98,7 @@ const GoalDialog = ({
 					setGlobalGoal("");
 				});
 			});
-	}, [actions, setOpen, accountId, categoriesGoal, date]);
+	}, [actions, setOpen, accountId, categoriesGoal, date, globalGoal]);
 
 	// NEW SALE
 	const addCategoryToNewGoal = useCallback(
@@ -138,7 +138,7 @@ const GoalDialog = ({
 	);
 
 	const handleChangeGlobalGoal = useCallback(
-		(value, invalid) => {
+		value => {
 			setGlobalGoal(value);
 			selectedGoal &&
 				actions
@@ -147,7 +147,7 @@ const GoalDialog = ({
 					})
 					.then(() => actions.getFutureGoals(accountId));
 		},
-		[setGlobalGoal, selectedGoal]
+		[setGlobalGoal, selectedGoal, accountId, actions]
 	);
 
 	const goalExists = futureGoals?.some(
@@ -186,7 +186,7 @@ const GoalDialog = ({
 						label="Periodo"
 						value={date}
 						onChange={handleDateChange}
-						//minDate={moment().add(1, "month").toDate()}
+						minDate={moment().add(1, "month").toDate()}
 						disabled={Boolean(selectedGoal)}
 						minDateMessage=""
 						maxDateMessage=""
