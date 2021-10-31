@@ -212,13 +212,10 @@ const GoalDialog = ({
 					/>
 				</Grid>
 				<Grid item xs>
-					{!isPastGoal && (
+					{!isPastGoal && !selectedGoal && (
 						<GoalInputForm
 							categories={categories.filter(
-								item =>
-									(selectedGoal ? selectedGoal.incomesByCategory : categoriesGoal).findIndex(
-										x => x.category.id === item.id
-									) === -1
+								item => categoriesGoal.findIndex(x => x.category.id === item.id) === -1
 							)}
 							onAdd={selectedGoal ? undefined : addCategoryToNewGoal}
 						/>

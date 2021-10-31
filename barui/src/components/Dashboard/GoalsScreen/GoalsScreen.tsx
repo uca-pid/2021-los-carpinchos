@@ -99,7 +99,7 @@ const GoalsScreen = ({ actions, futureGoals, pastGoals, id }: Props) => {
 
 			<Grid container direction="column" spacing={3}>
 				<Grid item xs>
-					<CurrentGoalPanel variant="outlined" transparent />
+					<CurrentGoalPanel variant="outlined" transparent detailed />
 				</Grid>
 				<Grid alignItems="center" container item>
 					<Grid item xs>
