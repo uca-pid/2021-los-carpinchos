@@ -1,7 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.utils import json
 import datetime
 
 from ..models import Category
@@ -105,36 +104,17 @@ def get_all_goals(request, accountid):
         date = datetime.date.today()
         month = date.month
         year = date.year
-        if month == 1 or month == 3 or month == 6 or month == 7 or month == 8 or month == 10 or month == 12:
-            day = 31
-        else:
-            day = 30
         goals = Goal.goals.filter(account_id=accountid).exclude(goal_date__gt=datetime.date(year, month, 1)).values()
 
-        sale_product_id = Sale.sales.filter(account_id=accountid).filter(
-            creation_date__lt=datetime.date(year, month, 1)).values("sale_id", "creation_date",
-                                                                    "sale_products__id_sale_product",
-                                                                    "sale_products__quantity_of_product",
-                                                                    "sale_products__product__product_id",
-                                                                    "sale_products__product__name",
-                                                                    "sale_products__product__price",
-                                                                    "sale_products__product__category__category_id",
-                                                                    "sale_products__product__category__category_name",
-                                                                    "sale_products__product__category__static")
-
         json_enorme = []
-
         income = 0
-        # categories = list(categories)
         for goal in goals:
 
             categories = Goal_Category.goal_categories.filter(goal_id=goal['goal_id']).values(
                 "categoryIncomeGoal",
                 "category_id",
                 "category__category_name",
-
             )
-            # print(categories)
             mini_json = []
             for category in categories:
 
@@ -150,7 +130,6 @@ def get_all_goals(request, accountid):
                                                                             "sale_products__product__category__static")
 
                 for sale in sale_product_id:
-                    # print('vuelta', sale)
                     if category['category__category_name'] == sale["sale_products__product__category__category_name"]:
                         income = income + (
                                 sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
@@ -160,9 +139,7 @@ def get_all_goals(request, accountid):
                          "categoryIncomeGoal": category["categoryIncomeGoal"],
                          "totalCategoryIncome": income}
                 mini_json.append(data1)
-                # print(data1)
                 income = 0
-                #print('una vuelta de category')
             data2 = {
                 "incomeGoal": goal['incomeGoal'],
                 "month": goal['goal_date'].month,
@@ -170,7 +147,6 @@ def get_all_goals(request, accountid):
                 "incomeByCategory": mini_json
             }
             json_enorme.append(data2)
-            #print("una vuelta de goal\n")
         return Response(json_enorme, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -179,14 +155,11 @@ def get_all_goals(request, accountid):
 def update_goal_details(request, goal_id):
     goal = Goal.goals.filter(goal_id=goal_id)
     goal_found = goal.first()
-    print(goal_found.goal_date.month)
     if (goal_found.goal_date.month > (datetime.date.today().month) and goal_found.goal_date.year >= (datetime.date.today().year)) or (goal_found.goal_date.month > (datetime.date.today().month) and goal_found.goal_date.year > (datetime.date.today().year)):
-        print("entro")
         try:
             goal_found = goal_found.modify_Goal(**(request.data))
             goal_found.full_clean()
             goal_found.save()
-            print(goal_found)
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)

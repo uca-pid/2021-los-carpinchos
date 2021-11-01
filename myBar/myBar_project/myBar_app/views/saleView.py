@@ -1,19 +1,15 @@
 import datetime
 
-from django.http import JsonResponse
-from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.utils import json
 
 from ..models import Category
 from ..models.product import Product
 from ..models.sale_product import Sale_Product
 from ..models.user import Mb_user
 from ..models.sale import Sale
-from rest_framework.renderers import JSONRenderer
 
-from ..serializers.saleSerializer import SaleSerializer
 from dateutil import rrule
 
 @api_view(['POST'])
@@ -45,8 +41,6 @@ def create_sale(request, accountId):
 
 @api_view(['GET'])
 def get_all_sales(request, accountid):
-    sale = Sale.sales.filter(account_id=accountid).values()
-    #print(sale)
     sale_ids = Sale.sales.filter(account_id=accountid).values()
     sale_product_id = Sale.sales.filter(account_id=accountid).values("sale_id", "sale_products__id_sale_product",
                                                                      "sale_products__quantity_of_product",
@@ -68,9 +62,7 @@ def get_all_sales(request, accountid):
                                                                          "sale_products__product__category__category_id",
                                                                          "sale_products__product__category__category_name",
                                                                          "sale_products__product__category__static")
-        #print(products_by_sale_id)
         for product in products_by_sale_id:
-            #print(product)
             data = {
                 "sale_products": product["sale_products__id_sale_product"],
                 "quantity_of_product": product["sale_products__quantity_of_product"],
@@ -116,13 +108,8 @@ def update_sale_details(request, sale_id):
 def get_income_by_category(request, accountid):
     try:
         month = request.data.get('month')
-        #print(month)
         year = request.data.get('year')
         categories = Category.categories.filter(account_id=accountid).values()
-        #print(categories)
-        sale = Sale.sales.filter(account_id=accountid).values()
-        #print(sale)
-        sale_ids = Sale.sales.filter(account_id=accountid).values()
         if month == 1 or month ==3 or month == 6 or month==7 or month == 8 or month== 10 or month ==12:
             day = 31
         else:
@@ -140,9 +127,7 @@ def get_income_by_category(request, accountid):
                                                                      "sale_products__product__category__static")
         json_enorme = []
         income = 0
-        #categories = list(categories)
         for category in categories:
-            #print(category['category_name'])
             for sale in sale_product_id:
                 if category['category_name'] == sale["sale_products__product__category__category_name"]:
                     income = income + (sale["sale_products__quantity_of_product"]* sale["sale_products__product__price"])
@@ -170,7 +155,6 @@ def get_all_sales_by_date(request, accountid):
         toMonth = request.data.get('toMonth')
         toYear = request.data.get('toYear')
         toDay = request.data.get('toDay')
-        sales_ids = Sale.sales.filter(account_id=accountid).values()
         sale_product_id = Sale.sales.filter(account_id=accountid).exclude(
             creation_date__gt=datetime.date(toYear, toMonth, toDay),
             creation_date__lte=datetime.date(fromYear, fromMonth, fromDay)).values("sale_id", 'creation_date',
@@ -230,3 +214,4 @@ def delete_sale_product(request, sale_product_id):
         return Response(status=status.HTTP_200_OK)
     except Exception as e:
         return Response(status=status.HTTP_404_NOT_FOUND)
+

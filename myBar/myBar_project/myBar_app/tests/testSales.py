@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+
 from django.core.exceptions import ValidationError
 from rest_framework.test import APITestCase
 from ..models.user import Mb_user as mb_user
@@ -101,7 +101,6 @@ class TestProducts(APITestCase):
             '/updateSaleData/1', {"creation_date": date, 'amount':3 , 'productId': 1}, format="json")
         self.assertEqual(response.status_code, 200)
         sale = s.getAllSales().filter(sale_id=1).first()
-        #print(sale.creation_date)
         self.assertEqual(sale.creation_date, date)
         product = p.getAllProducts().filter(product_id = 1)
         productBis = product.first()
@@ -118,13 +117,11 @@ class TestProducts(APITestCase):
     def test_get_sales_by_date(self):
         webClient = self.client
         response = webClient.post('/getAllSalesByDate/1' , { 'fromDay': 10, 'fromMonth':3 , 'fromYear': 2021 , 'toDay': 10, 'toMonth':10  , 'toYear':2021 }, format="json")
-        #print(response.data)
         self.assertEqual(len(response.data), 8)
 
     def test_get_income_by_category(self):
         webClient = self.client
         response = webClient.post('/getIncomeByCategory/1' , {'month': 10 , 'year': 2021 }, format="json")
-        #print(response.data)
         self.assertEqual(len(response.data), 2)
 
     def test_delete_sale_product(self):

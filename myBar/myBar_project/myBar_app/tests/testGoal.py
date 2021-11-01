@@ -1,4 +1,4 @@
-
+from django.core.exceptions import ValidationError
 from rest_framework.test import APITestCase
 from ..models.user import Mb_user as mb_user
 from ..models.product import Product as p
@@ -125,18 +125,33 @@ class TestProducts(APITestCase):
             '/createGoal/1', {'month' : 10 , 'year' : 2021 , 'incomeGoal': 10000 ,'categories': [{'categoryId': 1 , 'categoryIncomeGoal': 3000},{'categoryId':2, 'categoryIncomeGoal': 2000}]}, format = 'json')
         self.assertEqual(response.status_code, 201)
 
+    def test_goal_creation_fail_with_no_goal_date(self):
+        user = mb_user(name='toto', email='h@gmail.com',
+                       manager='Toto', password='Pass')
+        goal = g(incomeGoal = 10000 , goal_date = '',   account=user)
+        with self.assertRaises(ValidationError):
+            goal.full_clean()
+            goal.save()
+
+    def test_goal_creation_fail_with_no_incomeGoal(self):
+        user = mb_user(name='toto', email='h@gmail.com',
+                       manager='Toto', password='Pass')
+        date5 = datetime.date(2021, 11, 8)
+        goal = g(incomeGoal = '' , goal_date = date5, account=user)
+        with self.assertRaises(ValidationError):
+            goal.full_clean()
+            goal.save()
+
     def test_get_current_goal(self):
         webClient = self.client
         response = webClient.get(
             '/getCurrentGoal/1', )
-        #print(response.data)
         self.assertEqual(response.status_code, 200)
 
     def test_get_all_goals(self):
         webClient = self.client
         response = webClient.get(
             '/getAllGoals/1', )
-        #print(response.data)
         self.assertEqual(response.status_code, 200)
 
     def test_modify_goal(self):
@@ -146,9 +161,24 @@ class TestProducts(APITestCase):
             '/updateGoalData/5', {"goal_date":date , "incomeGoal": 11000, 'categoryIncomeGoal':4000 , 'categoryId': 1}, format="json")
         self.assertEqual(response.status_code, 200)
         goal = g.getAllGoals().filter(goal_id=5).first()
-        #print(sale.creation_date)
         self.assertEqual(goal.incomeGoal, 11000)
         category = c.getAllCategories().filter(category_id = 1)
         categoryBis = category.first()
         goal_category_to_change = Goal_Category.getAllGoalCategories().filter(category = categoryBis).filter(goal = goal).first()
         self.assertEqual(goal_category_to_change.categoryIncomeGoal,4000)
+
+    def test_delete_goal(self):
+        webClient = self.client
+        response = webClient.delete('/deleteGoal/1')
+        self.assertEqual(response.status_code, 200)
+        goal = g.getAllGoals().filter(goal_id=1).first()
+        self.assertEqual(goal, None)
+
+    def test_delete_goal_category(self):
+        webClient = self.client
+        response = webClient.delete('/deleteGoalCategory/1')
+        self.assertEqual(response.status_code, 200)
+        goal_category = gc.getAllGoalCategories().filter(id_goal_category=1).first()
+        self.assertEqual(goal_category, None)
+
+

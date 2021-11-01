@@ -1,17 +1,13 @@
 from django.core.mail import send_mail
-from django.shortcuts import render
-
-# Create your views here.
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import HttpResponse
 
 from ..models.securityCode import SecurityCode
 from ..models.user import Mb_user
-# from ...myBar_project.settings import
 
 import myBar_project
 
@@ -185,7 +181,6 @@ def get_user_details(request, id):
                      ), responses={201: 'User deleted', 404: 'user not found'})
 @api_view(['DELETE'])
 def delete_user(request, id):
-    user = Mb_user.getAllUsers().filter(account_id=id)
     try:
         Mb_user.delete(id)
         return Response(status=status.HTTP_200_OK)

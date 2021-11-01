@@ -3,7 +3,6 @@ from .category import Category
 from .goal import Goal
 
 
-
 class Goal_Category(models.Model):
 
     id_goal_category = models.AutoField(primary_key=True)
@@ -22,7 +21,6 @@ class Goal_Category(models.Model):
         return cls.goal_categories.filter()
 
     def modifyGoalCategory(self, categoryIncomeGoal):
-        print('ento en goal category', categoryIncomeGoal)
         setattr(self, 'categoryIncomeGoal', categoryIncomeGoal)
         return self
 

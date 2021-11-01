@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+
 from django.core.exceptions import ValidationError
 from rest_framework.test import APITestCase
 from ..models.user import Mb_user as mb_user
@@ -41,7 +41,6 @@ class TestProducts(APITestCase):
         self.assertEqual(category.getStatic(),True)
 
     def test_category_creation_endPoint(self):
-        user = mb_user.getAllUsers().filter(account_id=1).first()
         webClient = self.client
         response = webClient.post(
             '/createCategory/1', {'name': 'Queso' , 'static': False})
@@ -73,7 +72,6 @@ class TestProducts(APITestCase):
             category.save()
 
     def test_get_all_static_categories(self):
-        categories = c.getAllCategories()
         webClient = self.client
         response = webClient.get('/getAllStaticCategories')
         self.assertEqual(len(response.data), 1)
@@ -95,7 +93,6 @@ class TestProducts(APITestCase):
         self.assertEqual(category.getCategoryname(), 'bebidas')
 
     def test_get_all_non_static_categories(self):
-        categories = c.getAllCategories()
         webClient = self.client
         response = webClient.get('/getAllNonStaticCategories/1')
         self.assertEqual(len(response.data), 1)
