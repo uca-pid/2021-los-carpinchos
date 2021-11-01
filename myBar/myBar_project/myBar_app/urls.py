@@ -48,6 +48,4 @@ urlpatterns = [
     path('updateGoalData/<int:goal_id>', goalView.update_goal_details, name='update_goal_details'),
     path('deleteGoalCategory/<int:goal_category_id>', goalView.delete_goal_category, name='delete_goal_category'),
     path('deleteGoal/<int:goal_id>', goalView.delete_goal, name='delete_goal'),
-
-
 ]

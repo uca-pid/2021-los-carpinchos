@@ -25,9 +25,10 @@ const DeleteFutureGoalDialog = ({ actions, accountId, open, setOpen, selectedGoa
 	const deleteProduct = useCallback(
 		() =>
 			selectedGoal &&
-			actions
-				.deleteGoal(selectedGoal.id)
-				.then(() => actions.getFutureGoals(accountId).then(() => setOpen(false))),
+			actions.deleteGoal(selectedGoal.id).then(() => {
+				actions.getFutureGoals(accountId).then(() => setOpen(false));
+				actions.deselectGoal();
+			}),
 		[actions, selectedGoal, accountId, setOpen]
 	);
 

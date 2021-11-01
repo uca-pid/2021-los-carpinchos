@@ -176,17 +176,16 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 						onChange={handleDateChange}
 					/>
 				</Grid>
-				<Grid item xs>
-					<SaleInputForm
-						products={products.filter(
-							item =>
-								(selectedSale ? selectedSale.productsSale : productsSale).findIndex(
-									x => x.product.id === item.id
-								) === -1
-						)}
-						onAdd={selectedSale ? addProductToExistingSale : addProductToNewSale}
-					/>
-				</Grid>
+				{!selectedSale && (
+					<Grid item xs>
+						<SaleInputForm
+							products={products.filter(
+								item => productsSale.findIndex(x => x.product.id === item.id) === -1
+							)}
+							onAdd={addProductToNewSale}
+						/>
+					</Grid>
+				)}
 				{(selectedSale ? selectedSale.productsSale : productsSale).length > 0 && (
 					<Grid item xs>
 						<TableContainer component={Paper} variant="outlined" className={classes.table}>

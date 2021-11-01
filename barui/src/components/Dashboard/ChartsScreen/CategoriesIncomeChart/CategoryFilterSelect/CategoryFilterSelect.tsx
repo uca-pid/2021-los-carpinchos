@@ -66,7 +66,7 @@ const CategoryFilterSelect = ({ categories, categoriesIdShown, setCategoriesIdSh
 								style={{ marginRight: 8 }}
 								checked={categoriesIdShown.includes(option.categoryId)}
 							/>
-							{option.categoryName} - {selected ? "True" : "false"}
+							{option.categoryName}
 						</React.Fragment>
 					)}
 					value={options.filter(r => categoriesIdShown.includes(r.categoryId))}

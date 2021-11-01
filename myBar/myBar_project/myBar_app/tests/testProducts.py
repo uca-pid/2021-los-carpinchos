@@ -4,11 +4,9 @@ from ..models.user import Mb_user as mb_user
 from ..models.product import Product as p
 from ..models.category import Category as c
 
-from rest_framework.renderers import JSONRenderer
 
 
 class TestProducts(APITestCase):
-    "this class contains tests to validate the corect functioning of the creation of users"
 
     def setUp(self):
         user = mb_user(name='Sofia', email='sofia@gmail.com',
@@ -68,10 +66,8 @@ class TestProducts(APITestCase):
             product.save()
 
     def test_get_all_products(self):
-        products = p.getAllProducts()
         webClient = self.client
         response = webClient.get('/getAllProducts/2')
-        #print(JSONRenderer().render(response.data))
         self.assertEqual(len(response.data), 2)
 
     def test_modify_product_details(self):

@@ -140,15 +140,18 @@ const GoalDialog = ({
 	const handleChangeGlobalGoal = useCallback(
 		value => {
 			setGlobalGoal(value);
-			selectedGoal &&
-				actions
-					.updateGoal(selectedGoal?.id, {
-						incomeGoal: value,
-					})
-					.then(() => actions.getFutureGoals(accountId));
 		},
-		[setGlobalGoal, selectedGoal, accountId, actions]
+		[setGlobalGoal]
 	);
+
+	const handleOnKeyDown = useCallback(() => {
+		selectedGoal &&
+			actions
+				.updateGoal(selectedGoal?.id, {
+					incomeGoal: globalGoal,
+				})
+				.then(() => actions.getFutureGoals(accountId));
+	}, [selectedGoal, accountId, actions, globalGoal]);
 
 	const goalExists = futureGoals?.some(
 		p =>
@@ -186,7 +189,7 @@ const GoalDialog = ({
 						label="Periodo"
 						value={date}
 						onChange={handleDateChange}
-						minDate={moment().add(1, "month").toDate()}
+						//minDate={moment().add(1, "month").toDate()}
 						disabled={Boolean(selectedGoal)}
 						minDateMessage=""
 						maxDateMessage=""
@@ -205,6 +208,7 @@ const GoalDialog = ({
 						placeholder="Ingresar objetivo de la meta"
 						value={globalGoal}
 						onChange={handleChangeGlobalGoal}
+						onEnterPress={handleOnKeyDown}
 						required
 						InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
 						settings={[...settings, numericSetting]}
@@ -212,13 +216,10 @@ const GoalDialog = ({
 					/>
 				</Grid>
 				<Grid item xs>
-					{!isPastGoal && (
+					{!isPastGoal && !selectedGoal && (
 						<GoalInputForm
 							categories={categories.filter(
-								item =>
-									(selectedGoal ? selectedGoal.incomesByCategory : categoriesGoal).findIndex(
-										x => x.category.id === item.id
-									) === -1
+								item => categoriesGoal.findIndex(x => x.category.id === item.id) === -1
 							)}
 							onAdd={selectedGoal ? undefined : addCategoryToNewGoal}
 						/>

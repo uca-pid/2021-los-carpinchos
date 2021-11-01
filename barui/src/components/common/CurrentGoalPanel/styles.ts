@@ -7,6 +7,9 @@ const styles = makeStyles(theme => ({
 	background: {
 		backgroundColor: theme.palette.action.hover,
 	},
+	seeMoreText: {
+		color: theme.palette.secondary.dark,
+	},
 }));
 
 export default styles;

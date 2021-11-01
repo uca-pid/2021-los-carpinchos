@@ -16,32 +16,33 @@ export const getCurrentGoal = accountId => async dispatch =>
 	await fetcher
 		.get(`getCurrentGoal/${accountId}`)
 		.then(response => {
-			let goal = response[0];
-			dispatch({
-				type: GET_CURRENT_GOAL_SUCCESS,
-				currentGoal: {
-					id: goal.id,
-					incomeGoal: goal.incomeGoal,
-					month: goal.month,
-					year: goal.year,
-					incomesByCategory: goal.incomeByCategory
-						.filter(m => m.categoryIncomeGoal > 0)
-						.map(cat => ({
-							category: {
-								id: cat.categoryId,
-								name: cat.categoryName,
-								static: false,
-							},
-							idGoalCategory: cat.idGoalCategory,
-							categoryIncomeGoal: cat.categoryIncomeGoal,
-							totalCategoryIncome: cat.totalCategoryIncome,
-						})),
-				},
-			});
+			if (response.length > 0) {
+				let goal = response[0];
+				dispatch({
+					type: GET_CURRENT_GOAL_SUCCESS,
+					currentGoal: {
+						id: goal.id,
+						incomeGoal: goal.incomeGoal,
+						month: goal.month,
+						year: goal.year,
+						incomesByCategory: goal.incomeByCategory
+							.filter(m => m.categoryIncomeGoal > 0)
+							.map(cat => ({
+								category: {
+									id: cat.categoryId,
+									name: cat.categoryName,
+									static: false,
+								},
+								idGoalCategory: cat.idGoalCategory,
+								categoryIncomeGoal: cat.categoryIncomeGoal,
+								totalCategoryIncome: cat.totalCategoryIncome,
+							})),
+					},
+				});
+			}
 		})
 		.catch(e => {
 			dispatch(showErrorMessage("No se pudieron obtener las metas. Recargue la página."));
-			throw new Error(e);
 		});
 
 export const getFutureGoals = accountId => async dispatch =>
@@ -70,7 +71,6 @@ export const getFutureGoals = accountId => async dispatch =>
 		})
 		.catch(e => {
 			dispatch(showErrorMessage("No se pudieron obtener las metas. Recargue la página."));
-			throw new Error(e);
 		});
 
 export const getPastGoals = accountId => async dispatch =>
@@ -99,7 +99,6 @@ export const getPastGoals = accountId => async dispatch =>
 		})
 		.catch(e => {
 			dispatch(showErrorMessage("No se pudieron obtener las metas. Recargue la página."));
-			throw new Error(e);
 		});
 
 export const addNewGoal = (accountId, incomeGoal, incomesByCategory, date) => async dispatch =>
