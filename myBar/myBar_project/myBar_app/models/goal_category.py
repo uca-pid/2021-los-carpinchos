@@ -1,8 +1,6 @@
 from django.db import models
 from .category import Category
 from .goal import Goal
-
-
 class Goal_Category(models.Model):
 
     id_goal_category = models.AutoField(primary_key=True)

@@ -180,5 +180,3 @@ class TestProducts(APITestCase):
         self.assertEqual(response.status_code, 200)
         goal_category = gc.getAllGoalCategories().filter(id_goal_category=1).first()
         self.assertEqual(goal_category, None)
-
-

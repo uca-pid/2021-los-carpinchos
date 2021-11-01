@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 
 export type TextFieldWithValidationProps = {
 	className?: string;
-	label: string;
+	label?: string;
 	placeholder: string;
 	value: string;
 	onChange: Function;

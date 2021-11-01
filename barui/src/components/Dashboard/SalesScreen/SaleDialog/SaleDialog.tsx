@@ -72,6 +72,7 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 				actions.getSales(accountId).then(() => {
 					setOpen(false);
 					setProductsSale([]);
+					setDate(new Date());
 				});
 			});
 	}, [actions, setOpen, accountId, productsSale, date]);
@@ -121,19 +122,18 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 
 	const handleUpdateDate = useCallback(
 		newDate => {
-			console.log(moment(newDate).startOf("day").toString());
-			console.log(moment(selectedSale?.creationDate).startOf("day").toString());
-			console.log(
-				moment(newDate).startOf("day").diff(moment(selectedSale?.creationDate).startOf("day"), "days")
-			);
-			moment(newDate)
-				.startOf("day")
-				.diff(moment(selectedSale?.creationDate).startOf("day"), "days") !== 0 &&
-				actions
-					.updateSale(selectedSale?.id, {
-						creation_date: moment(newDate).format("DD/MM/YY HH:mm:ss"),
-					})
-					.then(() => actions.getSales(accountId));
+			if (selectedSale) {
+				moment(newDate)
+					.startOf("day")
+					.diff(moment(selectedSale?.creationDate).startOf("day"), "days") !== 0 &&
+					actions
+						.updateSale(selectedSale?.id, {
+							creation_date: moment(newDate).format("DD/MM/YY HH:mm:ss"),
+						})
+						.then(() => actions.getSales(accountId));
+			} else {
+				setDate(newDate);
+			}
 		},
 		[actions, selectedSale, accountId]
 	);
@@ -176,17 +176,16 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 						onChange={handleDateChange}
 					/>
 				</Grid>
-				<Grid item xs>
-					<SaleInputForm
-						products={products.filter(
-							item =>
-								(selectedSale ? selectedSale.productsSale : productsSale).findIndex(
-									x => x.product.id === item.id
-								) === -1
-						)}
-						onAdd={selectedSale ? addProductToExistingSale : addProductToNewSale}
-					/>
-				</Grid>
+				{!selectedSale && (
+					<Grid item xs>
+						<SaleInputForm
+							products={products.filter(
+								item => productsSale.findIndex(x => x.product.id === item.id) === -1
+							)}
+							onAdd={addProductToNewSale}
+						/>
+					</Grid>
+				)}
 				{(selectedSale ? selectedSale.productsSale : productsSale).length > 0 && (
 					<Grid item xs>
 						<TableContainer component={Paper} variant="outlined" className={classes.table}>

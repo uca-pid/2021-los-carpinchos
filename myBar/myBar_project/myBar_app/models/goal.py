@@ -4,7 +4,6 @@ from rest_framework import status
 
 from .category import Category
 from .user import Mb_user
-
 class Goal(models.Model):
     goal_id = models.AutoField(primary_key=True)
     incomeGoal = models.IntegerField()
