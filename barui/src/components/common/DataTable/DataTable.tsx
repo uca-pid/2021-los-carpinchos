@@ -1,9 +1,10 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 
 import { GridColDef, DataGrid, GridRenderCellParams } from "@mui/x-data-grid";
 
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import { IconButton } from "@material-ui/core";
 
 type Props = {
@@ -11,9 +12,10 @@ type Props = {
 	rows?: any[];
 	onEditRow?: Function;
 	onDeleteRow?: Function;
+	watchMode?: boolean;
 };
 
-const DataTable = ({ columns = [], rows = [], onEditRow, onDeleteRow }: Props) => {
+const DataTable = ({ columns = [], rows = [], onEditRow, onDeleteRow, watchMode }: Props) => {
 	const actionsColumn: GridColDef = {
 		field: "actions",
 		headerName: "Acciones",
@@ -29,23 +31,31 @@ const DataTable = ({ columns = [], rows = [], onEditRow, onDeleteRow }: Props) =
 			return (
 				<>
 					<IconButton disabled={!onEditRow} onClick={handleEdit}>
-						<EditIcon />
+						{watchMode ? <VisibilityIcon /> : <EditIcon />}
 					</IconButton>
-					<IconButton disabled={!onDeleteRow} onClick={handleDelete}>
-						<DeleteIcon />
-					</IconButton>
+					{!watchMode && (
+						<IconButton disabled={!onDeleteRow} onClick={handleDelete}>
+							<DeleteIcon />
+						</IconButton>
+					)}
 				</>
 			);
 		},
 	};
+
+	const [pageSize, setPageSize] = useState(5);
+
+	const handlePageSizeChange = useCallback(event => setPageSize(event), [setPageSize]);
 
 	return (
 		<div style={{ height: 400, width: "100%" }}>
 			<DataGrid
 				rows={rows}
 				columns={[...columns, actionsColumn]}
-				pageSize={5}
+				pageSize={pageSize}
 				disableSelectionOnClick
+				rowsPerPageOptions={[5, 10, 15]}
+				onPageSizeChange={handlePageSizeChange}
 			/>
 		</div>
 	);

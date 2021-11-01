@@ -11,6 +11,10 @@ import {
 	addNewCategory,
 } from "../../../ducks/categoriesReducer";
 
+import { Grid } from "@material-ui/core";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import CategoryIcon from "@material-ui/icons/Category";
+
 export type Category = {
 	inputValue?: string;
 	id?: number;
@@ -100,7 +104,20 @@ const CategoryCombo = ({
 	}, []);
 
 	const renderOption = useCallback(
-		(option: Category) => `${option.name} ${option.static ? "*" : ""}`,
+		(option: Category) => (
+			<Grid container direction="row" spacing={2}>
+				<Grid item>
+					{option.static ? (
+						<FiberManualRecordIcon fontSize="small" />
+					) : (
+						<CategoryIcon fontSize="small" />
+					)}
+				</Grid>
+				<Grid item xs>
+					{option.name}
+				</Grid>
+			</Grid>
+		),
 		[]
 	);
 

@@ -11,7 +11,7 @@ class Product(models.Model):
     account = models.ForeignKey(
         Mb_user, on_delete=models.CASCADE, default=None)
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, default=None, blank=True, null=True)
+        Category, on_delete=models.SET_NULL, default=None, blank=True, null=True)
 
     products = models.Manager()
 

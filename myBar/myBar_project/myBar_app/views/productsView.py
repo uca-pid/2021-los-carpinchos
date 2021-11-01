@@ -1,8 +1,7 @@
 
-# Create your views here.
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 from ..models.user import Mb_user
@@ -78,7 +77,6 @@ def update_product_details(request, id):
 
 @api_view(['DELETE'])
 def delete_product(request, id):
-    product = Product.getAllProducts().filter(product_id=id)
     try:
         Product.delete(id)
         return Response(status=status.HTTP_200_OK)

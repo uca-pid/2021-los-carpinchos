@@ -5,8 +5,8 @@ from ..models.product import Product as p
 from ..models.category import Category as c
 
 
+
 class TestProducts(APITestCase):
-    "this class contains tests to validate the corect functioning of the creation of users"
 
     def setUp(self):
         user = mb_user(name='Sofia', email='sofia@gmail.com',
@@ -17,19 +17,19 @@ class TestProducts(APITestCase):
                         manager='Toto', password='Pass')
         user2.full_clean()
         user2.save()
-        category1 = c(category_name='bebidas',static=True,account=user)
+        category1 = c(category_name='bebidas', static=True, account=user)
         category1.full_clean()
         category1.save()
-        category2 = c(category_name='alcohol',static=False,account=user)
+        category2 = c(category_name='alcohol', static=False, account=user)
         category2.full_clean()
         category2.save()
-        product = p(name='cafe', price=9, account=user , category = category1)
+        product = p(name='cafe', price=9, account=user, category=category1)
         product.full_clean()
         product.save()
-        product2 = p(name='coca', price=9, account=user2 , category= category1)
+        product2 = p(name='coca', price=9, account=user2, category=category1)
         product2.full_clean()
         product2.save()
-        product3 = p(name='coca', price=9, account=user2, category = category2)
+        product3 = p(name='coca', price=9, account=user2, category=category2)
         product3.full_clean()
         product3.save()
 
@@ -38,20 +38,20 @@ class TestProducts(APITestCase):
         self.assertEqual(product.getName(), 'cafe')
         self.assertEqual(product.getPrice(), 9)
 
-
     def test_product_creation_fail(self):
         user = mb_user(name='Sofia', email='sofia@gmail.com',
                        manager='Toto', password='Pass')
-        category1 = c(category_name='bebidas',static=True,account=user)
-        product = p(name='', price=9 , account=user, category = category1)
+        category1 = c(category_name='bebidas', static=True, account=user)
+        product = p(name='', price=9, account=user, category=category1)
         with self.assertRaises(ValidationError):
             product.full_clean()
             product.save()
+
     def test_product_creation_with_no_mail(self):
         user = mb_user(name='Sofia', email='',
                        manager='Toto', password='Pass')
-        category1 = c(category_name='bebidas',static=True,account=user)
-        product = p(name='', price=9 , account=user, category = category1)
+        category1 = c(category_name='bebidas', static=True, account=user)
+        product = p(name='', price=9, account=user, category=category1)
         with self.assertRaises(ValidationError):
             product.full_clean()
             product.save()
@@ -59,14 +59,13 @@ class TestProducts(APITestCase):
     def test_product_already_exists(self):
         user = mb_user(name='Sofia', email='sofia@gmail.com',
                        manager='Toto', password='Pass')
-        category1 = c(category_name='bebidas',static=True,account=user)
-        product = p(name='cafe', price=9 , account=user, category=category1)
+        category1 = c(category_name='bebidas', static=True, account=user)
+        product = p(name='cafe', price=9, account=user, category=category1)
         with self.assertRaises(ValidationError):
             product.full_clean()
             product.save()
 
     def test_get_all_products(self):
-        products = p.getAllProducts()
         webClient = self.client
         response = webClient.get('/getAllProducts/2')
         self.assertEqual(len(response.data), 2)

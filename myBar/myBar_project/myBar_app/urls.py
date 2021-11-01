@@ -3,6 +3,7 @@ from .views import userView
 from .views import productsView
 from .views import categoryView
 from .views import saleView
+from .views import goalView
 
 
 urlpatterns = [
@@ -35,4 +36,16 @@ urlpatterns = [
     path('getAllSales/<int:accountid>', saleView.get_all_sales, name='get_all_sales'),
     path('updateSaleData/<int:sale_id>', saleView.update_sale_details, name='update_sale_details'),
     path('deleteSale/<int:sale_id>', saleView.delete_sale, name='delete_sale'),
+    path('deleteSaleProduct/<int:sale_product_id>', saleView.delete_sale_product, name='delete_sale_product'),
+    # Sales charts
+    path('getAllSalesByDate/<int:accountid>', saleView.get_all_sales_by_date, name='get_all_sales_by_date'),
+    path('getIncomeByCategory/<int:accountid>', saleView.get_income_by_category, name='get_income_by_category'),
+    # Goal
+    path('createGoal/<int:accountId>', goalView.create_goal, name='goal_creation'),
+    path('getCurrentGoal/<int:accountid>', goalView.get_current_goal, name='get_current_goal'),
+    path('getFutureGoals/<int:accountid>', goalView.get_all_goals, name='get_all_goals'),
+    path('getPastGoals/<int:accountid>', goalView.get_past_goals, name='get_all_goals'),
+    path('updateGoalData/<int:goal_id>', goalView.update_goal_details, name='update_goal_details'),
+    path('deleteGoalCategory/<int:goal_category_id>', goalView.delete_goal_category, name='delete_goal_category'),
+    path('deleteGoal/<int:goal_id>', goalView.delete_goal, name='delete_goal'),
 ]

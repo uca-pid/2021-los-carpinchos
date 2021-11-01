@@ -1,7 +1,5 @@
 import random
-
 from django.db import models
-
 from .user import Mb_user
 
 
@@ -11,7 +9,6 @@ class SecurityCode(models.Model):
     account = models.ForeignKey(
         Mb_user, on_delete=models.CASCADE, default=None)
 
-    # security = models.Manager()
 
     @classmethod
     def create(cls, user):
@@ -24,5 +21,4 @@ class SecurityCode(models.Model):
     @classmethod
     def delete(cls, user):
         security_code = cls.objects.filter(account=user)
-
         security_code.delete()
