@@ -4,9 +4,6 @@ from rest_framework import status
 
 from .category import Category
 from .user import Mb_user
-
-
-
 class Goal(models.Model):
     goal_id = models.AutoField(primary_key=True)
     incomeGoal = models.IntegerField()
@@ -43,24 +40,15 @@ class Goal(models.Model):
 
     def modify_Goal(self, **argsToChange):
         keys = argsToChange.keys()
-        print("hola")
         if 'categoryId' in keys:
-            print("entra a category")
             category = Category.getAllCategories().filter(category_id=argsToChange['categoryId'])
-            #print(category)
             categoryBis = category.first()
-            print(categoryBis.category_id)
             goal_category_to_change = (self.goals_categories.all().filter(category=categoryBis)).first().modifyGoalCategory(argsToChange['categoryIncomeGoal'])
-            #print(goal_category_to_change)
             goal_category_to_change.full_clean()
             goal_category_to_change.save()
-            print(goal_category_to_change)
         if 'goal_date' in keys :
-            print(argsToChange['goal_date'])
             goal = Goal.getAllGoals().filter(goal_date=argsToChange['goal_date'])
-            print(goal.exists())
             if goal.exists():
-                print('entra al none')
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         for arg in keys:
 

@@ -1,9 +1,5 @@
-from datetime import date
 
-from django.conf import settings
 from django.db import models
-from rest_framework.fields import DateField
-
 from .product import Product
 from .user import Mb_user
 

@@ -1,16 +1,15 @@
 import datetime
 
-from django.http import JsonResponse
-from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.utils import json
 
 from ..models import Category
 from ..models.product import Product
 from ..models.sale_product import Sale_Product
 from ..models.user import Mb_user
 from ..models.sale import Sale
+
 from rest_framework.renderers import JSONRenderer
 
 from ..serializers.saleSerializer import SaleSerializer
@@ -52,7 +51,6 @@ def create_sale(request, accountId):
 @api_view(['GET'])
 def get_all_sales(request, accountid):
     sale = Sale.sales.filter(account_id=accountid).values()
-    # print(sale)
     sale_ids = Sale.sales.filter(account_id=accountid).values("sale_id", "creation_date")
     sale_product_id = Sale.sales.filter(account_id=accountid).values("sale_id", "sale_products__id_sale_product",
                                                                      "sale_products__quantity_of_product",
@@ -73,9 +71,7 @@ def get_all_sales(request, accountid):
                                                                                      "sale_products__product__category__category_id",
                                                                                      "sale_products__product__category__category_name",
                                                                                      "sale_products__product__category__static")
-        # print(products_by_sale_id)
         for product in products_by_sale_id:
-            # print(product)
             data = {
                 "sale_products": product["sale_products__id_sale_product"],
                 "quantity_of_product": product["sale_products__quantity_of_product"],
@@ -214,7 +210,7 @@ def get_all_sales_by_date(request, accountid):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@ api_view(['DELETE'])
+@api_view(['DELETE'])
 def delete_sale(request, sale_id):
     try:
         Sale.delete(sale_id)
@@ -223,7 +219,7 @@ def delete_sale(request, sale_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-@ api_view(['DELETE'])
+@api_view(['DELETE'])
 def delete_sale_product(request, sale_product_id):
     try:
         Sale_Product.delete(sale_product_id)
