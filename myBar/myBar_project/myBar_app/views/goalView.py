@@ -12,6 +12,7 @@ from ..models.sale import Sale
 
 from django.db.models import Q
 
+
 @api_view(['POST'])
 def create_goal(request, accountId):
     try:
@@ -75,26 +76,28 @@ def get_current_goal(request, accountid):
         mini_json = []
         income = 0
         categories = list(categories)
-        for category in categories:
-            for sale in sale_product_id:
-                if category["goals_categories__category__category_name"] == sale[
-                        "sale_products__product__category__category_name"]:
-                    income = income + (
-                        sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
-            data1 = {"categoryName": category["goals_categories__category__category_name"],
-                     "categoryId": category['goals_categories__category__category_id'],
-                     "categoryIncomeGoal": category["goals_categories__categoryIncomeGoal"],
-                     "totalCategoryIncome": income}
-            mini_json.append(data1)
-            income = 0
-        data2 = {
-            "incomeGoal": goal['incomeGoal'],
-            "month": month,
-            "year": year,
-            "incomeByCategory": mini_json
-        }
-        json_enorme.append(data2)
-        return Response(json_enorme, status=status.HTTP_200_OK)
+        if len(categories) > 0:
+            for category in categories:
+                for sale in sale_product_id:
+                    if category["goals_categories__category__category_name"] == sale[
+                            "sale_products__product__category__category_name"]:
+                        income = income + (
+                            sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
+                data1 = {"categoryName": category["goals_categories__category__category_name"],
+                         "categoryId": category['goals_categories__category__category_id'],
+                         "categoryIncomeGoal": category["goals_categories__categoryIncomeGoal"],
+                         "totalCategoryIncome": income}
+                mini_json.append(data1)
+                income = 0
+            data2 = {
+                "incomeGoal": goal['incomeGoal'],
+                "month": month,
+                "year": year,
+                "incomeByCategory": mini_json
+            }
+            json_enorme.append(data2)
+            return Response(json_enorme, status=status.HTTP_200_OK)
+        return Response([], status=status.HTTP_200_OK)
     except Exception as e:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -122,7 +125,7 @@ def get_all_goals(request, accountid):
 
         json_enorme = []
 
-        income = 0 
+        income = 0
         for goal in goals:
 
             categories = Goal_Category.goal_categories.filter(goal_id=goal['goal_id']).values(
@@ -130,7 +133,7 @@ def get_all_goals(request, accountid):
                 "category_id",
                 "category__category_name",
                 "id_goal_category"
-            ) 
+            )
             mini_json = []
             for category in categories:
 
@@ -145,7 +148,7 @@ def get_all_goals(request, accountid):
                                                                             "sale_products__product__category__category_name",
                                                                             "sale_products__product__category__static")
 
-                for sale in sale_product_id: 
+                for sale in sale_product_id:
                     if category['category__category_name'] == sale["sale_products__product__category__category_name"]:
                         income = income + (
                             sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
@@ -155,8 +158,8 @@ def get_all_goals(request, accountid):
                          "idGoalCategory": category['id_goal_category'],
                          "categoryIncomeGoal": category["categoryIncomeGoal"],
                          "totalCategoryIncome": income}
-                mini_json.append(data1) 
-                income = 0 
+                mini_json.append(data1)
+                income = 0
             data2 = {
                 "id": goal['goal_id'],
                 "incomeGoal": goal['incomeGoal'],
@@ -164,7 +167,7 @@ def get_all_goals(request, accountid):
                 "year": goal['goal_date'].year,
                 "incomeByCategory": mini_json
             }
-            json_enorme.append(data2) 
+            json_enorme.append(data2)
         return Response(json_enorme, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -193,7 +196,7 @@ def get_past_goals(request, accountid):
 
         json_enorme = []
 
-        income = 0 
+        income = 0
         for goal in goals:
 
             categories = Goal_Category.goal_categories.filter(goal_id=goal['goal_id']).values(
@@ -217,7 +220,7 @@ def get_past_goals(request, accountid):
                                                                             "sale_products__product__category__category_name",
                                                                             "sale_products__product__category__static")
 
-                for sale in sale_product_id: 
+                for sale in sale_product_id:
                     if category['category__category_name'] == sale["sale_products__product__category__category_name"]:
                         income = income + (
                             sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
@@ -227,8 +230,8 @@ def get_past_goals(request, accountid):
                          "idGoalCategory": category['id_goal_category'],
                          "categoryIncomeGoal": category["categoryIncomeGoal"],
                          "totalCategoryIncome": income}
-                mini_json.append(data1) 
-                income = 0 
+                mini_json.append(data1)
+                income = 0
             data2 = {
                 "id": goal['goal_id'],
                 "incomeGoal": goal['incomeGoal'],
@@ -240,6 +243,7 @@ def get_past_goals(request, accountid):
         return Response(json_enorme, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['PUT'])
 def update_goal_details(request, goal_id):
@@ -256,6 +260,7 @@ def update_goal_details(request, goal_id):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['DELETE'])
 def delete_goal(request, goal_id):
     try:
@@ -263,6 +268,7 @@ def delete_goal(request, goal_id):
         return Response(status=status.HTTP_200_OK)
     except Exception as e:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['DELETE'])
 def delete_goal_category(request, goal_category_id):
