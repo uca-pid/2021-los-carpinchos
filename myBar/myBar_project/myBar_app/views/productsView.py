@@ -7,7 +7,9 @@ from rest_framework.response import Response
 from ..models.user import Mb_user
 from ..models.product import Product
 from ..models.category import Category
-
+from ..services.exceptions import ProductExistsException, InvalidCategoryNameException, InvalidProductNameException, \
+    InvalidProductPriceException
+from ..services.product_service import validate_product_existence, product_data_validator
 
 productName = openapi.Schema(title='productName', type=openapi.TYPE_STRING)
 price = openapi.Schema(title='price', type=openapi.TYPE_INTEGER)
@@ -34,9 +36,13 @@ def get_all_products(request, accountid):
                              'accountId': accountId,
                          }
                      ), responses={201: 'Product registration successfull', 400: 'Invalid request',  409: 'The product already exists'})
+
 @api_view(['POST'])
 def register_product(request):
+    print("Datos recibidos:", request.data)
     try:
+        product_data_validator(request.data.get('name'), request.data.get('price'))
+
         account = Mb_user.getAllUsers().filter(
             account_id=request.data.get('accountId')).first()
 
@@ -48,11 +54,22 @@ def register_product(request):
 
         product.save()
         return Response(status=status.HTTP_201_CREATED)
+
+    except ProductExistsException as e:
+        print("Error:", str(e))
+        return Response({'error': str(e)}, status=status.HTTP_409_CONFLICT)
+
+    except InvalidProductNameException as e:
+        print("Error:", str(e))
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    except InvalidProductPriceException as e:
+        print("Error:", str(e))
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
     except Exception as e:
-        if str(e) == "El producto ya existe":
-            return Response(status=status.HTTP_409_CONFLICT)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        print("Error:", str(e))
+        return Response({'error': "Error inesperado: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['PUT'])

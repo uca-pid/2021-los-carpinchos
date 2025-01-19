@@ -4,3 +4,12 @@ class CategoryAlreadyExistsException(Exception):
 
 class InvalidCategoryNameException(Exception):
     pass
+
+class ProductExistsException(Exception):
+    pass
+
+class InvalidProductNameException(Exception):
+    pass
+
+class InvalidProductPriceException(Exception):
+    pass

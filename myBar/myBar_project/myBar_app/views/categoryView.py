@@ -77,7 +77,7 @@ def get_all_non_static_categories(request, accountid):
 
 @api_view(['PUT'])
 def update_category_details(request, id):
-    print("Datos recibidos:", request.data)  # Agrega esto para depurar
+    print("Datos recibidos:", request.data)
     category = Category.categories.filter(category_id=id)
     category_found = category.first()
 
