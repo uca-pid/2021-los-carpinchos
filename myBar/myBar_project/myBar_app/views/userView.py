@@ -11,6 +11,9 @@ from ..models.user import Mb_user
 
 import myBar_project
 
+from ..services.exceptions import InvalidBarNameException, InvalidManagerNameException
+from ..services.user_service import user_data_validator
+
 EMAIL_HOST_USER = myBar_project.settings.EMAIL_HOST_USER
 
 password = openapi.Schema(title='password', type=openapi.TYPE_STRING)
@@ -39,15 +42,29 @@ def index(request):
                      ), responses={201: 'User created', 400: 'Invalid data', 409: "User already exits"})
 @api_view(['POST'])
 def user_create(request):
+    print("Data recibida: ", request.data)
     try:
+        user_data_validator(request.data)
+
         user = Mb_user(**request.data)
         user.save()
         return Response({'email': user.email}, status=status.HTTP_201_CREATED)
+
+    except InvalidBarNameException as e:
+        print("Error:", str(e))
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    except InvalidManagerNameException as e:
+        print("Error:", str(e))
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:  # Falta manejar mejor las exceptions aca tocar mañana
+        print("Error:", str(e))
+        return Response({'error': str(e)}, status=status.HTTP_409_CONFLICT)
+
     except Exception as e:
-        if str(e) == "El usuario ya existe":
-            return Response(status=status.HTTP_409_CONFLICT)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        print("Error inesperado:", str(e))
+        return Response({'error': "Error inesperado: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @swagger_auto_schema(method='post',
