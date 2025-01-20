@@ -41,7 +41,7 @@ def get_all_products(request, accountid):
 def register_product(request):
     print("Datos recibidos:", request.data)
     try:
-        product_data_validator(request.data.get('name'), request.data.get('price'))
+        product_data_validator(request.data)
 
         account = Mb_user.getAllUsers().filter(
             account_id=request.data.get('accountId')).first()
@@ -74,10 +74,13 @@ def register_product(request):
 
 @api_view(['PUT'])
 def update_product_details(request, id):
+    print("Datos recibidos:", request.data)
     product = Product.products.filter(product_id=id)
     product_found = product.first()
     if product_found:
         try:
+            product_data_validator(request.data)
+
             product_found = product_found.modifyProduct(**(request.data))
             if request.data.get('categoryId'):
                 category = Category.getAllCategories().filter(category_id=request.data.get('categoryId')).first()
@@ -86,6 +89,15 @@ def update_product_details(request, id):
             product_found.save()
             return Response({'name': product_found.name, 'price': product_found.price, 'id': product_found.product_id},
                             status=status.HTTP_200_OK)
+        except ProductExistsException as e:
+            print("Error:", str(e))
+            return Response({'message': str(e)}, status=status.HTTP_409_CONFLICT)
+        except InvalidProductNameException as e:
+            print("Error:", str(e))
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except InvalidProductPriceException as e:
+            print("Error:", str(e))
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
