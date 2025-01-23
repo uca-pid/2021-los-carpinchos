@@ -24,3 +24,10 @@ class InvalidBarNameException(Exception):
 
 class InvalidManagerNameException(Exception):
     pass
+
+class InvalidEmailException(Exception):
+    pass
+
+
+class InvalidPasswordException(Exception):
+    pass

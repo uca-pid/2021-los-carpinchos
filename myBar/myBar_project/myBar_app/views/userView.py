@@ -11,7 +11,8 @@ from ..models.user import Mb_user
 
 import myBar_project
 
-from ..services.exceptions import InvalidBarNameException, InvalidManagerNameException
+from ..services.exceptions import InvalidBarNameException, InvalidManagerNameException, InvalidEmailException, \
+    InvalidPasswordException
 from ..services.user_service import user_data_validator
 
 EMAIL_HOST_USER = myBar_project.settings.EMAIL_HOST_USER
@@ -58,9 +59,17 @@ def user_create(request):
         print("Error:", str(e))
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    except Exception as e:  # Falta manejar mejor las exceptions aca tocar mañana
+    except InvalidEmailException as e:
         print("Error:", str(e))
-        return Response({'error': str(e)}, status=status.HTTP_409_CONFLICT)
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    except InvalidPasswordException as e:
+        print("Error:", str(e))
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        print("Error de duplicado:", str(e))
+        return Response({'error': "El usuario ya existe."}, status=status.HTTP_409_CONFLICT)
 
     except Exception as e:
         print("Error inesperado:", str(e))
@@ -157,10 +166,13 @@ def reestablish_password(request):
                      ), responses={204: 'Details updated', 400: 'Invalid data'})
 @api_view(['PUT'])
 def modify_user_details(request, id):
+    print("Data recibida: ", request.data)
     user = Mb_user.users.filter(account_id=id)
     user2 = user.first()
     if user2:
         try:
+            user_data_validator(request.data)
+
             user2 = user2.modifyUser(**(request.data))
             user2.full_clean()
             user2.save()
