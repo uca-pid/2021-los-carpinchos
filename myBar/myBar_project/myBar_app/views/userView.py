@@ -13,7 +13,7 @@ import myBar_project
 
 from ..services.exceptions import InvalidBarNameException, InvalidManagerNameException, InvalidEmailException, \
     InvalidPasswordException
-from ..services.user_service import user_data_validator
+from ..services.user_service import user_data_validator, validate_repeated_password
 
 EMAIL_HOST_USER = myBar_project.settings.EMAIL_HOST_USER
 
@@ -136,8 +136,9 @@ def validate_code(request):
         return Response({'message': "No se ha generado un código para esta cuenta."}, status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['PUT'])
+@api_view(['PUT'])   #Pendiente validacion
 def reestablish_password(request):
+    print("Data recibida: ", request.data)
     user = Mb_user.users.filter(email=request.data.get('email'))
     user2 = user.first()
     if user2:
@@ -171,6 +172,7 @@ def modify_user_details(request, id):
     user2 = user.first()
     if user2:
         try:
+            validate_repeated_password(request.data, user2.password)
             user_data_validator(request.data)
 
             user2 = user2.modifyUser(**(request.data))
@@ -178,8 +180,21 @@ def modify_user_details(request, id):
             user2.save()
             return Response({'name': user2.name, 'manager': user2.manager, 'email': user2.email},
                             status=status.HTTP_200_OK)
-        except Exception as e:
+        except InvalidBarNameException as e:
+            print("Error:", str(e))
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except InvalidManagerNameException as e:
+            print("Error:", str(e))
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except InvalidEmailException as e:
+            print("Error:", str(e))
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except InvalidPasswordException as e:
+            print("Error:", str(e))
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print("Error:", str(e))
+            return Response({'message': f'Error inesperado: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 

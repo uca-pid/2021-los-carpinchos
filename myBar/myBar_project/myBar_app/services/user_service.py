@@ -34,6 +34,13 @@ def validate_user_password(user_password):
         )
 
 
+def validate_repeated_password(request_data, current_password):
+    if 'password' in request_data:
+        new_password = request_data.get('password')
+        if new_password == current_password:
+            raise InvalidPasswordException("La contraseña no puede ser igual a la anterior")
+
+
 def user_data_validator(request_data):
     print("Data que el validador recibe: ", request_data)
     if 'name' in request_data:
