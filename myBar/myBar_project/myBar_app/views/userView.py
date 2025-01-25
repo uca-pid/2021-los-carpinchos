@@ -13,7 +13,7 @@ import myBar_project
 
 from ..services.exceptions import InvalidBarNameException, InvalidManagerNameException, InvalidEmailException, \
     InvalidPasswordException
-from ..services.user_service import user_data_validator, validate_repeated_password
+from ..services.user_service import user_data_validator, validate_repeated_password, validate_password_reestablishment
 
 EMAIL_HOST_USER = myBar_project.settings.EMAIL_HOST_USER
 
@@ -136,20 +136,27 @@ def validate_code(request):
         return Response({'message': "No se ha generado un código para esta cuenta."}, status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['PUT'])   #Pendiente validacion
+@api_view(['PUT'])
 def reestablish_password(request):
     print("Data recibida: ", request.data)
     user = Mb_user.users.filter(email=request.data.get('email'))
     user2 = user.first()
     if user2:
         try:
+            validate_password_reestablishment(request.data, user2.password)
             user2 = user2.modifyUser(**{'password': request.data.get('newPassword')})
             user2.full_clean()
             user2.save()
 
             return Response({'message': "Contraseña reestablecida."}, status=status.HTTP_200_OK)
-        except Exception as e:
+
+        except InvalidPasswordException as e:
+            print("Error:", str(e))
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print("Error:", str(e))
+            return Response({'message': "Error inesperado: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response({'message': "Cuenta no encontrada."}, status=status.HTTP_404_NOT_FOUND)
 

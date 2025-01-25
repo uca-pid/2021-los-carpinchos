@@ -41,6 +41,19 @@ def validate_repeated_password(request_data, current_password):
             raise InvalidPasswordException("La contraseña no puede ser igual a la anterior")
 
 
+def validate_password_reestablishment(request_data, current_password):
+    password_regex = r'^(?=.*[A-Z])(?=.*\d)(?=.*[a-zA-Z])[A-Za-z\d@$!%*?&]{8,}$'
+    if 'newPassword' in request_data:
+        new_password = request_data.get('newPassword')
+        if new_password == current_password:
+            raise InvalidPasswordException("La contraseña no puede ser igual a la anterior")
+        if not re.match(password_regex, new_password):
+            raise InvalidPasswordException(
+                "La contraseña debe contener al menos 8 caracteres, "
+                "incluyendo al menos un número, una letra mayúscula y un caracteres alfanuméricos."
+            )
+
+
 def user_data_validator(request_data):
     print("Data que el validador recibe: ", request_data)
     if 'name' in request_data:
