@@ -19,12 +19,18 @@ from django.db.models import Q
 
 from datetime import datetime
 
+from ..services.exceptions import SaleProductDataException, InvalidDateException
+from ..services.sale_service import validate_sale_date, product_sale_validator, validate_sale_update_data
+
 
 @api_view(['POST'])
 def create_sale(request, accountId):
+    print("Data recibida: ", request.data)
     try:
         account = Mb_user.getAllUsers().filter(
             account_id=accountId).first()
+        validate_sale_date(request.data)
+        product_sale_validator(request.data)
         sale = Sale(**{'creation_date': datetime.strptime(request.data.get('creation_date'), '%d/%m/%y %H:%M:%S'),
                        'account': account})
         sale.full_clean()
@@ -41,11 +47,17 @@ def create_sale(request, accountId):
             sale_product.save()
 
         return Response({'sale_id': sale.sale_id}, status=status.HTTP_201_CREATED)
+
+    except InvalidDateException as e:
+        print("Error:", str(e))
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except SaleProductDataException as e:
+        print("Error:", str(e))
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        if str(e) == "La venta ya existe":
-            return Response(status=status.HTTP_409_CONFLICT)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        print("Error:", str(e))
+        return Response({'error': 'Ocurrió un error inesperado. Por favor, intente de nuevo.'},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])
@@ -100,6 +112,7 @@ def get_all_sales(request, accountid):
 
 @api_view(['PUT'])
 def update_sale_details(request, sale_id):
+    print("Data recibida: ", request.data)
     sale = Sale.sales.filter(sale_id=sale_id)
     sale_found = sale.first()
     if sale_found:
@@ -107,6 +120,7 @@ def update_sale_details(request, sale_id):
             date = request.data.get('creation_date')
             amount = request.data.get("amount")
             productId = request.data.get("productId")
+            validate_sale_update_data(date, amount, sale_found)
             if date:
                 sale_found.modify_Sale(**{'creation_date': datetime.strptime(date, '%d/%m/%y %H:%M:%S')})
 
@@ -116,10 +130,16 @@ def update_sale_details(request, sale_id):
             sale_found.full_clean()
             sale_found.save()
             return Response(status=status.HTTP_200_OK)
-        except Exception as e:
+        except InvalidDateException as e:
+            print("Error:", str(e))
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except SaleProductDataException as e:
+            print("Error:", str(e))
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'message': 'Ocurrió un error inesperado: ' + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': 'Venta no encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
