@@ -12,15 +12,23 @@ from ..models.sale import Sale
 
 from django.db.models import Q
 
+from ..services.goal_service import validate_goal_date, validate_no_repeated_date, validate_goal_income, \
+    category_income_validator
+
 
 @api_view(['POST'])
 def create_goal(request, accountId):
+    print("Datos recibidos:", request.data)  # Pendiente: Mejorar el manejo de exceptions a mas especifico y aparte hacer una funcion general que corra esas validaciones
     try:
         month = request.data.get('month')
         year = request.data.get('year')
         account = Mb_user.getAllUsers().filter(
             account_id=accountId).first()
         date = datetime.date(year, month, 1)
+        validate_goal_date(date)
+        validate_no_repeated_date(year, month)
+        validate_goal_income(request.data.get('incomeGoal'))
+        category_income_validator(request.data)
         goal = Goal(**{'goal_date': date,
                        'incomeGoal': request.data.get('incomeGoal'),
                        'account': account})
@@ -41,6 +49,7 @@ def create_goal(request, accountId):
         if str(e) == "La meta para este periodo ya existe":
             return Response(status=status.HTTP_409_CONFLICT)
         else:
+            print("Error:", str(e))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -80,9 +89,9 @@ def get_current_goal(request, accountid):
             for category in categories:
                 for sale in sale_product_id:
                     if category["goals_categories__category__category_name"] == sale[
-                            "sale_products__product__category__category_name"]:
+                        "sale_products__product__category__category_name"]:
                         income = income + (
-                            sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
+                                sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
                 data1 = {"categoryName": category["goals_categories__category__category_name"],
                          "categoryId": category['goals_categories__category__category_id'],
                          "categoryIncomeGoal": category["goals_categories__categoryIncomeGoal"],
@@ -151,7 +160,7 @@ def get_all_goals(request, accountid):
                 for sale in sale_product_id:
                     if category['category__category_name'] == sale["sale_products__product__category__category_name"]:
                         income = income + (
-                            sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
+                                sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
 
                 data1 = {"categoryName": category['category__category_name'],
                          "categoryId": category['category_id'],
@@ -223,7 +232,7 @@ def get_past_goals(request, accountid):
                 for sale in sale_product_id:
                     if category['category__category_name'] == sale["sale_products__product__category__category_name"]:
                         income = income + (
-                            sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
+                                sale["sale_products__quantity_of_product"] * sale["sale_products__product__price"])
 
                 data1 = {"categoryName": category['category__category_name'],
                          "categoryId": category['category_id'],
