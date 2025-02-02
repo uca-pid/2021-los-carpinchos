@@ -1,3 +1,5 @@
+from calendar import monthrange
+
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
@@ -12,23 +14,21 @@ from ..models.sale import Sale
 
 from django.db.models import Q
 
+from ..services.exceptions import InvalidGoalDataException, InvalidGoalPeriodException
 from ..services.goal_service import validate_goal_date, validate_no_repeated_date, validate_goal_income, \
-    category_income_validator
+    category_income_validator, goal_data_validator, goal_data_modifier_validator, validate_category_goal_modification
 
 
 @api_view(['POST'])
 def create_goal(request, accountId):
-    print("Datos recibidos:", request.data)  # Pendiente: Mejorar el manejo de exceptions a mas especifico y aparte hacer una funcion general que corra esas validaciones
+    print("Datos recibidos:", request.data)
     try:
         month = request.data.get('month')
         year = request.data.get('year')
         account = Mb_user.getAllUsers().filter(
             account_id=accountId).first()
         date = datetime.date(year, month, 1)
-        validate_goal_date(date)
-        validate_no_repeated_date(year, month)
-        validate_goal_income(request.data.get('incomeGoal'))
-        category_income_validator(request.data)
+        goal_data_validator(request.data, date)
         goal = Goal(**{'goal_date': date,
                        'incomeGoal': request.data.get('incomeGoal'),
                        'account': account})
@@ -45,12 +45,18 @@ def create_goal(request, accountId):
             goal_category.full_clean()
             goal_category.save()
         return Response({'goal_id': goal.goal_id}, status=status.HTTP_201_CREATED)
+
+    except InvalidGoalDataException as e:
+        print("Error:", str(e))
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    except InvalidGoalPeriodException as e:
+        print("Error:", str(e))
+        return Response({"error": str(e)}, status=status.HTTP_409_CONFLICT)
+
     except Exception as e:
-        if str(e) == "La meta para este periodo ya existe":
-            return Response(status=status.HTTP_409_CONFLICT)
-        else:
-            print("Error:", str(e))
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        print("Error inesperado:", str(e))
+        return Response({"error": "Ocurrió un error interno"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])
@@ -59,10 +65,9 @@ def get_current_goal(request, accountid):
         date = datetime.date.today()
         month = date.month
         year = date.year
-        if month == 1 or month == 3 or month == 6 or month == 7 or month == 8 or month == 10 or month == 12:
-            day = 31
-        else:
-            day = 30
+
+        _, day = monthrange(year, month)
+
         goal = Goal.goals.filter(account_id=accountid).values().first()
 
         categories = Goal.goals.filter(account_id=accountid, goal_date__year=year, goal_date__month=month).values(
@@ -108,6 +113,7 @@ def get_current_goal(request, accountid):
             return Response(json_enorme, status=status.HTTP_200_OK)
         return Response([], status=status.HTTP_200_OK)
     except Exception as e:
+        print("Error:", str(e))
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -256,18 +262,27 @@ def get_past_goals(request, accountid):
 
 @api_view(['PUT'])
 def update_goal_details(request, goal_id):
+    print("Datos recibidos:", request.data)
     goal = Goal.goals.filter(goal_id=goal_id)
     goal_found = goal.first()
-    if (goal_found.goal_date.month > (datetime.date.today().month) and goal_found.goal_date.year >= (datetime.date.today().year)) or (goal_found.goal_date.month > (datetime.date.today().month) and goal_found.goal_date.year > (datetime.date.today().year)):
+    if (goal_found.goal_date.month > (datetime.date.today().month) and goal_found.goal_date.year >= (
+            datetime.date.today().year)) or (
+            goal_found.goal_date.month > (datetime.date.today().month) and goal_found.goal_date.year > (
+            datetime.date.today().year)):
         try:
+            goal_data_modifier_validator(request.data, goal_found)
             goal_found = goal_found.modify_Goal(**(request.data))
             goal_found.full_clean()
             goal_found.save()
             return Response(status=status.HTTP_200_OK)
-        except Exception as e:
+        except InvalidGoalDataException as e:
+            print("Error:", str(e))
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print("Error inesperado:", str(e))
+            return Response({'message': 'Error interno del servidor'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': 'La meta ya ha pasado el periodo de modificación'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['DELETE'])

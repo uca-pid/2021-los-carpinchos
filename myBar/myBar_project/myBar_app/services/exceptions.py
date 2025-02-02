@@ -44,3 +44,7 @@ class SaleProductDataException(Exception):
 
 class InvalidGoalDataException(Exception):
     pass
+
+
+class InvalidGoalPeriodException(Exception):
+    pass
