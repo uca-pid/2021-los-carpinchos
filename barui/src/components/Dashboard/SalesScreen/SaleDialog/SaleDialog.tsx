@@ -174,6 +174,7 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 						format="D [de] MMMM [de] yyyy"
 						value={date}
 						onChange={handleDateChange}
+						//maxDate={new Date(new Date().setHours(0, 0, 0, 0))}
 					/>
 				</Grid>
 				{!selectedSale && (
