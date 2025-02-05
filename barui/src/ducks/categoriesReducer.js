@@ -56,8 +56,9 @@ export const addNewCategory = (name, accountId) => async dispatch =>
 
 			return response;
 		})
-		.catch(() => {
-			dispatch(showErrorMessage("No se pudo crear la nueva categoría. Intente de nuevo."));
+		.catch( error => {
+		    const errorMessage = error.message || 'Hubo un problema al crear la categoría. Intente de nuevo';
+			dispatch(showErrorMessage(errorMessage));
 		});
 
 export const selectCategory = category => dispatch =>
@@ -75,9 +76,10 @@ export const updateCategory = (categoryId, data) => async dispatch =>
 			dispatch({ type: UPDATE_CATEGORY_SUCCESS });
 			dispatch(showSuccessMessage("La categoría se ha actualizado éxitosamente."));
 		})
-		.catch(() =>
-			dispatch(showErrorMessage("No fue posible actualizar la categoría. Intente de nuevo."))
-		);
+		.catch( error => {
+            const errorMessage = error.message || 'Hubo un problema al editar la categoría. Intente de nuevo';
+            dispatch(showErrorMessage(errorMessage));
+    });
 
 export const deleteCategory = categoryId => async dispatch =>
 	await fetcher
