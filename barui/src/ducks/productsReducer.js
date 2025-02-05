@@ -44,10 +44,11 @@ export const addNewProduct = (name, price, categoryId, accountId) => async dispa
 		})
 		.then(() => {
 			dispatch({ type: SAVE_PRODUCT_SUCCESS });
-			dispatch(showSuccessMessage("Un nuevo producto ha sido agregado a la carta."));
+			dispatch(showSuccessMessage(`El producto: ${name} ha sido agregado a la carta.`));
 		})
-		.catch(() => {
-			dispatch(showErrorMessage("No se pudo agrega el nuevo producto. Intente de nuevo."));
+		.catch( error => {
+		    const errorMessage = error.message || "No se pudo agrega el nuevo producto. Intente de nuevo.";
+			dispatch(showErrorMessage(errorMessage));
 		});
 
 export const selectProduct = product => dispatch =>
@@ -65,9 +66,10 @@ export const updateProduct = (productId, data) => async dispatch =>
 			dispatch({ type: UPDATE_PRODUCT_SUCCESS });
 			dispatch(showSuccessMessage("El producto se ha actualizado éxitosamente."));
 		})
-		.catch(() =>
-			dispatch(showErrorMessage("No fue posible actualizar los datos del producto. Intente de nuevo."))
-		);
+		.catch( error => {
+            const errorMessage = error.message || "No se pudo actualizar producto. Intente de nuevo.";
+            dispatch(showErrorMessage(errorMessage));
+		});
 
 export const deleteProduct = productId => async dispatch =>
 	await fetcher

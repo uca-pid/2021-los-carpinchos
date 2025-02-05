@@ -52,7 +52,7 @@ export const addNewCategory = (name, accountId) => async dispatch =>
 		.post(`createCategory/${accountId}`, { name })
 		.then(response => {
 			dispatch({ type: SAVE_CATEGORY_SUCCESS });
-			dispatch(showSuccessMessage("Una nueva categoría ha sido creada."));
+			dispatch(showSuccessMessage(`Una nueva categoría ha sido creada: ${name}`));
 
 			return response;
 		})
