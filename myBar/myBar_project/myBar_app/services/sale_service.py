@@ -27,7 +27,7 @@ def validate_sale_date_update(date, existing_sale):
     new_date = datetime.strptime(date, '%d/%m/%y %H:%M:%S').date()
     existing_date = existing_sale.creation_date
     if new_date == existing_date:
-        raise InvalidDateException("La fecha ingresada no puede ser la misma")
+        raise InvalidDateException("La fecha ingresada no puede ser la misma que ya tiene asignada la venta a modificar")
     if new_date > datetime.now().date():
         raise InvalidDateException("La fecha ingresada no puede ser futura")
 

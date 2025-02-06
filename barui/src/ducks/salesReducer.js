@@ -50,13 +50,14 @@ export const addNewSale = (accountId, productsSale, date) => async dispatch =>
 		})
 		.then(response => {
 			dispatch({ type: SAVE_SALE_SUCCESS });
-			dispatch(showSuccessMessage("Una nueva venta ha sido creada."));
+			dispatch(showSuccessMessage("Una nueva venta ha sido creada con exito."));
 
 			return response;
 		})
-		.catch(() => {
-			dispatch(showErrorMessage("No se pudo crear la nueva venta. Intente de nuevo."));
-		});
+		.catch( error => {
+            const errorMessage = error.message || "No se pudo crear la venta. Intente de nuevo.";
+            dispatch(showErrorMessage(errorMessage));
+        });
 
 export const selectSale = sale => dispatch =>
 	dispatch({
@@ -72,7 +73,10 @@ export const updateSale = (saleId, data) => async dispatch =>
 		.then(() => {
 			dispatch(showSuccessMessage("La venta se ha actualizado éxitosamente."));
 		})
-		.catch(() => dispatch(showErrorMessage("No fue posible actualizar la venta. Intente de nuevo.")));
+		.catch( error => {
+            const errorMessage = error.message || "No se pudo actualizar la venta. Intente de nuevo.";
+            dispatch(showErrorMessage(errorMessage));
+    });
 
 export const deleteSale = saleId => async dispatch =>
 	await fetcher
