@@ -6,7 +6,7 @@ import AppDialog from "../../../common/AppDialog";
 import TextFieldWithValidation from "../../../common/TextFieldWithValidation";
 
 import styles from "./styles";
-import { numericSetting, settings } from "../../../SignUp/validationSettings";
+import { numericSetting, settings, textValidationSettings, priceSetting } from "../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -60,14 +60,28 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 	}, [selectedProduct, setInput, setSelectedCategory]);
 
 	const handleChangeName = useCallback(
-		(value, invalid) => setInput(prev => ({ ...prev, name: { value, invalid } })),
-		[setInput]
-	);
+      (value) => {
+        const isInvalid = value.trim() === "" || !/^[a-zA-Z\s]+$/.test(value);
+        setInput(prev => ({
+          ...prev,
+          name: { value, invalid: isInvalid }
+        }));
+      },
+      [setInput]
+    );
 
 	const handleChangePrice = useCallback(
-		(value, invalid) => setInput(prev => ({ ...prev, price: { value, invalid } })),
-		[setInput]
-	);
+      (value) => {
+        const re = /^[+]?\d+(\.\d+)?$/;
+        const isInvalid = !re.test(value) || value ==="0";
+
+        setInput(prev => ({
+          ...prev,
+          price: { value, invalid: isInvalid }
+        }));
+      },
+      [setInput]
+    );
 
 	const addProduct = useCallback(() => {
 		actions
@@ -127,7 +141,7 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 						value={input.name.value}
 						onChange={handleChangeName}
 						required
-						settings={settings}
+						settings={textValidationSettings}
 					/>
 				</Grid>
 				<Grid item xs>
@@ -142,7 +156,7 @@ const ProductDialog = ({ actions, accountId, open, setOpen, selectedProduct }: P
 						onChange={handleChangePrice}
 						required
 						InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
-						settings={[...settings, numericSetting]}
+						settings={[...settings, priceSetting]}
 					/>
 				</Grid>
 			</Grid>

@@ -14,20 +14,28 @@ export const settings: ValidationSetting[] = [
 	},
 ];
 
-export const categoryValidationSettings = [
+export const textValidationSettings = [
   {
-    message: "Debe contener menos de 30 caracteres",
-    validate: (input: string) => input.length > 30,
-  },
-  {
-    message: "El campo no puede ser vacio",
-    validate: (input: string) => input.trim().length === 0,
-  },
-  {
-    message: "Solo se permiten letras y espacios",
-    validate: (input: string) => !/^[a-zA-Z\s]+$/.test(input),
-  },
+      message: "Debe contener menos de 30 caracteres",
+      validate: (input: string) => input.length > 30,
+    },
+    {
+      message: "El campo es requerido",
+      validate: (input: string) => input.trim().length === 0,
+    },
+    {
+      message: "Solo se permiten letras",
+      validate: (input: string) => !/^[a-zA-Z\s]+$/.test(input),
+    },
 ];
+
+export const priceSetting: ValidationSetting = {
+  message: "Solo se aceptan números positivos",
+  validate: (input: string) => {
+    const re = /^[+]?\d+(\.\d+)?$/;
+    return !re.test(input) || input === "0";
+  },
+};
 
 export const numericSetting: ValidationSetting = {
 	message: "Solo se aceptan numeros.",

@@ -41,7 +41,7 @@ def product_data_validator(request_data):
     print("Data que el validador recibe: ", request_data)
     if 'name' in request_data:
         product_name = request_data.get('name')
-        product_name = product_name.strip()  # El strip me sirve para eliminar espacios en blanco antes y despues
+        product_name = product_name.strip()
         validate_product_existence(product_name)
         validate_product_name(product_name)
     if 'price' in request_data:

@@ -6,7 +6,7 @@ import AppDialog from "../../../../common/AppDialog";
 import TextFieldWithValidation from "../../../../common/TextFieldWithValidation";
 
 import styles from "./styles";
-import { categoryValidationSettings } from "../../../../SignUp/validationSettings";
+import { textValidationSettings } from "../../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -108,7 +108,7 @@ const CategoryDialog = ({ actions, accountId, open, setOpen, selectedCategory }:
 						value={input.name.value}
 						onChange={handleChangeName}
 						required
-						settings={categoryValidationSettings}
+						settings={textValidationSettings}
 					/>
 				</Grid>
 			</Grid>
