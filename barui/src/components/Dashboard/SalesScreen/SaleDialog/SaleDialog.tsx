@@ -163,7 +163,7 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 			setOpen={setOpen}
 			submitButtonDisabled={productsSale.length === 0}
 			submitButtonLabel={"Crear"}
-			title={selectedSale ? `Venta #${selectedSale.id}` : "Venta Nuevo"}
+			title={selectedSale ? `Venta #${selectedSale.id}` : "Venta Nueva"}
 			hideActions={Boolean(selectedSale)}
 		>
 			<Grid container direction="column" spacing={2}>
@@ -174,7 +174,7 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 						format="D [de] MMMM [de] yyyy"
 						value={date}
 						onChange={handleDateChange}
-						//maxDate={new Date(new Date().setHours(0, 0, 0, 0))}
+						maxDate={new Date(new Date().setHours(0, 0, 0, 0))}
 					/>
 				</Grid>
 				{!selectedSale && (

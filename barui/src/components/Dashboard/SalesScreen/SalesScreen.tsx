@@ -100,7 +100,7 @@ const ProductsScreen = ({ actions, accountId, sales = [] }: Props) => {
 						rows={sales.map(s => ({
 							id: s.id,
 							number: `Venta #${s.id}`,
-							date: moment(s.creationDate).format("DD [de] MMMM [de] YYYY - hh:mm[hs]"),
+							date: moment(s.creationDate).utc().format("DD [de] MMMM [de] YYYY"),
 							actions: s,
 						}))}
 						onEditRow={handleEditRow}
