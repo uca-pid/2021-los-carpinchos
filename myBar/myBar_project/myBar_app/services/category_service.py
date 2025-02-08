@@ -16,10 +16,10 @@ def validate_category_name(name):
 
     if not re.match(r'^[a-zA-Z\s]+$', name):
         raise InvalidCategoryNameException(
-            "El nombre de la categoria no puede tener caracteres que no sean letras mayusculas o minusculas")
+            "El nombre de la categoria solo puede estar conformado de letras")
 
 
 def category_data_validator(name):
-    name = name.strip()  # Meto el strip asi no puedo meter espacios antes o despues y pasa igual
+    name = name.strip()
     validate_category_name(name)
     validate_category_existence(name)

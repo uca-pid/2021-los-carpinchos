@@ -6,7 +6,7 @@ import AppDialog from "../../../../common/AppDialog";
 import TextFieldWithValidation from "../../../../common/TextFieldWithValidation";
 
 import styles from "./styles";
-import { settings } from "../../../../SignUp/validationSettings";
+import { categoryValidationSettings } from "../../../../SignUp/validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -53,9 +53,15 @@ const CategoryDialog = ({ actions, accountId, open, setOpen, selectedCategory }:
 	}, [selectedCategory, setInput]);
 
 	const handleChangeName = useCallback(
-		(value, invalid) => setInput(prev => ({ ...prev, name: { value, invalid } })),
-		[setInput]
-	);
+        (value) => {
+            const isInvalid = value.trim() === "" || !/^[a-zA-Z\s]+$/.test(value);
+            setInput(prev => ({
+                ...prev,
+                name: { value, invalid: isInvalid }
+            }));
+        },
+        [setInput]
+    );
 
 	const addProduct = useCallback(() => {
 		actions.addNewCategory(input.name.value, accountId).then(() => {
@@ -97,12 +103,12 @@ const CategoryDialog = ({ actions, accountId, open, setOpen, selectedCategory }:
 				<Grid item xs>
 					<TextFieldWithValidation
 						className={classes.textField}
-						label="Nombre de la categoía"
-						placeholder="Ingresar nombre del categoría"
+						label="Nombre de la categoria"
+						placeholder="Ingresar nombre de categoría"
 						value={input.name.value}
 						onChange={handleChangeName}
 						required
-						settings={settings}
+						settings={categoryValidationSettings}
 					/>
 				</Grid>
 			</Grid>

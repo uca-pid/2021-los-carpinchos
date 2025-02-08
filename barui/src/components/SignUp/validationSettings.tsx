@@ -13,7 +13,21 @@ export const settings: ValidationSetting[] = [
 		validate: (input: string) => input.length === 0,
 	},
 ];
-// new Regex(@"^\d$");
+
+export const categoryValidationSettings = [
+  {
+    message: "Debe contener menos de 30 caracteres",
+    validate: (input: string) => input.length > 30,
+  },
+  {
+    message: "El campo no puede ser vacio",
+    validate: (input: string) => input.trim().length === 0,
+  },
+  {
+    message: "Solo se permiten letras y espacios",
+    validate: (input: string) => !/^[a-zA-Z\s]+$/.test(input),
+  },
+];
 
 export const numericSetting: ValidationSetting = {
 	message: "Solo se aceptan numeros.",
