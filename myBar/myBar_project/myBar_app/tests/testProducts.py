@@ -1,3 +1,4 @@
+import pytest
 from django.core.exceptions import ValidationError
 from rest_framework.test import APITestCase
 from ..models.user import Mb_user as mb_user
@@ -5,7 +6,7 @@ from ..models.product import Product as p
 from ..models.category import Category as c
 
 
-
+@pytest.mark.django_db
 class TestProducts(APITestCase):
 
     def setUp(self):

@@ -1,10 +1,11 @@
+import pytest
 from django.core.exceptions import ValidationError
 from rest_framework.test import APITestCase
 from ..models.user import Mb_user as mb_user
 from ..models.securityCode import SecurityCode as Sc
 from django.core import mail
 
-
+@pytest.mark.django_db
 class TestUser(APITestCase):
 
     def setUp(self):
@@ -61,7 +62,7 @@ class TestUser(APITestCase):
     def test_user_creation_endPoint(self):
         webClient = self.client
         response = webClient.post(
-            '/createAccount', {'name': 'Sofia', 'manager': 'Toto', 'email': 'sofia@gmail.com', 'password': 'Pass'})
+            '/createAccount', {'name': 'Sofia', 'manager': 'Toto', 'email': 'sofia@gmail.com', 'password': 'Hola1234567!'})
         self.assertEqual(response.status_code, 201)
 
     def test_log_in_succefull(self):
@@ -73,10 +74,10 @@ class TestUser(APITestCase):
     def test_modify_details(self):
         webClient = self.client
         response = webClient.put(
-            '/updateAccountData/1', {"password": "Pass4", "manager": "Glenn"}, format="json")
+            '/updateAccountData/1', {"password": "Hola12345678!", "manager": "Glenn"}, format="json")
         self.assertEqual(response.status_code, 200)
         user = mb_user.getAllUsers().filter(account_id=1).first()
-        self.assertEqual(user.getPassword(), 'Pass4')
+        self.assertEqual(user.getPassword(), 'Hola12345678!')
         self.assertEqual(user.getManager(), 'Glenn')
 
     def test_delete_user(self):
@@ -94,8 +95,8 @@ class TestUser(APITestCase):
         self.assertEqual(len(Sc.objects.filter()), 1)
         self.assertEqual(len(mail.outbox), 1)
         response = webClient.post('/validateCode', {'email': 'sofia@gmail.com', 'code': Sc.objects.filter().first().security_code},format="json")
-        response = webClient.put('/resetPassword', {'email': 'sofia@gmail.com', 'newPassword': 'hola'},format="json")
+        response = webClient.put('/resetPassword', {'email': 'sofia@gmail.com', 'newPassword': 'Hola123456!'},format="json")
         self.assertEqual(response.status_code, 200)
         user = mb_user.getAllUsers().filter(account_id=1).first()
-        self.assertEqual(user.getPassword(), 'hola')
+        self.assertEqual(user.getPassword(), 'Hola123456!')
         self.assertEqual(len(Sc.objects.filter()), 0)

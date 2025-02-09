@@ -1,3 +1,4 @@
+import pytest
 from django.core.exceptions import ValidationError
 from rest_framework.test import APITestCase
 from ..models.user import Mb_user as mb_user
@@ -9,7 +10,7 @@ from ..models.goal import Goal as g
 from ..models.goal_category import Goal_Category as gc, Goal_Category
 import datetime
 
-
+@pytest.mark.django_db
 class TestProducts(APITestCase):
 
     def setUp(self):
@@ -107,7 +108,7 @@ class TestProducts(APITestCase):
         goal_category8 = gc(category=category1, categoryIncomeGoal=2000, goal=goal4)
         goal_category8.full_clean()
         goal_category8.save()
-        date5 = datetime.date(2023, 12, 8)
+        date5 = datetime.date(2025, 12, 8)
         goal5 = g(incomeGoal=10000, goal_date=date5,   account=user)
         goal5.full_clean()
         goal5.save()
@@ -121,7 +122,7 @@ class TestProducts(APITestCase):
     def test_create_goal_enpoint(self):
         webClient = self.client
         response = webClient.post(
-            '/createGoal/1', {'month': 10, 'year': 2021, 'incomeGoal': 10000, 'categories': [{'categoryId': 1, 'categoryIncomeGoal': 3000}, {'categoryId': 2, 'categoryIncomeGoal': 2000}]}, format='json')
+            '/createGoal/1', {'month': 10, 'year': 2025, 'incomeGoal': 10000, 'categories': [{'categoryId': 1, 'categoryIncomeGoal': 5000}, {'categoryId': 2, 'categoryIncomeGoal': 5000}]}, format='json')
         self.assertEqual(response.status_code, 201)
 
     def test_goal_creation_fail_with_no_goal_date(self):

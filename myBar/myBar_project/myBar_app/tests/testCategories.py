@@ -1,32 +1,33 @@
-
 from django.core.exceptions import ValidationError
 from rest_framework.test import APITestCase
+
+import pytest
 from ..models.user import Mb_user as mb_user
 from ..models.product import Product as p
 from ..models.category import Category as c
 
-
+@pytest.mark.django_db
 class TestProducts(APITestCase):
 
     def setUp(self):
         user = mb_user(name='Sofia', email='sofia@gmail.com',
-                       manager='Toto', password='Pass')
+                       manager='Toto', password='Hola1234!')
         user.full_clean()
         user.save()
         user2 = mb_user(name='Pepe', email='pepe@gmail.com',
-                        manager='Toto', password='Pass')
+                        manager='Toto', password='Hola123456!')
         user2.full_clean()
         user2.save()
-        category1 = c(category_name='bebidas', static=True, account=user)
+        category1 = c(category_name='Bebidas', static=True, account=user)
         category1.full_clean()
         category1.save()
-        category2 = c(category_name='alcohol', static=False, account=user)
+        category2 = c(category_name='Alcohol', static=False, account=user)
         category2.full_clean()
         category2.save()
-        product = p(name='cafe', price=9, account=user, category=category1)
+        product = p(name='Cafe', price=9, account=user, category=category1)
         product.full_clean()
         product.save()
-        product2 = p(name='coca', price=9, account=user2, category=category2)
+        product2 = p(name='Coca', price=9, account=user2, category=category2)
         product2.full_clean()
         product2.save()
         product3 = p(name='coca', price=9, account=user2, category=category2)
@@ -35,7 +36,7 @@ class TestProducts(APITestCase):
 
     def test_category_was_succesfully_saved(self):
         category = c.categories.first()
-        self.assertEqual(category.getCategoryname(), 'bebidas')
+        self.assertEqual(category.getCategoryname(), 'Bebidas')
         self.assertEqual(category.getStatic(), True)
 
     def test_category_creation_endPoint(self):
@@ -65,7 +66,7 @@ class TestProducts(APITestCase):
         user = mb_user(name='Sofia', email='sofia@gmail.com',
                        manager='Toto', password='Pass')
 
-        category = c(category_name='bebidas', static=True, account=user)
+        category = c(category_name='Bebidas', static=True, account=user)
         with self.assertRaises(ValueError):
             category.full_clean()
             category.save()
@@ -89,7 +90,7 @@ class TestProducts(APITestCase):
             '/updateCategoryData/1', {"category_name": 'gaseosas'}, format="json")
         self.assertEqual(response.status_code, 403)
         category = c.getAllCategories().filter(category_id=1).first()
-        self.assertEqual(category.getCategoryname(), 'bebidas')
+        self.assertEqual(category.getCategoryname(), 'Bebidas')
 
     def test_get_all_non_static_categories(self):
         webClient = self.client
@@ -108,4 +109,4 @@ class TestProducts(APITestCase):
         response = webClient.delete('/deleteCategory/1')
         self.assertEqual(response.status_code, 403)
         category = c.getAllCategories().filter(category_id=1).first()
-        self.assertEqual(category.getCategoryname(), 'bebidas')
+        self.assertEqual(category.getCategoryname(), 'Bebidas')
