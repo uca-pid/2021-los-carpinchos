@@ -25,10 +25,11 @@ export const signUp = (name, manager, email, password) => async dispatch =>
 		.post("createAccount", { name, manager, email, password })
 		.then(response => {
 			dispatch({ type: SIGNUP_SUCCESS, email: response.email });
-			dispatch(showSuccessMessage("Cuenta creada éxtisamente."));
+			dispatch(showSuccessMessage("Cuenta creada éxitosamente."));
 		})
-		.catch(() => {
-			dispatch(showErrorMessage("Cuenta ya existente. Utilice otro correo electrónico."));
+		.catch( error => {
+			const errorMessage = error.message || "No se pudo crear la cuenta, intente nuevamente";
+            dispatch(showErrorMessage(errorMessage));
 			throw new Error();
 		});
 
@@ -83,9 +84,10 @@ export const updateAccountData = (userId, data) => async dispatch =>
 			});
 			dispatch(showSuccessMessage("Sus datos han sido actualizados éxitosamente."));
 		})
-		.catch(() =>
-			dispatch(showErrorMessage("No fue posible actualizar los datos de la cuenta. Intente de nuevo."))
-		);
+		.catch( error => {
+        			const errorMessage = error.message || "No se puedo actualizar los datos de su cuenta intente de nuevo";
+                    dispatch(showErrorMessage(errorMessage));
+        });
 
 export const changePassword = (userId, email, currentPassword, newPassword) => async dispatch =>
 	await fetcher
@@ -96,9 +98,10 @@ export const changePassword = (userId, email, currentPassword, newPassword) => a
 				.then(() => {
 					dispatch(showSuccessMessage("Su contraseña ha sido modificada éxitosamente."));
 				})
-				.catch(() =>
-					dispatch(showErrorMessage("No fue posible actualizar su contraseña. Intente de nuevo."))
-				)
+				.catch( error => {
+                    const errorMessage = error.message || "No fue posible actualizar su contraseña. Intente de nuevo";
+                    dispatch(showErrorMessage(errorMessage));
+                })
 		)
 		.catch(() => {
 			dispatch(showErrorMessage("Contraseña actual incorrecta. Vuelva a intentar."));

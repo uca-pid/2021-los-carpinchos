@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 
 import { Grid, IconButton, Typography } from "@material-ui/core";
 
-import { emailSetting, settings } from "../../../SignUp/validationSettings";
+import { emailSetting, settings, textValidationSettings } from "../../../SignUp/validationSettings";
 import TextFieldWithValidation from "../../../common/TextFieldWithValidation";
 
 import EditIcon from "@material-ui/icons/Edit";
@@ -127,12 +127,12 @@ const ProfileScreen = ({ actions, accountName, manager, email, id }: Props) => {
 				<Grid item xs>
 					<TextFieldWithValidation
 						className={classes.textField}
-						label="Ecargado del bar"
+						label="Encargado del bar"
 						placeholder="Ingresar nombre del encargado"
 						value={input.manager.value}
 						onChange={handleChangeManager}
 						required
-						settings={settings}
+						settings={textValidationSettings}
 						disabled={!editMode}
 					/>
 				</Grid>

@@ -77,7 +77,6 @@ def goal_data_modifier_validator(request_data, goal_found):
     if 'categoryIncomeGoal' in request_data:
         validate_goal_income(request_data.get('categoryIncomeGoal'))
         validate_category_goal_modification(goal_found, request_data.get('categoryIncomeGoal'))
-        validate_repeated_income_goal(goal_found, request_data.get('categoryIncomeGoal'))
 
 
 def validate_category_goal_modification(goal_found, categoryIncomeGoal):

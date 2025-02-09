@@ -58,8 +58,8 @@ export const passwordSetting: ValidationSetting = {
 	message: "La contraseña no es válida",
 	validate: (password: string) => {
 		const re = new RegExp(
-			"^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})"
+			"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=.{8,})"
 		);
-		return !re.test(String(password).toLowerCase());
+		return !re.test(password);
 	},
 };

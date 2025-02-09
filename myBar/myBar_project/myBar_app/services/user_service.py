@@ -22,11 +22,11 @@ def validate_manager_name(manager_name):
 def validate_user_email(user_email):
     email_regex = r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     if not re.match(email_regex, user_email):
-        raise InvalidEmailException("El correo electrónico no es válido con el formato pedido")
+        raise InvalidEmailException("El formato del correo electronico no es correcto")
 
 
 def validate_user_password(user_password):
-    password_regex = r'^(?=.*[A-Z])(?=.*\d)(?=.*[a-zA-Z])[A-Za-z\d@$!%*?&]{8,}$'
+    password_regex = r'^(?=(.*[A-Z]))(?=(.*\d))(?=(.*[a-zA-Z]))(?=(.*[^\w\s]))[A-Za-z\d@$!%*?&]{8,}$'
     if not re.match(password_regex, user_password):
         raise InvalidPasswordException(
             "La contraseña debe contener al menos 8 caracteres, "

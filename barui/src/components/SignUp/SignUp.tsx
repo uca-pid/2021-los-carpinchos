@@ -16,7 +16,7 @@ import PasswordTextField from "../common/PasswordTextField";
 import styles from "./styles";
 import TextFieldWithValidation from "../common/TextFieldWithValidation";
 
-import { settings, emailSetting, passwordSetting, ValidationSetting } from "./validationSettings";
+import { settings, emailSetting, passwordSetting, ValidationSetting, textValidationSettings } from "./validationSettings";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -122,12 +122,12 @@ const SignUp = ({ actions }: Props) => {
 							<Grid item xs>
 								<TextFieldWithValidation
 									className={classes.textField}
-									label="Ecargado del bar"
+									label="Encargado del bar"
 									placeholder="Ingresar nombre del encargado"
 									value={input.manager.value}
 									onChange={handleChangeManager}
 									required
-									settings={settings}
+									settings={textValidationSettings}
 								/>
 							</Grid>
 						</Grid>
