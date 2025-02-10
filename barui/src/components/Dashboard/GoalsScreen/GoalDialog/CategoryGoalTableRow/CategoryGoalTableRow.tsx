@@ -15,7 +15,7 @@ import { CategoryGoal } from "../../GoalsScreen";
 import { Category } from "../../../../common/CategoryCombo/CategoryCombo";
 import TextFieldWithValidation from "../../../../common/TextFieldWithValidation";
 import { InputAdornment } from "@material-ui/core";
-import { numericSetting, settings } from "../../../../SignUp/validationSettings";
+import { numericSetting, settings, goalSetting } from "../../../../SignUp/validationSettings";
 
 type Props = {
 	row?: CategoryGoal;
@@ -114,7 +114,7 @@ const CategoryGoalTableRow = ({
 					onChange={handleCategoryGoal}
 					required
 					InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
-					settings={[...settings, numericSetting]}
+					settings={[...settings, goalSetting]}
 					disabled={!editMode}
 				/>
 			</TableCell>

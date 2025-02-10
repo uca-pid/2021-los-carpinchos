@@ -1,4 +1,6 @@
 const fetcher = ({ method, url, body, headers = null }) => {
+	const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+
 	const settings = {
 		headers: headers || {
 			Accept: "application/json",
@@ -8,7 +10,7 @@ const fetcher = ({ method, url, body, headers = null }) => {
 		body,
 	};
 
-	return fetch(`http://127.0.0.1:8000/${url}`, settings).then(response => {
+	return fetch(`${API_URL}/${url}`, settings).then(response => {
 		if (!response.ok) {
 			return response.json().then((errorData) => {
 				const errorMessage = errorData.message || errorData.error || 'Error desconocido';

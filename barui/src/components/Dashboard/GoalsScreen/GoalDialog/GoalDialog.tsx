@@ -28,7 +28,7 @@ import styles from "./styles";
 
 import moment from "moment";
 import TextFieldWithValidation from "../../../common/TextFieldWithValidation";
-import { numericSetting, settings } from "../../../SignUp/validationSettings";
+import { numericSetting, settings, goalSetting } from "../../../SignUp/validationSettings";
 import { Goal, CategoryGoal } from "../GoalsScreen";
 import { Category } from "../../../common/CategoryCombo/CategoryCombo";
 
@@ -189,7 +189,7 @@ const GoalDialog = ({
 						label="Periodo"
 						value={date}
 						onChange={handleDateChange}
-						//minDate={moment().add(1, "month").toDate()}
+						minDate={moment().startOf("month").toDate()}
 						disabled={Boolean(selectedGoal)}
 						minDateMessage=""
 						maxDateMessage=""
@@ -211,7 +211,7 @@ const GoalDialog = ({
 						onEnterPress={handleOnKeyDown}
 						required
 						InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
-						settings={[...settings, numericSetting]}
+						settings={[...settings, goalSetting]}
 						disabled={isPastGoal}
 					/>
 				</Grid>

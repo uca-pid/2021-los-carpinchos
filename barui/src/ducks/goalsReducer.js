@@ -115,9 +115,10 @@ export const addNewGoal = (accountId, incomeGoal, incomesByCategory, date) => as
 
 			return response;
 		})
-		.catch(() => {
-			dispatch(showErrorMessage("No se pudo crear la nueva meta. Intente de nuevo."));
-		});
+		.catch( error => {
+            const errorMessage = error.message || "No se pudo crear la nueva meta, intentelo de nuevo";
+            dispatch(showErrorMessage(errorMessage));
+        });
 
 export const selectGoal = goal => dispatch =>
 	dispatch({
@@ -133,7 +134,10 @@ export const updateGoal = (goalId, data) => async dispatch =>
 		.then(() => {
 			dispatch(showSuccessMessage("La meta se ha actualizado éxitosamente."));
 		})
-		.catch(() => dispatch(showErrorMessage("No fue posible actualizar la meta. Intente de nuevo.")));
+		.catch( error => {
+            const errorMessage = error.message || "No se pudo crear la nueva meta, intentelo de nuevo";
+            dispatch(showErrorMessage(errorMessage));
+        });
 
 export const deleteGoal = goalId => async dispatch =>
 	await fetcher

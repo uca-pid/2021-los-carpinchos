@@ -45,6 +45,14 @@ export const numericSetting: ValidationSetting = {
 	},
 };
 
+export const goalSetting: ValidationSetting = {
+    message: "Solo se aceptan números enteros positivos",
+    validate: (input: string) => {
+      const re = /^[+]?\d+$/;
+      return !re.test(input.trim());
+    },
+  };
+
 export const emailSetting: ValidationSetting = {
 	message: "Esta dirección de correo no es válida",
 	validate: (email: string) => {
