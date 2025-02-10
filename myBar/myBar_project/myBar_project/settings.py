@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'myBar_app',
     'drf_yasg',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -72,7 +73,7 @@ ROOT_URLCONF = 'myBar_project.urls'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://two021-los-carpinchos.onrender.com"
+    "fantastic-biscotti-59c999.netlify.app"
 ]
 
 TEMPLATES = [
