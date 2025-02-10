@@ -1,5 +1,5 @@
 const fetcher = ({ method, url, body, headers = null }) => {
-	const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+	const API_URL = "https://two021-los-carpinchos.onrender.com" || "http://127.0.0.1:8000";
 
 	const settings = {
 		headers: headers || {
