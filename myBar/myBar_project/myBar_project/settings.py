@@ -38,7 +38,7 @@ DATE_INPUT_FORMATS = ['%d-%m-%Y']
 
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["two021-los-carpinchos.onrender.com"]
 
 #DJANGO_SETTINGS_MODULE = myBar_project.settings
 
@@ -71,7 +71,8 @@ ROOT_URLCONF = 'myBar_project.urls'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "https://two021-los-carpinchos.onrender.com"
 ]
 
 TEMPLATES = [
