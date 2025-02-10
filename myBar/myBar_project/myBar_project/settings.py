@@ -38,7 +38,7 @@ DATE_INPUT_FORMATS = ['%d-%m-%Y']
 
 
 
-ALLOWED_HOSTS = ["two021-los-carpinchos.onrender.com"]
+ALLOWED_HOSTS = ["two021-los-carpinchos.onrender.com",'127.0.0.1', 'localhost']
 
 #DJANGO_SETTINGS_MODULE = myBar_project.settings
 
@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'myBar_app',
     'drf_yasg',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -70,12 +69,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'myBar_project.urls'
 
-CORS_ALLOW_ALL_ORIGINS = True
+##CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "fantastic-biscotti-59c999.netlify.app"
+    "https://fantastic-biscotti-59c999.netlify.app"
 ]
 
 TEMPLATES = [
