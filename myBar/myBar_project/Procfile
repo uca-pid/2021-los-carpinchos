@@ -1,1 +1,1 @@
-web: gunicorn myBar_project.wsgi:application
+web: gunicorn myBar_project.myBar_project.wsgi:application
