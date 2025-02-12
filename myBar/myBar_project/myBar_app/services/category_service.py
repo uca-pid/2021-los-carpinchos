@@ -5,8 +5,8 @@ from ..models.category import Category
 
 
 def validate_category_existence(name):
-    normalized_name = name.strip().lower()
-    if Category.categories.filter(category_name__iexact=normalized_name).exists():
+    name = name.replace(" ", "")
+    if Category.categories.filter(category_name__iexact=name).exists():
         raise CategoryAlreadyExistsException("La categoría ya existe")
 
 

@@ -65,6 +65,11 @@ const SecurityScreen = ({ actions, id, email }: Props) => {
 		validate: useCallback(password => password !== input.newPassword.value, [input]),
 	};
 
+	const passwordCheckMatchValidation: ValidationSetting = {
+	    message: "La constraseña no puede ser la misma",
+	    validate: useCallback(password => password == input.currentPassword.value, [input]),
+	};
+
 	return (
 		<Grid container direction="column" item spacing={3}>
 			<Grid item xs>
@@ -93,7 +98,7 @@ const SecurityScreen = ({ actions, id, email }: Props) => {
 						value={input.newPassword.value}
 						onChange={handleChangeNewPassword}
 						required
-						settings={[passwordSetting]}
+						settings={[passwordSetting, passwordCheckMatchValidation]}
 					/>
 				</div>
 			</Grid>
@@ -118,7 +123,8 @@ const SecurityScreen = ({ actions, id, email }: Props) => {
 					disabled={
 						input.newPassword.invalid ||
 						input.validatePassword.invalid ||
-						input.newPassword.value !== input.validatePassword.value
+						input.newPassword.value !== input.validatePassword.value ||
+						input.currentPassword.value == input.newPassword.value
 					}
 					onClick={changePassword}
 				>
