@@ -60,6 +60,7 @@ const GoalDialog = ({
 	const [categoriesGoal, setCategoriesGoal] = useState<CategoryGoal[]>([]);
 	const [date, setDate] = useState<Date | null>(null);
 	const [globalGoal, setGlobalGoal] = useState("");
+	const [isGoalValid, setIsGoalValid] = useState(false);
 
 	const classes = styles();
 
@@ -138,11 +139,15 @@ const GoalDialog = ({
 	);
 
 	const handleChangeGlobalGoal = useCallback(
-		value => {
-			setGlobalGoal(value);
-		},
-		[setGlobalGoal]
-	);
+    	(value) => {
+    		setGlobalGoal(value);
+    		const numValue = parseInt(value.trim())
+    		const hasDecimals = value.includes('.');
+    		const isValid = value.trim().length > 0 && numValue > 0 && !hasDecimals;
+    		setIsGoalValid(isValid);
+    	},
+    	[setGlobalGoal, setIsGoalValid]
+    );
 
 	const handleOnKeyDown = useCallback(() => {
 		selectedGoal &&
@@ -169,14 +174,14 @@ const GoalDialog = ({
 			onSubmit={createGoal}
 			onDialogClose={handleOnDialogClose}
 			setOpen={setOpen}
-			submitButtonDisabled={categoriesGoal.length === 0 || goalExists}
+			submitButtonDisabled={ categoriesGoal.length === 0 || goalExists || !isGoalValid }
 			submitButtonLabel={"Crear"}
 			title={
 				selectedGoal
 					? `Meta ${moment(selectedGoal.month, "M").format("MMMM")} - ${selectedGoal.year} (${
 							isPastGoal ? "Terminada" : "Meta futura"
 					  })`
-					: "Meta Nuevo"
+					: "Meta Nueva"
 			}
 			hideActions={Boolean(selectedGoal)}
 		>
@@ -189,7 +194,7 @@ const GoalDialog = ({
 						label="Periodo"
 						value={date}
 						onChange={handleDateChange}
-						minDate={moment().startOf("month").toDate()}
+						//minDate={moment().startOf("month").toDate()}
 						disabled={Boolean(selectedGoal)}
 						minDateMessage=""
 						maxDateMessage=""

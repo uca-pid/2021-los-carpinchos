@@ -42,7 +42,7 @@ const CategoryGoalTableRow = ({
 
 	const canSaveNewRow = !editMode && category !== null;
 	const canSaveExistingRow =
-		editMode && row && categoryIncomeGoal != row.categoryIncomeGoal.toString();
+		editMode && row && categoryIncomeGoal != row.categoryIncomeGoal.toString() && Number(categoryIncomeGoal)  > 0 && !(categoryIncomeGoal.includes('.'));
 	const canDelete = !editMode && row;
 
 	useEffect(() => {
