@@ -174,7 +174,7 @@ const GoalDialog = ({
 			onSubmit={createGoal}
 			onDialogClose={handleOnDialogClose}
 			setOpen={setOpen}
-			submitButtonDisabled={ categoriesGoal.length === 0 || goalExists || !isGoalValid }
+			submitButtonDisabled={ !date || categoriesGoal.length === 0 || goalExists || !isGoalValid }
 			submitButtonLabel={"Crear"}
 			title={
 				selectedGoal
@@ -194,7 +194,7 @@ const GoalDialog = ({
 						label="Periodo"
 						value={date}
 						onChange={handleDateChange}
-						//minDate={moment().startOf("month").toDate()}
+						minDate={moment().startOf("month").toDate()}
 						disabled={Boolean(selectedGoal)}
 						minDateMessage=""
 						maxDateMessage=""

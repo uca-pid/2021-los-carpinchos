@@ -20,7 +20,7 @@ def validate_manager_name(manager_name):
 
 
 def validate_user_email(user_email):
-    email_regex = r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    email_regex = r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$'
     if not re.match(email_regex, user_email):
         raise InvalidEmailException("El formato del correo electronico no es correcto")
 

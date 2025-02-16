@@ -25,17 +25,17 @@ def validate_goal_income(incomeGoal):
     if incomeGoal is None:
         raise InvalidGoalDataException("El valor de la meta no puede estar vacía")
     try:
-        value = float(incomeGoal)
+        value = int(incomeGoal)
     except (ValueError, TypeError):
-        raise InvalidGoalDataException("El valor de la meta debe ser un numero valido")
+        raise InvalidGoalDataException("El valor de la meta global debe ser un numero valido")
 
     if value <= 0:
-        raise InvalidGoalDataException("El valor de la meta debe ser un numero positivo")
+        raise InvalidGoalDataException("El valor de la meta global debe ser un numero positivo")
 
 
 def category_income_validator(request_data):
     categories = request_data.get('categories')
-    finalGoalIncomeRecieved = float(request_data.get('incomeGoal'))
+    finalGoalIncomeRecieved = int(request_data.get('incomeGoal'))
     finalGoalIncome = 0
     for category in categories:
         categoryIncome = category.get('categoryIncomeGoal')
@@ -45,11 +45,11 @@ def category_income_validator(request_data):
         if not category_bis:
             raise InvalidGoalDataException("La categoria ingresada en la meta no existe")
         try:
-            categoryIncomeNum = float(categoryIncome)
+            categoryIncomeNum = int(categoryIncome)
             finalGoalIncome = finalGoalIncome + categoryIncomeNum
         except ValueError:
             print(ValueError)
-            raise InvalidGoalDataException("El valor de la meta por categoria debe ser un número válido")
+            raise InvalidGoalDataException("El valor de la meta por categoria debe ser un número válido entero")
 
         if categoryIncomeNum <= 0:
             raise InvalidGoalDataException("El meta ingresada por categoria debe ser mayor a O")
@@ -81,7 +81,7 @@ def goal_data_modifier_validator(request_data, goal_found):
 
 def validate_category_goal_modification(goal_found, categoryIncomeGoal):
     try:
-        categoryIncomeGoal = float(categoryIncomeGoal)
+        categoryIncomeGoal = int(categoryIncomeGoal)
     except ValueError:
         raise InvalidGoalDataException("El valor de la meta de la categoría no es válido")
 
@@ -90,6 +90,6 @@ def validate_category_goal_modification(goal_found, categoryIncomeGoal):
 
 
 def validate_repeated_income_goal(goal_found, incomeGoalSent):
-    incomeGoalSentNumber = float(incomeGoalSent)
+    incomeGoalSentNumber = int(incomeGoalSent)
     if goal_found.incomeGoal == incomeGoalSentNumber:
         raise InvalidGoalDataException("La meta que quiere modificar ya contiene ese valor asignado")
