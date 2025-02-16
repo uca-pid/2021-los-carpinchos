@@ -50,7 +50,7 @@ const SaleInputForm = ({ products, onAdd }: Props) => {
 					<AmountInput amount={amount} onAdd={handleAdd} onRemove={handleRemove} />
 				</Grid>
 				<Grid item>
-					<Typography>{amount !== 0 && `$ ${product ? product.price * amount : "0"}`}</Typography>
+					<Typography>{amount !== 0 && `$ ${product ? (product.price * amount).toFixed(2) : "0"}`}</Typography>
 				</Grid>
 				<Grid item>
 					<Button

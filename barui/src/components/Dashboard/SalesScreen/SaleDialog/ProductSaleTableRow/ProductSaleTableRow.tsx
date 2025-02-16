@@ -90,7 +90,7 @@ const ProductSaleTableRow = ({ products, row, onSave, onDelete, className }: Pro
 				/>
 			</TableCell>
 			<TableCell align="center">
-				{amount !== 0 && `$ ${product ? product.price * amount : "0"}`}
+				{amount !== 0 && `$ ${product ? (product.price * amount).toFixed(2) : "0"}`}
 			</TableCell>
 			<TableCell align="right">
 				{row && (

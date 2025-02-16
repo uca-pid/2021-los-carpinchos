@@ -217,7 +217,7 @@ const SaleDialog = ({ accountId, actions, open, setOpen, selectedSale, products 
 										</TableCell>
 										<TableCell></TableCell>
 										<TableCell align="center">
-											<Typography variant="h6">{`$ ${calculateTotalSum()}`}</Typography>
+											<Typography variant="h6">{`$ ${(calculateTotalSum()).toFixed(2)}`}</Typography>
 										</TableCell>
 										<TableCell></TableCell>
 									</TableRow>
