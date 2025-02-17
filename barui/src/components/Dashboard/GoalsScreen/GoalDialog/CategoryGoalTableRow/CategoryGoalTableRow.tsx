@@ -16,6 +16,8 @@ import { Category } from "../../../../common/CategoryCombo/CategoryCombo";
 import TextFieldWithValidation from "../../../../common/TextFieldWithValidation";
 import { InputAdornment } from "@material-ui/core";
 import { numericSetting, settings, goalSetting } from "../../../../SignUp/validationSettings";
+import { useSelector } from "react-redux";
+import { RootState } from '../../../../ducks/stateTypes'
 
 type Props = {
 	row?: CategoryGoal;
@@ -40,9 +42,11 @@ const CategoryGoalTableRow = ({
 
 	const classes = styles();
 
+	const globalIncome = useSelector(state => state.globalIncome);
+
 	const canSaveNewRow = !editMode && category !== null;
 	const canSaveExistingRow =
-		editMode && row && categoryIncomeGoal != row.categoryIncomeGoal.toString() && Number(categoryIncomeGoal)  > 0 && !(categoryIncomeGoal.includes('.'));
+		editMode && row && categoryIncomeGoal != row.categoryIncomeGoal.toString() && Number(categoryIncomeGoal)  > 0 && !(categoryIncomeGoal.includes('.')) && Number(categoryIncomeGoal) <= globalIncome;
 	const canDelete = !editMode && row;
 
 	useEffect(() => {

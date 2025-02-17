@@ -14,6 +14,9 @@ import AppDialog from "../../../common/AppDialog";
 import CategoryGoalTableRow from "./CategoryGoalTableRow";
 import GoalInputForm from "./GoalInputForm";
 
+import { useDispatch } from "react-redux";
+import { setGlobalIncome } from "../../../../ducks/globalIncomeReducer";
+
 import {
 	deselectGoal,
 	addNewGoal,
@@ -61,6 +64,7 @@ const GoalDialog = ({
 	const [date, setDate] = useState<Date | null>(null);
 	const [globalGoal, setGlobalGoal] = useState("");
 	const [isGoalValid, setIsGoalValid] = useState(false);
+	const dispatch = useDispatch();
 
 	const classes = styles();
 
@@ -145,8 +149,12 @@ const GoalDialog = ({
     		const hasDecimals = value.includes('.');
     		const isValid = value.trim().length > 0 && numValue > 0 && !hasDecimals;
     		setIsGoalValid(isValid);
+
+    		if (isValid){
+                dispatch(setGlobalIncome(numValue));
+                }
     	},
-    	[setGlobalGoal, setIsGoalValid]
+    	[setGlobalGoal, setIsGoalValid, dispatch]
     );
 
 	const handleOnKeyDown = useCallback(() => {
